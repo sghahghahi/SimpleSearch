@@ -20,4 +20,22 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.m2e.core.maven2Nature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>.._project-tests_src_test_java</name>
+			<type>2</type>
+			<location>//Users/shyon/Documents/School/USF/Fall 24/CS 272N/Repos/project-tests/src/test/java/</location>
+		</link>
+	</linkedResources>
+	<filteredResources>
+		<filter>
+			<id>1725048908818</id>
+			<name></name>
+			<type>30</type>
+			<matcher>
+				<id>org.eclipse.core.resources.regexFilterMatcher</id>
+				<arguments>node_modules|\.git|__CREATED_BY_JAVA_LANGUAGE_SERVER__</arguments>
+			</matcher>
+		</filter>
+	</filteredResources>
 </projectDescription>
