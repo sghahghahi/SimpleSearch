@@ -1,0 +1,23 @@
+name: 'Verify User'
+
+on:
+  issues:
+    types: 
+      - 'labeled'
+      - 'unlabeled'
+      - 'assigned'
+      - 'unassigned'
+
+  pull_request:
+    types: 
+      - 'labeled'
+      - 'unlabeled'
+      - 'assigned'
+      - 'unassigned'
+
+jobs:
+  main:
+    name: 'Run'
+    uses: 'usf-cs272n-fall2024/cs272n-bot/.github/workflows/verify-user.yml@main'
+    secrets: 'inherit'
+    permissions: 'write-all'

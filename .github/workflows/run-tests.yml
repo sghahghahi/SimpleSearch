@@ -1,0 +1,24 @@
+name: 'Run Tests'
+
+on:
+  release:
+    types: 
+      - 'published'
+      - 'edited'
+
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version number to use
+        type: string
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  main:
+    name: 'Run'
+    uses: 'usf-cs272n-fall2024/cs272n-bot/.github/workflows/run-project.yml@main'
+    secrets: 'inherit'
+    permissions: 'write-all'
+    with:
+      version: ${{ inputs.version }}

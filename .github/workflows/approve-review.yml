@@ -1,0 +1,13 @@
+name: 'Approve Review'
+
+on:
+  push:
+    branches:
+      - 'review/**'
+
+jobs:
+  main:
+    name: 'Run'
+    uses: 'usf-cs272n-fall2024/cs272n-bot/.github/workflows/approve-review.yml@main'
+    secrets: 'inherit'
+    permissions: 'write-all'

@@ -1,0 +1,25 @@
+name: 'Request Review'
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release to review'
+        required: true
+        default: 'v1.0.0'
+        type: 'string'
+
+  # force workflow to showup
+  push: 
+    tags:
+      - 'v0.0.0'
+
+jobs:
+  main:
+    name: 'Run'
+    uses: 'usf-cs272n-fall2024/cs272n-bot/.github/workflows/request-review.yml@main'
+    if: ${{ github.event_name != 'push' }}
+    secrets: 'inherit'
+    permissions: 'write-all'
+    with:
+      head_ref: '${{ inputs.release }}'
