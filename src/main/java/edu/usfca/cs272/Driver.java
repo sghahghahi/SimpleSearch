@@ -1,6 +1,7 @@
 package edu.usfca.cs272;
 
 import java.nio.file.Path;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -32,9 +33,15 @@ public class Driver {
 	 * Write JavaDoc comments here
 	 * @param path File path to read from
 	 */
-	private void readFile(Path path) {
+	private void readFile(Path path)
+		throws IOException,
+		NullPointerException,
+		UnsupportedOperationException,
+		ClassCastException,
+		IllegalArgumentException,
+		IllegalStateException
+	{
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
-			int numLines = 0;
 			String line = null;
 			ArrayList<String> wordOccurences;
 			SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
@@ -54,45 +61,54 @@ public class Driver {
 					path.toString(),
 					this.wordStems.getOrDefault(path.toString(), 0) + wordOccurences.size()
 				);
+			}
+		}
+	}
 
-				// Keep track of number of blank lines
-				// We will reference this later to see if we're dealing with an empty file
-				if (FileStemmer.clean(line).isBlank()) {
-					numLines--;
+	/**
+	 * Write JavaDoc comments here
+	 * @param dirPath
+	 */
+	private void readDir(Path dirPath) throws IOException {
+		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirPath)) {
+			for (Path path : dirStream) {
+				if (Files.isDirectory(path)) {
+					readDir(path);
 				} else {
-					numLines++;
+					if (isTextFile(path)) {
+						readFile(path);
+					}
 				}
 			}
-
-			// Clear the TreeMap if there are no lines (empty file)
-			// Not the most efficient way to do this, but it works for now
-			if (numLines <= 0) {
-				this.wordStems.clear();
-			}
-
-		} catch (
-			IOException |
-			NullPointerException |
-			UnsupportedOperationException |
-			ClassCastException |
-			IllegalArgumentException |
-			IllegalStateException
-			e
-		) {
-			System.err.println(e);
 		}
+	}
+
+	private static boolean isTextFile(Path path) {
+		String lowerCasePath = path.toString().toLowerCase();
+
+		return (
+			lowerCasePath.endsWith(".txt") ||
+			lowerCasePath.endsWith(".text")
+		);
 	}
 
 	/**
 	 * Write JavaDoc comments here
 	 * @param path File path to write to
 	 */
-	private void writeFile(Path path) {
-		try {
-			JsonWriter.writeObject(this.wordStems, path);
+	private void writeFile(Path path) throws IOException {
+		JsonWriter.writeObject(this.wordStems, path);
+	}
 
-		} catch (IOException e) {
-			System.err.println(e);
+	/**
+	 * Write JavaDoc comments here
+	 * @param path
+	 */
+	private void textFlag(Path path) throws IOException {
+		if (Files.isDirectory(path)) {
+			readDir(path);
+		} else {
+			readFile(path);
 		}
 	}
 
@@ -100,19 +116,7 @@ public class Driver {
 	 * Write JavaDoc comments here
 	 * @param path
 	 */
-	private void textFlag(Path path) {
-		/* Handle single file */
-		readFile(path);
-
-		/* Handle directory */
-		// Call method here
-	}
-
-	/**
-	 * Write JavaDoc comments here
-	 * @param path
-	 */
-	private void countFlag(Path path) {
+	private void countFlag(Path path) throws IOException {
 		writeFile(path);
 	}
 
@@ -130,15 +134,19 @@ public class Driver {
 		Driver driver = new Driver();
 		ArgumentParser argParser = new ArgumentParser(args);
 
-		if (argParser.hasFlag(TEXT)) {
-			driver.textFlag(argParser.getPath(TEXT));
-		}
+		try {
+			if (argParser.hasFlag(TEXT)) {
+				driver.textFlag(argParser.getPath(TEXT));
+			}
 
-		if (argParser.hasFlag(COUNTS)) {
-			driver.countFlag(argParser.getPath(COUNTS));
-			// Get current directory, then get path of new file (counts.json) in the current directory
-			// Pass this new path to counts.json as the second argument in argParser.getPath()
-			// driver.countFlag(argParser.getPath(COUNTS, <path to counts.json>));
+			if (argParser.hasFlag(COUNTS)) {
+				driver.countFlag(argParser.getPath(COUNTS));
+				// Get current directory, then get path of new file (counts.json) in the current directory
+				// Pass this new path to counts.json as the second argument in argParser.getPath()
+				// driver.countFlag(argParser.getPath(COUNTS, <path to counts.json>));
+			}
+		} catch (IOException e) {
+			System.err.println(e);
 		}
 	}
 }
