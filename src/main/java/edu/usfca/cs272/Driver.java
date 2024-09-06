@@ -136,15 +136,17 @@ public class Driver {
 
 		try {
 			if (argParser.hasFlag(TEXT)) {
+				if (argParser.getPath(TEXT) == null) {
+					System.err.println("Missing input file.");
+					return;
+				}
 				driver.textFlag(argParser.getPath(TEXT));
 			}
 
 			if (argParser.hasFlag(COUNTS)) {
-				driver.countFlag(argParser.getPath(COUNTS));
-				// Get current directory, then get path of new file (counts.json) in the current directory
-				// Pass this new path to counts.json as the second argument in argParser.getPath()
-				// driver.countFlag(argParser.getPath(COUNTS, <path to counts.json>));
+				driver.countFlag(argParser.getPath(COUNTS, Path.of(".", "counts.json")));
 			}
+
 		} catch (IOException e) {
 			System.err.println(e);
 		}
