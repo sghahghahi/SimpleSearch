@@ -23,6 +23,8 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
  * @version Fall 2024
  */
 public class Driver {
+
+	/** {@code TreeMap} to store file path and word count key/value pairs */
 	private final TreeMap<String, Integer> wordStems;
 
 	public Driver() {
@@ -30,7 +32,8 @@ public class Driver {
 	}
 
 	/**
-	 * Write JavaDoc comments here
+	 * Reads file from {@code path} and adds word stems from file to an {@code ArrayList}.
+	 * Adds {@code path} and word counts to {@code this.TreeMap} to be written to a file later.
 	 * @param path File path to read from
 	 */
 	private void readFile(Path path)
@@ -66,8 +69,9 @@ public class Driver {
 	}
 
 	/**
-	 * Write JavaDoc comments here
-	 * @param dirPath
+	 * Recursively reads all files and subdirectories from {@code dirPath}.
+	 * Only reads files if they end in {@code .txt} or {@code .text} (case-insensitive).
+	 * @param dirPath path of directory to traverse
 	 */
 	private void readDir(Path dirPath) throws IOException {
 		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirPath)) {
@@ -83,6 +87,10 @@ public class Driver {
 		}
 	}
 
+	/**
+	 * @param path The file path to check
+	 * @return If the file at {@code path} ends with {@code .txt} or {@code .text} (case-insensitive).
+	 */
 	private static boolean isTextFile(Path path) {
 		String lowerCasePath = path.toString().toLowerCase();
 
@@ -93,7 +101,7 @@ public class Driver {
 	}
 
 	/**
-	 * Write JavaDoc comments here
+	 * Writes {@code this.TreeMap} to the output file at {@code path} in pretty JSON format.
 	 * @param path File path to write to
 	 */
 	private void writeFile(Path path) throws IOException {
@@ -101,8 +109,9 @@ public class Driver {
 	}
 
 	/**
-	 * Write JavaDoc comments here
-	 * @param path
+	 * Reads {@code path}.
+	 * Sends the directory or file at {@code path} to its appropriate method.
+	 * @param path The path of either a directory or file
 	 */
 	private void textFlag(Path path) throws IOException {
 		if (Files.isDirectory(path)) {
@@ -113,8 +122,8 @@ public class Driver {
 	}
 
 	/**
-	 * Write JavaDoc comments here
-	 * @param path
+	 * Sends {@code path} to {@link #writeFile(Path)} to be processed and output.
+	 * @param path The output file path to write to
 	 */
 	private void countFlag(Path path) throws IOException {
 		writeFile(path);
