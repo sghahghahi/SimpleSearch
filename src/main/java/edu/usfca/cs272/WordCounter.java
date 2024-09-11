@@ -19,10 +19,20 @@ public class WordCounter {
 	/** {@code TreeMap} to store file path and word count key/value pairs */
 	private final TreeMap<String, Integer> invertedIndex;
 
+	/**
+	 * Default constructor that initializes a new {@code TreeMap<String, Integer>}
+	 */
 	public WordCounter() {
 		this.invertedIndex= new TreeMap<>();
 	}
 
+	/**
+	 * Reads the given line and adds the path and number of word stems
+	 * as a key/value pair to {@code this.invertedIndex}
+	 * @param line The line to read
+	 * @param snowballStemmer The stemmer to use
+	 * @param path Where the file to be read is
+	 */
 	private void calculateWordCount(String line, SnowballStemmer snowballStemmer, Path path) {
 		ArrayList<String> wordStems = new ArrayList<>();
 
