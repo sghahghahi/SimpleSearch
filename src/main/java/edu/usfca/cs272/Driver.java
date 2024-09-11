@@ -23,12 +23,17 @@ public class Driver {
 	public static void main(String[] args) {
 		final String TEXT = "-text";
 		final String COUNTS = "-counts";
+		final String INDEX = "-index";
+		final String CURR_DIR = ".";
 
 		ArgumentParser argParser = new ArgumentParser(args);
 		WordCounter wordCounter = new WordCounter();
 
 		try {
-			if (argParser.hasFlag(TEXT)) {
+			if (argParser.hasFlag(TEXT) && argParser.hasFlag(INDEX)) {
+				/* Read file and build inverted index */
+
+			} else if (argParser.hasFlag(TEXT)) {
 				if (argParser.getPath(TEXT) == null) {
 					System.err.println("Missing input file.");
 					return;
@@ -37,7 +42,7 @@ public class Driver {
 			}
 
 			if (argParser.hasFlag(COUNTS)) {
-				wordCounter.countFlag(argParser.getPath(COUNTS, Path.of(".", "counts.json")));
+				wordCounter.countFlag(argParser.getPath(COUNTS, Path.of(CURR_DIR, "counts.json")));
 			}
 
 		} catch (IOException e) {

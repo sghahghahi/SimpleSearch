@@ -17,22 +17,22 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 public class WordCounter {
 
 	/** {@code TreeMap} to store file path and word count key/value pairs */
-	private final TreeMap<String, Integer> wordStems;
+	private final TreeMap<String, Integer> invertedIndex;
 
 	public WordCounter() {
-		this.wordStems = new TreeMap<>();
+		this.invertedIndex= new TreeMap<>();
 	}
 
 	private void calculateWordCount(String line, SnowballStemmer snowballStemmer, Path path) {
-		ArrayList<String> wordOccurences = new ArrayList<>();
+		ArrayList<String> wordStems = new ArrayList<>();
 
 		// Populate ArrayList with word stems
-		FileStemmer.addStems(line, snowballStemmer, wordOccurences);
+		FileStemmer.addStems(line, snowballStemmer, wordStems);
 
 		// Add file path and word count to TreeMap
-		this.wordStems.put(
+		this.invertedIndex.put(
 			path.toString(),
-			this.wordStems.getOrDefault(path.toString(), 0) + wordOccurences.size()
+			this.invertedIndex.getOrDefault(path.toString(), 0) + wordStems.size()
 		);
 	}
 
@@ -96,7 +96,7 @@ public class WordCounter {
 	 * @param path File path to write to
 	 */
 	private void writeFile(Path path) throws IOException {
-		JsonWriter.writeObject(this.wordStems, path);
+		JsonWriter.writeObject(this.invertedIndex, path);
 	}
 
 	/**
