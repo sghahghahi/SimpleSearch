@@ -84,14 +84,16 @@ public class JsonWriter {
 
 		writeIndent("[\n", writer, 0);
 
-		int i = 0;
-		for (var element : elements) {
-			// Omit a trailing comma if we're at the last element
-			if (++i == elements.size()) {
-				writeIndent(element.toString() + "\n", writer, indent + 1);
-			} else {
+		var iterator = elements.iterator();
+		while (iterator.hasNext()) {
+			var element = iterator.next();
+
+			if (iterator.hasNext()) {
 				writeIndent(element.toString() + ",\n", writer, indent + 1);
+			} else {
+				writeIndent(element.toString() + "\n", writer, indent + 1);
 			}
+
 		}
 
 		writeIndent("]", writer, indent);
@@ -352,6 +354,11 @@ public class JsonWriter {
 			return null;
 		}
 	}
+
+	/**
+	 * Empty private constructor to pass style check
+	 */
+	private JsonWriter() {}
 
 	/**
 	 * Demonstrates this class.

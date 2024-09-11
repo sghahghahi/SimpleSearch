@@ -51,19 +51,14 @@ public class ArgumentParser {
 
 		if (
 			arg == null ||
-			arg.isBlank() ||
 			arg.length() < 2 ||
 			!arg.startsWith(PREFIX)
 		) { return false; }
 
 		// Safe to use `.codePointAt()` without fear of Exception because we are guaranteed at this point that `arg`'s length >= 2
-		int ch = arg.codePointAt(CHAR_AFTER_DASH);
-		if (
-			Character.isDigit(ch) ||
-			Character.isWhitespace(ch)
-		) { return false; }
+		int second = arg.codePointAt(CHAR_AFTER_DASH);
 
-		return true;
+		return !(Character.isDigit(second) || Character.isWhitespace(second));
 	}
 
 	/**
@@ -82,11 +77,8 @@ public class ArgumentParser {
 	 * have associated values. If a flag is repeated, its value will be overwritten.
 	 *
 	 * @param args the command line arguments to parse
-	 * @throws NullPointerException if the {@code args} parameter is {@code null}
 	 */
 	public final void parse(String[] args) {
-		if (args == null) throw new NullPointerException("Cannot operate on null args array");
-
 		int lastFlagIndex = -1; // Initialize at -1 instead of 0 because index 0 is not guaranteed to be a flag
 		String prevArg = null;	// Keeps track of the previous arg when iterating through `args`. Updates after each loop iteration
 
@@ -103,13 +95,9 @@ public class ArgumentParser {
 			 * If the previous arg was also a value, ignore `currArg` since the only time we can add a value to the map is if a flag precedes it
 			 */
 			} else if (isValue(currArg)) {
-				if (
-					this.map.isEmpty() ||
-					isValue(prevArg)
-				) { continue; }
-
-				// Here, we've reached a value that's met the criteria to be mapped to a flag, therefore guaranteeing us that lastFlagIndex >= 0
-				this.map.put(args[lastFlagIndex], currArg);
+				if (!(this.map.isEmpty() || isValue(prevArg))) {
+					this.map.put(args[lastFlagIndex], currArg);
+				}
 			}
 
 			prevArg = currArg;
@@ -151,16 +139,10 @@ public class ArgumentParser {
 	 *
 	 * @param flag the flag whose associated value is to be returned
 	 * @param backup the backup value to return if there is no mapping
-	 * @throws NullPointerException if either {@code flag} or {@code backup} are {@code null}
 	 * @return the value to which the specified flag is mapped,
 	 *   or the backup value if there is no mapping
 	 */
 	public String getString(String flag, String backup) {
-		if (
-			flag == null ||
-			backup == null
-		) { throw new NullPointerException("Cannot operate on null flag or backup value"); }
-
 		return Objects.requireNonNullElse(
 			this.map.get(flag),
 			backup
@@ -172,13 +154,10 @@ public class ArgumentParser {
 	 * or null if there is no mapping.
 	 *
 	 * @param flag the flag whose associated value is to be returned
-	 * @throws NullPointerException if {@code flag} is {@code null}
 	 * @return the value to which the specified flag is mapped or {@code null} if
 	 *   there is no mapping
 	 */
 	public String getString(String flag) {
-		if (flag == null) throw new NullPointerException("Cannot operate on null flag value");
-
 		return this.map.get(flag);
 	}
 

@@ -151,9 +151,7 @@ public class FileStemmer {
 
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-				stems.addAll(
-					listStems(line, snowballStemmer)
-				);
+				addStems(line, snowballStemmer, stems);
 			}
 
 			return stems;
