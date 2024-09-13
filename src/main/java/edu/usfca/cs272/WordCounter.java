@@ -63,7 +63,6 @@ public class WordCounter {
 	 * Adds each word in the line, its file path, and its word position in the file to an inverted index
 	 * @param line The line to read
 	 * @param path Where the file to be read is
-	 * @throws IOException If an IO error occurs
 	 */
 	private void buildInvertedIndex(String line, Path path) {
 		ArrayList<String> words = FileStemmer.listStems(line);
