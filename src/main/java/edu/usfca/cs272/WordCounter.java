@@ -65,36 +65,29 @@ public class WordCounter {
 	 * @param path Where the file to be read is
 	 * @throws IOException If an IO error occurs
 	 */
-	private void buildInvertedIndex(String line, Path path) throws IOException {
-		/*
-		 * Get stemmed words from FileStemmer
-		 * Loop through words (case-insensitive)
-		 * Add word, path, and word position to inverted index
-		 */
-		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
-			ArrayList<String> words = FileStemmer.listStems(line);
-			for (String word : words) {
-				word = word.toLowerCase();
+	private void buildInvertedIndex(String line, Path path) {
+		ArrayList<String> words = FileStemmer.listStems(line);
+		for (String word : words) {
+			word = word.toLowerCase();
 
-				var innerMap = this.invertedIndex.get(word);
-				if (innerMap == null) {
-					innerMap = new TreeMap<>();
-				}
-
-				var innerCollection = innerMap.get(path.toString());
-				ArrayList<Number> innerList;
-				if (innerCollection == null) {
-					innerList = new ArrayList<>();
-				} else {
-					innerList = new ArrayList<>(innerCollection);
-				}
-
-				innerList.add(this.wordPosition);
-				innerMap.put(path.toString(), innerList);
-				this.invertedIndex.put(word, innerMap);
-
-				this.wordPosition++;
+			var innerMap = this.invertedIndex.get(word);
+			if (innerMap == null) {
+				innerMap = new TreeMap<>();
 			}
+
+			var innerCollection = innerMap.get(path.toString());
+			ArrayList<Number> innerList;
+			if (innerCollection == null) {
+				innerList = new ArrayList<>();
+			} else {
+				innerList = new ArrayList<>(innerCollection);
+			}
+
+			innerList.add(this.wordPosition);
+			innerMap.put(path.toString(), innerList);
+			this.invertedIndex.put(word, innerMap);
+
+			this.wordPosition++;
 		}
 	}
 
