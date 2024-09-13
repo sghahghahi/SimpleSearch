@@ -299,13 +299,14 @@ public class JsonWriter {
 
 		writeIndent("[\n", writer, 0);
 
-		int i = 0;
-		for (var element : elements) {
+		var iterator = elements.iterator();
+		while (iterator.hasNext()) {
+			var element = iterator.next();
 			writeIndent(writer, indent + 1);
 			writeObject(element, writer, indent + 1);
 
 			// Omit a trailing comma if we're at the last element
-			if (++i == elements.size()) {
+			if (iterator.next() == null) {
 				writeIndent("\n", writer, 0);
 			} else {
 				writeIndent(",\n", writer, 0);
