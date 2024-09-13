@@ -75,12 +75,7 @@ public class WordCounter {
 			}
 
 			var innerCollection = innerMap.get(path.toString());
-			ArrayList<Number> innerList;
-			if (innerCollection == null) {
-				innerList = new ArrayList<>();
-			} else {
-				innerList = new ArrayList<>(innerCollection);
-			}
+			ArrayList<Number> innerList = (innerCollection == null) ? new ArrayList<>() : new ArrayList<>(innerCollection);
 
 			innerList.add(this.wordPosition);
 			innerMap.put(path.toString(), innerList);
