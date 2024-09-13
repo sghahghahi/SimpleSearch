@@ -29,16 +29,20 @@ public class Driver {
 		ArgumentParser argParser = new ArgumentParser(args);
 		WordCounter wordCounter = new WordCounter();
 
+		boolean indexFlag = true;
+
 		try {
 			if (argParser.hasFlag(TEXT) && argParser.hasFlag(INDEX)) {
 				/* Read file and build inverted index */
+				wordCounter.textFlag(argParser.getPath(TEXT), indexFlag);
+				wordCounter.indexFlag(argParser.getPath(INDEX, Path.of(CURR_DIR, "index.json")));
 
 			} else if (argParser.hasFlag(TEXT)) {
 				if (argParser.getPath(TEXT) == null) {
 					System.err.println("Missing input file.");
 					return;
 				}
-				wordCounter.textFlag(argParser.getPath(TEXT));
+				wordCounter.textFlag(argParser.getPath(TEXT), !indexFlag);
 			}
 
 			if (argParser.hasFlag(COUNTS)) {
