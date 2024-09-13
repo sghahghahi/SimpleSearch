@@ -24,6 +24,9 @@ public class WordCounter {
 	/** {@code Inverted Index} to store words with their file paths and word positions */
 	private final TreeMap<String, Map<String, Collection<? extends Number>>> invertedIndex;
 
+	/** Keeps track of the word position in each file */
+	private int wordPosition = 1;
+
 	/**
 	 * Default constructor that initializes a new {@code TreeMap<String, Integer>}
 	 */
@@ -63,6 +66,31 @@ public class WordCounter {
 		 * Loop through words (case-insensitive)
 		 * Add word, path, and word position to inverted index
 		 */
+		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
+			ArrayList<String> words = FileStemmer.listStems(line);
+			for (String word : words) {
+				word = word.toLowerCase();
+
+				var innerMap = this.invertedIndex.get(word);
+				if (innerMap == null) {
+					innerMap = new TreeMap<>();
+				}
+
+				var innerCollection = innerMap.get(path.toString());
+				ArrayList<Number> innerList;
+				if (innerCollection == null) {
+					innerList = new ArrayList<>();
+				} else {
+					innerList = new ArrayList<>(innerCollection);
+				}
+
+				innerList.add(this.wordPosition);
+				innerMap.put(path.toString(), innerList);
+				this.invertedIndex.put(word, innerMap);
+
+				this.wordPosition++;
+			}
+		}
 	}
 
 	/**
