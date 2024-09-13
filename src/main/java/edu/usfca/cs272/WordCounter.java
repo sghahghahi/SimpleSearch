@@ -45,7 +45,6 @@ public class WordCounter {
 	private void calculateWordCount(String line, SnowballStemmer snowballStemmer, Path path, boolean indexFlag) throws IOException {
 		if (indexFlag == true) {
 			buildInvertedIndex(line, path);
-			return;
 		}
 
 		ArrayList<String> wordOccurences = new ArrayList<>();
