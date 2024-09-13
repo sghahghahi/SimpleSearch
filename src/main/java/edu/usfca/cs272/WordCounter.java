@@ -134,6 +134,8 @@ public class WordCounter {
 					readDir(path, indexFlag);
 				} else {
 					if (isTextFile(path)) {
+						// Reset word position to 1 every time we read from a new file
+						this.wordPosition = 1;
 						readFile(path, indexFlag);
 					}
 				}
@@ -157,12 +159,18 @@ public class WordCounter {
 	/**
 	 * Writes {@code this.TreeMap} to the output file at {@code path} in pretty JSON format.
 	 * @param path File path to write to
+	 * @param indexFlag Whether the {@code -index} flag is present
 	 */
-	private void writeFile(Path path) throws IOException {
+	private void writeFile(Path path, boolean indexFlag) throws IOException {
 		// // Commenting this out to test "-index"
 		// JsonWriter.writeObject(this.wordStems, path);
 
-		JsonWriter.writeObjectObject(this.invertedIndex, path, 0);
+		if (indexFlag == true) {
+			JsonWriter.writeObjectObject(this.invertedIndex, path, 0);
+		} else {
+			JsonWriter.writeObject(this.wordStems, path);
+		}
+
 	}
 
 	/**
@@ -182,11 +190,11 @@ public class WordCounter {
 	 * Sends {@code path} to {@link #writeFile(Path)} to be processed and output.
 	 * @param path The output file path to write to
 	 */
-	public void countFlag(Path path) throws IOException {
-		writeFile(path);
+	public void countFlag(Path path, boolean indexFlag) throws IOException {
+		writeFile(path, indexFlag);
 	}
 
-	public void indexFlag(Path path) throws IOException {
-		writeFile(path);
+	public void indexFlag(Path path, boolean indexFlag) throws IOException {
+		writeFile(path, indexFlag);
 	}
 }

@@ -35,7 +35,7 @@ public class Driver {
 			if (argParser.hasFlag(TEXT) && argParser.hasFlag(INDEX)) {
 				/* Read file and build inverted index */
 				wordCounter.textFlag(argParser.getPath(TEXT), indexFlag);
-				wordCounter.indexFlag(argParser.getPath(INDEX, Path.of(CURR_DIR, "index.json")));
+				wordCounter.indexFlag(argParser.getPath(INDEX, Path.of(CURR_DIR, "index.json")), indexFlag);
 
 			} else if (argParser.hasFlag(TEXT)) {
 				if (argParser.getPath(TEXT) == null) {
@@ -43,10 +43,12 @@ public class Driver {
 					return;
 				}
 				wordCounter.textFlag(argParser.getPath(TEXT), !indexFlag);
+			} else if (argParser.hasFlag(INDEX)) {
+				wordCounter.indexFlag(argParser.getPath(INDEX, Path.of(CURR_DIR, "index.json")), indexFlag);
 			}
 
 			if (argParser.hasFlag(COUNTS)) {
-				wordCounter.countFlag(argParser.getPath(COUNTS, Path.of(CURR_DIR, "counts.json")));
+				wordCounter.countFlag(argParser.getPath(COUNTS, Path.of(CURR_DIR, "counts.json")), !indexFlag);
 			}
 
 		} catch (IOException e) {
