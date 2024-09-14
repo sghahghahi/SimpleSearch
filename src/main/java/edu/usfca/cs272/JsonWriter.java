@@ -360,30 +360,40 @@ public class JsonWriter {
 	/**
 	 * Writes the elements as a pretty JSON array with nested Maps to file.
 	 * @param elements The elements to write
-	 * @param path The file path to use
+	 * @param writer The writer to use
 	 * @param indent the initial indent level; the first bracket is not indented,
 	 * inner elements are indented by one, and the last bracket is indented at
 	 * the initial indentation level
 	 * @throws IOException if an IO error occurs
 	 */
-	public static void writeObjectObject(Map<String, Map<String, Collection<? extends Number>>> elements, Path path, int indent) throws IOException {
-		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
-			writeIndent("{\n", writer, 0);
+	public static void writeObjectObject(Map<String, Map<String, Collection<? extends Number>>> elements, BufferedWriter writer, int indent) throws IOException {
+		writeIndent("{\n", writer, 0);
 
-			int i = 0;
-			for (var element : elements.entrySet()) {
-				writeQuote(element.getKey(), writer, indent + 1);
-				writeIndent(": ", writer, 0);
-				writeObjectArrays(element.getValue(), writer, indent + 1);
+		int i = 0;
+		for (var element : elements.entrySet()) {
+			writeQuote(element.getKey(), writer, indent + 1);
+			writeIndent(": ", writer, 0);
+			writeObjectArrays(element.getValue(), writer, indent + 1);
 
-				if (++i == elements.size()) {
-					writeIndent("\n", writer, 0);
-				} else {
-					writeIndent(",\n", writer, 0);
-				}
+			if (++i == elements.size()) {
+				writeIndent("\n", writer, 0);
+			} else {
+				writeIndent(",\n", writer, 0);
 			}
+		}
 
-			writeIndent("}", writer, indent);
+		writeIndent("}", writer, indent);
+	}
+
+	/**
+	 * Writes the elements as a pretty JSON array with nested Maps to file.
+	 * @param elements The elements to write
+	 * @param path The file path to write to
+	 * @throws IOException If an IO error occurs
+	 */
+	public static void writeObjectObject(Map<String, Map<String, Collection<? extends Number>>> elements, Path path) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
+			writeObjectObject(elements, writer, 0);
 		}
 	}
 

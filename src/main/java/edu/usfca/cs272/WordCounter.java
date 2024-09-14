@@ -159,7 +159,7 @@ public class WordCounter {
 		// JsonWriter.writeObject(this.wordStems, path);
 
 		if (indexFlag == true) {
-			JsonWriter.writeObjectObject(this.invertedIndex, path, 0);
+			JsonWriter.writeObjectObject(this.invertedIndex, path);
 		} else {
 			JsonWriter.writeObject(this.wordStems, path);
 		}
