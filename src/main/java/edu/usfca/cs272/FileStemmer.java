@@ -78,27 +78,8 @@ public class FileStemmer {
 	 * @param line the line of words to clean, split, and stem
 	 * @param stemmer the stemmer to use
 	 * @param stems the collection to add stems
-	 *
-	 * @throws NullPointerException if {@link Collection#add(Object)} throws it
-	 * @throws UnsupportedOperationException if {@link Collection#add(Object)} throws it
-	 * @throws ClassCastException if {@link Collection#add(Object)} throws it
-	 * @throws IllegalArgumentException if {@link Collection#add(Object)} throws it
-	 * or if any of the parameters are {@code null}
-	 * @throws IllegalStateException if {@link Collection#add(Object)} throws it
 	 */
-	public static void addStems(String line, Stemmer stemmer, Collection<String> stems)
-		throws NullPointerException,
-		UnsupportedOperationException,
-		ClassCastException,
-		IllegalArgumentException,
-		IllegalStateException {
-
-		if (
-			line == null ||
-			stemmer == null ||
-			stems == null
-		) { throw new IllegalArgumentException("Cannot operate on null parameter"); }
-
+	public static void addStems(String line, Stemmer stemmer, Collection<String> stems) {
 		final String[] cleanWords = parse(line);
 		for (String cleanWord : cleanWords) {
 			stems.add(
@@ -140,11 +121,8 @@ public class FileStemmer {
 	 * @param input the input file to parse and stem
 	 * @return a list of stems from file in parsed order
 	 * @throws IOException if unable to read or parse file
-	 * @throws NullPointerException if {@link ArrayList#addAll(Collection)} throws it
 	 */
-	public static ArrayList<String> listStems(Path input)
-		throws IOException, NullPointerException {
-
+	public static ArrayList<String> listStems(Path input) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			final SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 			final ArrayList<String> stems = new ArrayList<>();
@@ -202,9 +180,7 @@ public class FileStemmer {
 
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-				stems.addAll(
-					uniqueStems(line, snowballStemmer)
-				);
+				addStems(line, snowballStemmer, stems);
 			}
 
 			return stems;
