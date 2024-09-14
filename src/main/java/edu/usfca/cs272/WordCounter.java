@@ -32,7 +32,7 @@ public class WordCounter {
 	private int wordPosition = 1;
 
 	/**
-	 * Default constructor that initializes a new word counter and inverted index
+	 * Default constructor that initializes a new word counter and inverted index.
 	 */
 	public WordCounter() {
 		this.wordStems = new TreeMap<>();
@@ -41,10 +41,12 @@ public class WordCounter {
 
 	/**
 	 * Reads the given line and adds the path and number of word stems
-	 * as a key/value pair to {@code this.wordStems}
+	 * as a key/value pair to {@code this.wordStems}.
+	 * Builds an inverted index if the {@code -index} flag is present.
 	 * @param line The line to read
-	 * @param snowballStemmer The stemmer to use
 	 * @param path Where the file to be read is
+	 * @param indexFlag Whether the {@code -index} flag is present
+	 * @throws IOException If an IO error occurs
 	 */
 	private void calculateWordCount(String line, Path path, boolean indexFlag) throws IOException {
 		if (indexFlag == true) {
@@ -59,7 +61,7 @@ public class WordCounter {
 	}
 
 	/**
-	 * Adds each word in the line, its file path, and its word position in the file to an inverted index
+	 * Adds each word in the line, its file path, and its word position in the file to an inverted index.
 	 * @param line The line to read
 	 * @param path Where the file to be read is
 	 */
@@ -76,27 +78,21 @@ public class WordCounter {
 			var innerCollection = innerMap.get(path.toString());
 			ArrayList<Number> innerList = (innerCollection == null) ? new ArrayList<>() : new ArrayList<>(innerCollection);
 
-			innerList.add(this.wordPosition);
+			innerList.add(this.wordPosition++);
 			innerMap.put(path.toString(), innerList);
-			this.invertedIndex.put(word, innerMap);
 
-			this.wordPosition++;
+			this.invertedIndex.put(word, innerMap);
 		}
 	}
 
 	/**
-	 * Reads file from {@code path} and adds word stems from file to an {@code ArrayList}.
-	 * Adds {@code path} and word counts to {@code this.TreeMap} to be written to a file later.
+	 * Reads file from {@code path}.
+	 * Adds {@code path} and word counts to {@code this.wordStems} to be written to a file later.
 	 * @param path File path to read from
+	 * @param indexFlag Whether the {@code -index} flag is present
+	 * @throws IOException If an IO error occurs
 	 */
-	private void readFile(Path path, boolean indexFlag)
-		throws IOException,
-		NullPointerException,
-		UnsupportedOperationException,
-		ClassCastException,
-		IllegalArgumentException,
-		IllegalStateException
-	{
+	private void readFile(Path path, boolean indexFlag) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
 			String line = null;
 
@@ -110,6 +106,8 @@ public class WordCounter {
 	 * Recursively reads all files and subdirectories from {@code dirPath}.
 	 * Only reads files if they end in {@code .txt} or {@code .text} (case-insensitive).
 	 * @param dirPath path of directory to traverse
+	 * @param indexFlag Whether the {@code -index} flag is present
+	 * @throws IOException If an IO error occurs
 	 */
 	private void readDir(Path dirPath, boolean indexFlag) throws IOException {
 		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirPath)) {
@@ -141,9 +139,10 @@ public class WordCounter {
 	}
 
 	/**
-	 * Writes {@code this.TreeMap} to the output file at {@code path} in pretty JSON format.
+	 * Writes the word counter or inverted index to the output file at {@code path} in pretty JSON format.
 	 * @param path File path to write to
 	 * @param indexFlag Whether the {@code -index} flag is present
+	 * @throws IOException If an IO error occurs
 	 */
 	private void writeFile(Path path, boolean indexFlag) throws IOException {
 		if (indexFlag == true) {
@@ -157,6 +156,8 @@ public class WordCounter {
 	 * Reads {@code path}.
 	 * Sends the directory or file at {@code path} to its appropriate method.
 	 * @param path The path of either a directory or file
+	 * @param indexFlag Whether the {@code -index} flag is present
+	 * @throws IOException If an IO error occurs
 	 */
 	public void textFlag(Path path, boolean indexFlag) throws IOException {
 		if (Files.isDirectory(path)) {
@@ -167,14 +168,22 @@ public class WordCounter {
 	}
 
 	/**
-	 * Sends {@code path} to {@link #writeFile(Path)} to be processed and output.
+	 * Sends {@code path} to {@link #writeFile(Path, boolean)} to be written.
 	 * @param path The output file path to write to
+	 * @param indexFlag Whether the {@code -index} flag is present
+	 * @throws IOException if an IO error occurs
 	 */
 	public void countFlag(Path path, boolean indexFlag) throws IOException {
 		writeFile(path, indexFlag);
 	}
 
+	/**
+	 * Sends {@code path} to {@link #writeFile(Path, boolean)} to be written.
+	 * @param path The output file path to write to
+	 * @param indexFlag Whether the {@code -index} flag is present
+	 * @throws IOException If an IO error occurs
+	 */
 	public void indexFlag(Path path, boolean indexFlag) throws IOException {
-		writeFile(path, indexFlag);
+		countFlag(path, indexFlag);
 	}
 }

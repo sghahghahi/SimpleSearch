@@ -25,6 +25,8 @@ public class Driver {
 		final String COUNTS = "-counts";
 		final String INDEX = "-index";
 		final String CURR_DIR = ".";
+		final String COUNTS_BACKUP = "counts.json";
+		final String INDEX_BACKUP = "index.json";
 
 		ArgumentParser argParser = new ArgumentParser(args);
 		WordCounter wordCounter = new WordCounter();
@@ -33,9 +35,14 @@ public class Driver {
 
 		try {
 			if (argParser.hasFlag(TEXT) && argParser.hasFlag(INDEX)) {
+				if (argParser.getPath(TEXT) == null) {
+					System.err.println("Missing input file.");
+					return;
+				}
+
 				/* Read file and build inverted index */
 				wordCounter.textFlag(argParser.getPath(TEXT), indexFlag);
-				wordCounter.indexFlag(argParser.getPath(INDEX, Path.of(CURR_DIR, "index.json")), indexFlag);
+				wordCounter.indexFlag(argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP)), indexFlag);
 
 			} else if (argParser.hasFlag(TEXT)) {
 				if (argParser.getPath(TEXT) == null) {
@@ -43,12 +50,13 @@ public class Driver {
 					return;
 				}
 				wordCounter.textFlag(argParser.getPath(TEXT), !indexFlag);
+
 			} else if (argParser.hasFlag(INDEX)) {
-				wordCounter.indexFlag(argParser.getPath(INDEX, Path.of(CURR_DIR, "index.json")), indexFlag);
+				wordCounter.indexFlag(argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP)), indexFlag);
 			}
 
 			if (argParser.hasFlag(COUNTS)) {
-				wordCounter.countFlag(argParser.getPath(COUNTS, Path.of(CURR_DIR, "counts.json")), !indexFlag);
+				wordCounter.countFlag(argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP)), !indexFlag);
 			}
 
 		} catch (IOException e) {
