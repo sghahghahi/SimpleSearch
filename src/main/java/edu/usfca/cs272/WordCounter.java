@@ -13,9 +13,6 @@ import java.util.TreeMap;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import opennlp.tools.stemmer.snowball.SnowballStemmer;
-import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
-
 /**
  * Class responsible for for calculating word counts and building an inverted index.
  *
