@@ -38,7 +38,7 @@ public class WordCounter {
 	 * Default constructor that initializes a new {@code TreeMap<String, Integer>}
 	 */
 	public WordCounter() {
-		this.wordStems= new TreeMap<>();
+		this.wordStems = new TreeMap<>();
 		this.invertedIndex = new TreeMap<>();
 	}
 
