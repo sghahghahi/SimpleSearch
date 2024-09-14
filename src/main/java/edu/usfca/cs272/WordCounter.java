@@ -28,14 +28,14 @@ public class WordCounter {
 	/** {@code TreeMap} to store file path and word count key/value pairs */
 	private final TreeMap<String, Integer> wordStems;
 
-	/** {@code Inverted Index} to store words with their file paths and word positions */
+	/** Stores words with their file paths and word positions */
 	private final TreeMap<String, Map<String, Collection<? extends Number>>> invertedIndex;
 
 	/** Keeps track of the word position in each file */
 	private int wordPosition = 1;
 
 	/**
-	 * Default constructor that initializes a new {@code TreeMap<String, Integer>}
+	 * Default constructor that initializes a new word counter and inverted index
 	 */
 	public WordCounter() {
 		this.wordStems = new TreeMap<>();
@@ -155,15 +155,11 @@ public class WordCounter {
 	 * @param indexFlag Whether the {@code -index} flag is present
 	 */
 	private void writeFile(Path path, boolean indexFlag) throws IOException {
-		// // Commenting this out to test "-index"
-		// JsonWriter.writeObject(this.wordStems, path);
-
 		if (indexFlag == true) {
 			JsonWriter.writeObjectObject(this.invertedIndex, path);
 		} else {
 			JsonWriter.writeObject(this.wordStems, path);
 		}
-
 	}
 
 	/**

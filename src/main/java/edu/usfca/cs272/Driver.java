@@ -52,7 +52,7 @@ public class Driver {
 			}
 
 		} catch (IOException e) {
-			System.err.println(e);
+			System.err.println("An IO error occured.");
 		}
 	}
 }
