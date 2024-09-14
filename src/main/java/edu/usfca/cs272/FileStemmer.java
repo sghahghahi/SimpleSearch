@@ -168,12 +168,8 @@ public class FileStemmer {
 	 * @param input the input file to parse and stem
 	 * @return a sorted set of unique cleaned and stemmed words from file
 	 * @throws IOException if unable to read or parse file
-	 * @throws NullPointerException if {@link TreeSet#addAll(Collection)} throws it
 	 */
-	public static TreeSet<String> uniqueStems(Path input)
-		throws IOException,
-		NullPointerException {
-
+	public static TreeSet<String> uniqueStems(Path input) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(input, UTF_8)) {
 			final SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 			final TreeSet<String> stems = new TreeSet<>();
