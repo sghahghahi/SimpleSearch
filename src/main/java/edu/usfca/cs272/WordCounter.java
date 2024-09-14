@@ -49,20 +49,15 @@ public class WordCounter {
 	 * @param snowballStemmer The stemmer to use
 	 * @param path Where the file to be read is
 	 */
-	private void calculateWordCount(String line, SnowballStemmer snowballStemmer, Path path, boolean indexFlag) throws IOException {
+	private void calculateWordCount(String line, Path path, boolean indexFlag) throws IOException {
 		if (indexFlag == true) {
 			buildInvertedIndex(line, path);
 		}
 
-		ArrayList<String> wordOccurences = new ArrayList<>();
-
-		// Populate ArrayList with word stems
-		FileStemmer.addStems(line, snowballStemmer, wordOccurences);
-
 		// Add file path and word count to TreeMap
 		this.wordStems.put(
 			path.toString(),
-			this.wordStems.getOrDefault(path.toString(), 0) + wordOccurences.size()
+			this.wordStems.getOrDefault(path.toString(), 0) + FileStemmer.listStems(line).size()
 		);
 	}
 
@@ -107,10 +102,9 @@ public class WordCounter {
 	{
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
 			String line = null;
-			SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 
 			while ((line = reader.readLine()) != null) {
-				calculateWordCount(line, snowballStemmer, path, indexFlag);
+				calculateWordCount(line, path, indexFlag);
 			}
 		}
 	}
