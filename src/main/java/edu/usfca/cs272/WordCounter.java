@@ -16,6 +16,13 @@ import java.io.IOException;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
+/**
+ * Class responsible for for calculating word counts and building an inverted index.
+ *
+ * @author Shyon Ghahghahi
+ * @author CS 272 Software Development (University of San Francisco)
+ * @version Fall 2024
+ */
 public class WordCounter {
 
 	/** {@code TreeMap} to store file path and word count key/value pairs */
