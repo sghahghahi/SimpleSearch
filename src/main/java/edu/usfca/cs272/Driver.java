@@ -1,7 +1,7 @@
 package edu.usfca.cs272;
 
-import java.nio.file.Path;
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * Class responsible for running this project based on the provided command-line
@@ -21,7 +21,7 @@ public class Driver {
 	 * @param args flag/value pairs used to start this program
 	 */
 	public static void main(String[] args) {
-		final String TEXT = "-text";
+		final String TEXT = "-text"; // TODO Make these static members in Driver
 		final String COUNTS = "-counts";
 		final String INDEX = "-index";
 		final String CURR_DIR = ".";
@@ -32,6 +32,21 @@ public class Driver {
 		WordCounter wordCounter = new WordCounter();
 
 		boolean indexFlag = true;
+
+		// TODO Worry less about different flag combos
+
+		/* TODO
+		if (argParser.hasFlag(TEXT)) {
+			Path path = argParser.getPath(TEXT);
+			try {
+				wordCounter.textFlag(path, indexFlag);
+			}
+			catch ( ) {
+				Unable to index the files from path: + path
+			}
+		}
+		*/
+
 
 		try {
 			if (argParser.hasFlag(TEXT) && argParser.hasFlag(INDEX)) {
