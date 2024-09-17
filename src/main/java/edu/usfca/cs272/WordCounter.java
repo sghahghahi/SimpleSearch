@@ -1,17 +1,20 @@
 package edu.usfca.cs272;
 
-import java.nio.file.Path;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
-import java.io.BufferedReader;
-import java.io.IOException;
+/*
+ * TODO Move the IO stuff into FileIndexer (or similar name)
+ */
 
 /**
  * Class responsible for for calculating word counts and building an inverted index.
@@ -20,13 +23,14 @@ import java.io.IOException;
  * @author CS 272 Software Development (University of San Francisco)
  * @version Fall 2024
  */
-public class WordCounter {
+public class WordCounter { // TODO Refactor InvertedIndex
 
 	/** {@code TreeMap} to store file path and word count key/value pairs */
 	private final TreeMap<String, Integer> wordStems;
 
 	/** Stores words with their file paths and word positions */
 	private final TreeMap<String, Map<String, Collection<? extends Number>>> invertedIndex;
+	// TODO private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> invertedIndex;
 
 	/** Keeps track of the word position in each file */
 	private int wordPosition = 1;
@@ -70,13 +74,13 @@ public class WordCounter {
 		for (String word : words) {
 			word = word.toLowerCase();
 
-			var innerMap = this.invertedIndex.get(word);
+			var innerMap = this.invertedIndex.get(word); // TODO This is the start of the add method
 			if (innerMap == null) {
 				innerMap = new TreeMap<>();
 			}
 
 			var innerCollection = innerMap.get(path.toString());
-			ArrayList<Number> innerList = (innerCollection == null) ? new ArrayList<>() : new ArrayList<>(innerCollection);
+			ArrayList<Number> innerList = innerCollection == null ? new ArrayList<>() : new ArrayList<>(innerCollection);
 
 			innerList.add(this.wordPosition++);
 			innerMap.put(path.toString(), innerList);
@@ -92,13 +96,17 @@ public class WordCounter {
 	 * @param indexFlag Whether the {@code -index} flag is present
 	 * @throws IOException If an IO error occurs
 	 */
-	private void readFile(Path path, boolean indexFlag) throws IOException {
+	private void readFile(Path path, boolean indexFlag) throws IOException { // TODO public
+		// TODO Create a stemmer here and as you stem here
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
 			String line = null;
 
 			while ((line = reader.readLine()) != null) {
+				// TODO add(stem, path.toString(), counter++)
 				calculateWordCount(line, path, indexFlag);
 			}
+
+			// TODO the counter is the word count
 		}
 	}
 
@@ -109,7 +117,7 @@ public class WordCounter {
 	 * @param indexFlag Whether the {@code -index} flag is present
 	 * @throws IOException If an IO error occurs
 	 */
-	private void readDir(Path dirPath, boolean indexFlag) throws IOException {
+	private void readDir(Path dirPath, boolean indexFlag) throws IOException { // TODO public
 		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirPath)) {
 			for (Path path : dirStream) {
 				if (Files.isDirectory(path)) {
@@ -129,13 +137,11 @@ public class WordCounter {
 	 * @param path The file path to check
 	 * @return If the file at {@code path} ends with {@code .txt} or {@code .text} (case-insensitive).
 	 */
-	private static boolean isTextFile(Path path) {
+	private static boolean isTextFile(Path path) { // TODO public
 		String lowerCasePath = path.toString().toLowerCase();
 
-		return (
-			lowerCasePath.endsWith(".txt") ||
-			lowerCasePath.endsWith(".text")
-		);
+		return lowerCasePath.endsWith(".txt") ||
+		lowerCasePath.endsWith(".text");
 	}
 
 	/**
