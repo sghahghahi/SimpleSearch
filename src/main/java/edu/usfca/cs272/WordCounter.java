@@ -145,20 +145,6 @@ public class WordCounter { // TODO Refactor InvertedIndex
 	}
 
 	/**
-	 * Writes the word counter or inverted index to the output file at {@code path} in pretty JSON format.
-	 * @param path File path to write to
-	 * @param indexFlag Whether the {@code -index} flag is present
-	 * @throws IOException If an IO error occurs
-	 */
-	private void writeFile(Path path, boolean indexFlag) throws IOException {
-		if (indexFlag == true) {
-			JsonWriter.writeObjectObject(this.invertedIndex, path);
-		} else {
-			JsonWriter.writeObject(this.wordStems, path);
-		}
-	}
-
-	/**
 	 * Reads {@code path}.
 	 * Sends the directory or file at {@code path} to its appropriate method.
 	 * @param path The path of either a directory or file
