@@ -54,7 +54,7 @@ public class WordCounter { // TODO Refactor InvertedIndex
 	 * @param indexFlag Whether the {@code -index} flag is present
 	 * @throws IOException If an IO error occurs
 	 */
-	private void calculateWordCount(String line, Path path, boolean indexFlag) throws IOException {
+	private void calculateWordCount(String line, Path path) throws IOException {
 		buildInvertedIndex(line, path);
 
 		// Add file path and word count to TreeMap
@@ -96,14 +96,14 @@ public class WordCounter { // TODO Refactor InvertedIndex
 	 * @param indexFlag Whether the {@code -index} flag is present
 	 * @throws IOException If an IO error occurs
 	 */
-	private void readFile(Path path, boolean indexFlag) throws IOException { // TODO public
+	private void readFile(Path path) throws IOException { // TODO public
 		// TODO Create a stemmer here and as you stem here
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
 			String line = null;
 
 			while ((line = reader.readLine()) != null) {
 				// TODO add(stem, path.toString(), counter++)
-				calculateWordCount(line, path, indexFlag);
+				calculateWordCount(line, path);
 			}
 
 			// TODO the counter is the word count
@@ -117,16 +117,16 @@ public class WordCounter { // TODO Refactor InvertedIndex
 	 * @param indexFlag Whether the {@code -index} flag is present
 	 * @throws IOException If an IO error occurs
 	 */
-	private void readDir(Path dirPath, boolean indexFlag) throws IOException { // TODO public
+	private void readDir(Path dirPath) throws IOException { // TODO public
 		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirPath)) {
 			for (Path path : dirStream) {
 				if (Files.isDirectory(path)) {
-					readDir(path, indexFlag);
+					readDir(path);
 				} else {
 					if (isTextFile(path)) {
 						// Reset word position to 1 every time we read from a new file
 						this.wordPosition = 1;
-						readFile(path, indexFlag);
+						readFile(path);
 					}
 				}
 			}
@@ -165,31 +165,29 @@ public class WordCounter { // TODO Refactor InvertedIndex
 	 * @param indexFlag Whether the {@code -index} flag is present
 	 * @throws IOException If an IO error occurs
 	 */
-	public void textFlag(Path path, boolean indexFlag) throws IOException {
+	public void textFlag(Path path) throws IOException {
 		if (Files.isDirectory(path)) {
-			readDir(path, indexFlag);
+			readDir(path);
 		} else {
-			readFile(path, indexFlag);
+			readFile(path);
 		}
 	}
 
 	/**
-	 * Sends {@code path} to {@link #writeFile(Path, boolean)} to be written.
+	 * Sends word counts to {@link JsonWriter#writeObjectObject(Map, Path)} to write to {@code path}.
 	 * @param path The output file path to write to
-	 * @param indexFlag Whether the {@code -index} flag is present
 	 * @throws IOException if an IO error occurs
 	 */
-	public void countFlag(Path path, boolean indexFlag) throws IOException {
-		writeFile(path, indexFlag);
+	public void countFlag(Path path) throws IOException {
+		JsonWriter.writeObject(this.wordStems, path);
 	}
 
 	/**
-	 * Sends {@code path} to {@link #writeFile(Path, boolean)} to be written.
+	 * Sends inverted index to {@link JsonWriter#writeObjectObject(Map, Path)} to write to {@code path}.
 	 * @param path The output file path to write to
-	 * @param indexFlag Whether the {@code -index} flag is present
 	 * @throws IOException If an IO error occurs
 	 */
-	public void indexFlag(Path path, boolean indexFlag) throws IOException {
-		countFlag(path, indexFlag);
+	public void indexFlag(Path path) throws IOException {
+		JsonWriter.writeObjectObject(this.invertedIndex, path);
 	}
 }
