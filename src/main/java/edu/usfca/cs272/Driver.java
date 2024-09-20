@@ -42,51 +42,33 @@ public class Driver {
 		ArgumentParser argParser = new ArgumentParser(args);
 		WordCounter wordCounter = new WordCounter();
 
-		boolean indexFlag = true;
-
-		// TODO Worry less about different flag combos
-
-		/* TODO
 		if (argParser.hasFlag(TEXT)) {
 			Path path = argParser.getPath(TEXT);
 			try {
-				wordCounter.textFlag(path, indexFlag);
-			}
-			catch ( ) {
-				Unable to index the files from path: + path
+				wordCounter.textFlag(path);
+			} catch (IOException e) {
+				System.err.println("Unable to index the files from path: " + path);
+			} catch (NullPointerException e) {
+				System.err.println("No input file was provided after '-text' flag.");
 			}
 		}
-		*/
 
-
-		try {
-			if (argParser.hasFlag(TEXT) && argParser.hasFlag(INDEX)) {
-				if (argParser.getPath(TEXT) == null) {
-					System.err.println("Missing input file.");
-					return;
-				}
-
-				/* Read file and build inverted index */
-				wordCounter.textFlag(argParser.getPath(TEXT), indexFlag);
-				wordCounter.indexFlag(argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP)), indexFlag);
-
-			} else if (argParser.hasFlag(TEXT)) {
-				if (argParser.getPath(TEXT) == null) {
-					System.err.println("Missing input file.");
-					return;
-				}
-				wordCounter.textFlag(argParser.getPath(TEXT), !indexFlag);
-
-			} else if (argParser.hasFlag(INDEX)) {
-				wordCounter.indexFlag(argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP)), indexFlag);
+		if (argParser.hasFlag(COUNTS)) {
+			Path path = argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP));
+			try {
+				wordCounter.countFlag(path);
+			} catch (IOException e) {
+				System.err.println("Unable to write word counts to path: " + path);
 			}
+		}
 
-			if (argParser.hasFlag(COUNTS)) {
-				wordCounter.countFlag(argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP)), !indexFlag);
+		if (argParser.hasFlag(INDEX)) {
+			Path path = argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP));
+			try {
+				wordCounter.indexFlag(path);
+			} catch (Exception e) {
+				System.err.println("Unable to write inverted index to path: " + path);
 			}
-
-		} catch (IOException e) {
-			System.err.println("An IO error occured.");
 		}
 	}
 }
