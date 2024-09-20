@@ -13,6 +13,24 @@ import java.nio.file.Path;
  */
 public class Driver {
 
+	/** {@code -text} flag passed an argument to this program. Next argument signifies file path to read text from. */
+	public static final String TEXT = "-text";
+
+	/** {@code -counts} flag passed as an argument to this program. File path to write word counts to (next argument) not necessary. */
+	public static final String COUNTS = "-counts";
+
+	/** {@code -index} flag passed as an argument to this program. File path to write inverted index to (next argument) not necessary. */
+	public static final String INDEX = "-index";
+
+	/** Represents the current working directory. Useful for creating new files. */
+	public static final String CURR_DIR = ".";
+
+	/** File name to write word counts to if no file path included after {@code -counts} flag. Will write file in the current working directory. */
+	public static final String COUNTS_BACKUP = "counts.json";
+
+	/** File name to write inverted index to if no file path included after {@code -index} flag. Will write file in the current working directory. */
+	public static final String INDEX_BACKUP = "index.json";
+
 	/**
 	 * Initializes the classes necessary based on the provided command-line
 	 * arguments. This includes (but is not limited to) how to build or search an
@@ -21,13 +39,6 @@ public class Driver {
 	 * @param args flag/value pairs used to start this program
 	 */
 	public static void main(String[] args) {
-		final String TEXT = "-text"; // TODO Make these static members in Driver
-		final String COUNTS = "-counts";
-		final String INDEX = "-index";
-		final String CURR_DIR = ".";
-		final String COUNTS_BACKUP = "counts.json";
-		final String INDEX_BACKUP = "index.json";
-
 		ArgumentParser argParser = new ArgumentParser(args);
 		WordCounter wordCounter = new WordCounter();
 
