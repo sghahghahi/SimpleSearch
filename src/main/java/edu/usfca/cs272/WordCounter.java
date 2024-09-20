@@ -4,9 +4,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -53,9 +55,7 @@ public class WordCounter { // TODO Refactor InvertedIndex
 	 * @throws IOException If an IO error occurs
 	 */
 	private void calculateWordCount(String line, Path path, boolean indexFlag) throws IOException {
-		if (indexFlag == true) {
-			buildInvertedIndex(line, path);
-		}
+		buildInvertedIndex(line, path);
 
 		// Add file path and word count to TreeMap
 		this.wordStems.put(
