@@ -2,8 +2,6 @@ package edu.usfca.cs272;
 
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
-import java.io.IOException;
-
 import java.nio.file.Path;
 
 import java.util.ArrayList;
@@ -45,7 +43,6 @@ public class InvertedIndex {
 	 * @param line The line to read
 	 * @param snowballStemmer The stemmer to use
 	 * @param path Where the file to be read is
-	 * @throws IOException If an IO error occurs
 	 * @returns {@code true} if the add was successful
 	 */
 	public boolean addWordCounts(String line, SnowballStemmer snowballStemmer, Path path) {

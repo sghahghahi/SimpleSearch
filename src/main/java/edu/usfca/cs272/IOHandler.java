@@ -22,7 +22,7 @@ public class IOHandler {
 	 * Reads file from {@code path}.
 	 * Adds {@code path} and word counts to {@code this.wordStems} to be written to a file later.
 	 * @param path File path to read from
-	 * @param indexFlag Whether the {@code -index} flag is present
+	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
 	public static void readFile(Path path, InvertedIndex invertedIndex) throws IOException {
@@ -42,7 +42,7 @@ public class IOHandler {
 	 * Recursively reads all files and subdirectories from {@code dirPath}.
 	 * Only reads files if they end in {@code .txt} or {@code .text} (case-insensitive).
 	 * @param dirPath path of directory to traverse
-	 * @param indexFlag Whether the {@code -index} flag is present
+	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
 	public static void readDir(Path dirPath, InvertedIndex invertedIndex) throws IOException {
@@ -78,7 +78,7 @@ public class IOHandler {
 	 * Reads {@code path}.
 	 * Sends the directory or file at {@code path} to its appropriate method.
 	 * @param path The path of either a directory or file
-	 * @param indexFlag Whether the {@code -index} flag is present
+	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
 	public static void textFlag(Path path, InvertedIndex invertedIndex) throws IOException {
@@ -92,6 +92,7 @@ public class IOHandler {
 	/**
 	 * Sends word counts to {@link JsonWriter#writeObject(Map, Path)} to write to {@code path}.
 	 * @param path The output file path to write to
+	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException if an IO error occurs
 	 */
 	public static void countFlag(Path path, InvertedIndex invertedIndex) throws IOException {
@@ -101,6 +102,7 @@ public class IOHandler {
 	/**
 	 * Sends inverted index to {@link JsonWriter#writeObjectObject(Map, Path)} to write to {@code path}.
 	 * @param path The output file path to write to
+	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
 	public static void indexFlag(Path path, InvertedIndex invertedIndex) throws IOException {
