@@ -40,7 +40,7 @@ public class Driver {
 	 */
 	public static void main(String[] args) {
 		ArgumentParser argParser = new ArgumentParser(args);
-		WordCounter wordCounter = new WordCounter();
+		InvertedIndex wordCounter = new InvertedIndex();
 
 		if (argParser.hasFlag(TEXT)) {
 			Path path = argParser.getPath(TEXT);

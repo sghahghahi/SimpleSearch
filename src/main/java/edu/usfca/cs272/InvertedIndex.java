@@ -25,7 +25,7 @@ import java.util.TreeMap;
  * @author CS 272 Software Development (University of San Francisco)
  * @version Fall 2024
  */
-public class WordCounter { // TODO Refactor InvertedIndex
+public class InvertedIndex { // TODO Refactor InvertedIndex
 
 	/** {@code TreeMap} to store file path and word count key/value pairs */
 	private final TreeMap<String, Integer> wordStems;
@@ -40,7 +40,7 @@ public class WordCounter { // TODO Refactor InvertedIndex
 	/**
 	 * Default constructor that initializes a new word counter and inverted index.
 	 */
-	public WordCounter() {
+	public InvertedIndex() {
 		this.wordStems = new TreeMap<>();
 		this.invertedIndex = new TreeMap<>();
 	}
