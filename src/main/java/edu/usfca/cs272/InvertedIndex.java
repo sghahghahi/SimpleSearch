@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 /*
  * TODO Move the IO stuff into FileIndexer (or similar name)
@@ -25,14 +26,13 @@ import java.util.TreeMap;
  * @author CS 272 Software Development (University of San Francisco)
  * @version Fall 2024
  */
-public class InvertedIndex { // TODO Refactor InvertedIndex
+public class InvertedIndex {
 
 	/** {@code TreeMap} to store file path and word count key/value pairs */
 	private final TreeMap<String, Integer> wordStems;
 
 	/** Stores words with their file paths and word positions */
-	private final TreeMap<String, Map<String, Collection<? extends Number>>> invertedIndex;
-	// TODO private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> invertedIndex;
+	private final Map<String, Map<String, Collection<Integer>>> invertedIndex;
 
 	/** Keeps track of the word position in each file */
 	private int wordPosition = 1;
@@ -72,21 +72,31 @@ public class InvertedIndex { // TODO Refactor InvertedIndex
 	private void buildInvertedIndex(String line, Path path) {
 		ArrayList<String> words = FileStemmer.listStems(line);
 		for (String word : words) {
-			word = word.toLowerCase();
-
-			var innerMap = this.invertedIndex.get(word); // TODO This is the start of the add method
-			if (innerMap == null) {
-				innerMap = new TreeMap<>();
-			}
-
-			var innerCollection = innerMap.get(path.toString());
-			ArrayList<Number> innerList = innerCollection == null ? new ArrayList<>() : new ArrayList<>(innerCollection);
-
-			innerList.add(this.wordPosition++);
-			innerMap.put(path.toString(), innerList);
-
-			this.invertedIndex.put(word, innerMap);
+			add(word.toLowerCase(), path);
 		}
+	}
+
+	/**
+	 * Adds the word and its path to the inverted index.
+	 * @param word The word to add
+	 * @param path Where the word was found
+	 * @return {@code true} if the add was successful
+	 */
+	public boolean add(String word, Path path) {
+		var innerMap = this.invertedIndex.get(word);
+		if (innerMap == null) {
+			innerMap = new TreeMap<>();
+		}
+
+		var innerCollection = innerMap.get(path.toString());
+		TreeSet<Integer> innerList = (innerCollection == null) ? new TreeSet<>() : new TreeSet<>(innerCollection);
+
+		innerList.add(this.wordPosition++);
+		innerMap.put(path.toString(), innerList);
+
+		this.invertedIndex.put(word, innerMap);
+
+		return true;
 	}
 
 	/**

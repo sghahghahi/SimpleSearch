@@ -366,8 +366,7 @@ public class JsonWriter {
 	 * the initial indentation level
 	 * @throws IOException if an IO error occurs
 	 */
-	public static void writeObjectObject(Map<String, Map<String, Collection<? extends Number>>> elements, BufferedWriter writer, int indent) throws IOException {
-	// public static void writeObjectObject(TreeMap<String, TreeMap<String, TreeSet<Integer>>> elements, BufferedWriter writer, int indent) throws IOException {
+	public static void writeObjectObject(Map<String, Map<String, Collection<Integer>>> elements, BufferedWriter writer, int indent) throws IOException {
 		writeIndent("{\n", writer, 0);
 
 		int i = 0;
@@ -392,7 +391,7 @@ public class JsonWriter {
 	 * @param path The file path to write to
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void writeObjectObject(Map<String, Map<String, Collection<? extends Number>>> elements, Path path) throws IOException {
+	public static void writeObjectObject(Map<String, Map<String, Collection<Integer>>> elements, Path path) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
 			writeObjectObject(elements, writer, 0);
 		}
