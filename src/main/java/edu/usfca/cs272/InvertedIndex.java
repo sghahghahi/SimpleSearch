@@ -1,10 +1,12 @@
 package edu.usfca.cs272;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import opennlp.tools.stemmer.snowball.SnowballStemmer;
+import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +16,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
 
 /*
  * TODO Move the IO stuff into FileIndexer (or similar name)
@@ -47,32 +50,33 @@ public class InvertedIndex {
 
 	/**
 	 * Reads the given line and adds the path and number of word stems
-	 * as a key/value pair to {@code this.wordStems}.
+	 * as a key/value pair to the word stems {@code Map}
 	 * Builds an inverted index if the {@code -index} flag is present.
 	 * @param line The line to read
+	 * @param snowballStemmer The stemmer to use
 	 * @param path Where the file to be read is
-	 * @param indexFlag Whether the {@code -index} flag is present
 	 * @throws IOException If an IO error occurs
+	 * @returns {@code true} if the add was successful
 	 */
-	private void calculateWordCount(String line, Path path) throws IOException {
-		buildInvertedIndex(line, path);
-
-		// Add file path and word count to TreeMap
+	public boolean addWordCounts(String line, SnowballStemmer snowballStemmer, Path path) throws IOException {
 		this.wordStems.put(
 			path.toString(),
-			this.wordStems.getOrDefault(path.toString(), 0) + FileStemmer.listStems(line).size()
+			this.wordStems.getOrDefault(path.toString(), 0) + FileStemmer.listStems(line, snowballStemmer).size()
 		);
+
+		return true;
 	}
 
 	/**
 	 * Adds each word in the line, its file path, and its word position in the file to an inverted index.
 	 * @param line The line to read
+	 * @param snowballStemmer The stemmer to use
 	 * @param path Where the file to be read is
 	 */
-	private void buildInvertedIndex(String line, Path path) {
-		ArrayList<String> words = FileStemmer.listStems(line);
+	private void buildInvertedIndex(String line, SnowballStemmer snowballStemmer, Path path) {
+		ArrayList<String> words = FileStemmer.listStems(line, snowballStemmer);
 		for (String word : words) {
-			add(word.toLowerCase(), path);
+			addWordPosition(word.toLowerCase(), path.toString());
 		}
 	}
 
@@ -82,13 +86,13 @@ public class InvertedIndex {
 	 * @param path Where the word was found
 	 * @return {@code true} if the add was successful
 	 */
-	public boolean add(String word, Path path) {
+	public boolean addWordPosition(String word, String path) {
 		var innerMap = this.invertedIndex.get(word);
 		if (innerMap == null) {
 			innerMap = new TreeMap<>();
 		}
 
-		var innerCollection = innerMap.get(path.toString());
+		var innerCollection = innerMap.get(path);
 		TreeSet<Integer> innerList = (innerCollection == null) ? new TreeSet<>() : new TreeSet<>(innerCollection);
 
 		innerList.add(this.wordPosition++);
@@ -106,17 +110,16 @@ public class InvertedIndex {
 	 * @param indexFlag Whether the {@code -index} flag is present
 	 * @throws IOException If an IO error occurs
 	 */
-	private void readFile(Path path) throws IOException { // TODO public
-		// TODO Create a stemmer here and as you stem here
+	public void readFile(Path path) throws IOException {
+		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
+
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
 			String line = null;
 
 			while ((line = reader.readLine()) != null) {
-				// TODO add(stem, path.toString(), counter++)
-				calculateWordCount(line, path);
+				addWordCounts(line, snowballStemmer, path);
+				buildInvertedIndex(line, snowballStemmer, path);
 			}
-
-			// TODO the counter is the word count
 		}
 	}
 
@@ -127,7 +130,7 @@ public class InvertedIndex {
 	 * @param indexFlag Whether the {@code -index} flag is present
 	 * @throws IOException If an IO error occurs
 	 */
-	private void readDir(Path dirPath) throws IOException { // TODO public
+	public void readDir(Path dirPath) throws IOException {
 		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirPath)) {
 			for (Path path : dirStream) {
 				if (Files.isDirectory(path)) {
@@ -147,11 +150,13 @@ public class InvertedIndex {
 	 * @param path The file path to check
 	 * @return If the file at {@code path} ends with {@code .txt} or {@code .text} (case-insensitive).
 	 */
-	private static boolean isTextFile(Path path) { // TODO public
+	public static boolean isTextFile(Path path) {
 		String lowerCasePath = path.toString().toLowerCase();
 
-		return lowerCasePath.endsWith(".txt") ||
-		lowerCasePath.endsWith(".text");
+		return (
+			lowerCasePath.endsWith(".txt") ||
+			lowerCasePath.endsWith(".text")
+		);
 	}
 
 	/**
@@ -170,7 +175,7 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Sends word counts to {@link JsonWriter#writeObjectObject(Map, Path)} to write to {@code path}.
+	 * Sends word counts to {@link JsonWriter#writeObject(Map, Path)} to write to {@code path}.
 	 * @param path The output file path to write to
 	 * @throws IOException if an IO error occurs
 	 */
