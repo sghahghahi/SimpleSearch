@@ -45,7 +45,7 @@ public class Driver {
 		if (argParser.hasFlag(TEXT)) {
 			Path path = argParser.getPath(TEXT);
 			try {
-				invertedIndex.textFlag(path);
+				IOHandler.textFlag(path, invertedIndex);
 			} catch (IOException e) {
 				System.err.println("Unable to index the files from path: " + path);
 			} catch (NullPointerException e) {
@@ -56,7 +56,7 @@ public class Driver {
 		if (argParser.hasFlag(COUNTS)) {
 			Path path = argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP));
 			try {
-				invertedIndex.countFlag(path);
+				IOHandler.countFlag(path, invertedIndex);
 			} catch (IOException e) {
 				System.err.println("Unable to write word counts to path: " + path);
 			}
@@ -65,8 +65,8 @@ public class Driver {
 		if (argParser.hasFlag(INDEX)) {
 			Path path = argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP));
 			try {
-				invertedIndex.indexFlag(path);
-			} catch (Exception e) {
+				IOHandler.indexFlag(path, invertedIndex);
+			} catch (IOException e) {
 				System.err.println("Unable to write inverted index to path: " + path);
 			}
 		}
