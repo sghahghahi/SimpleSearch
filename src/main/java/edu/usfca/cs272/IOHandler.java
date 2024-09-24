@@ -13,7 +13,7 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 /** Class that handles anything I/O related. All methods are {@code static}. */
-public class IOHandler {
+public class IOHandler { // TODO Refactor name TextFileIndexer
 
 	/** No need to instantiate this class because all methods are {@code static} */
 	private IOHandler() {}
@@ -25,16 +25,20 @@ public class IOHandler {
 	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void readFile(Path path, InvertedIndex invertedIndex) throws IOException {
+	public static void readFile(Path path, InvertedIndex invertedIndex) throws IOException { // TODO indexFile
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
 			String line = null;
+			// TODO Track the word count/position here
 
 			while ((line = reader.readLine()) != null) {
+				// TODO Customize how we build here instead of using listStems... copy/paste part of addStems and change to add directly to the index (never to any collection)
 				invertedIndex.addWordCounts(line, snowballStemmer, path);
 				invertedIndex.buildInvertedIndex(line, snowballStemmer, path);
 			}
+			
+			// TODO Update the count once
 		}
 	}
 
@@ -45,7 +49,7 @@ public class IOHandler {
 	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void readDir(Path dirPath, InvertedIndex invertedIndex) throws IOException {
+	public static void readDir(Path dirPath, InvertedIndex invertedIndex) throws IOException { // TODO indexDirectory
 		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirPath)) {
 			for (Path path : dirStream) {
 				if (Files.isDirectory(path)) {
@@ -62,6 +66,8 @@ public class IOHandler {
 	}
 
 	/**
+	 * TODO Description
+	 * 
 	 * @param path The file path to check
 	 * @return If the file at {@code path} ends with {@code .txt} or {@code .text} (case-insensitive).
 	 */
@@ -81,7 +87,7 @@ public class IOHandler {
 	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void textFlag(Path path, InvertedIndex invertedIndex) throws IOException {
+	public static void textFlag(Path path, InvertedIndex invertedIndex) throws IOException { // TODO indexPath
 		if (Files.isDirectory(path)) {
 			readDir(path, invertedIndex);
 		} else {
@@ -89,6 +95,7 @@ public class IOHandler {
 		}
 	}
 
+	// TODO Remove
 	/**
 	 * Sends word counts to {@link JsonWriter#writeObject(Map, Path)} to write to {@code path}.
 	 * @param path The output file path to write to
@@ -99,6 +106,7 @@ public class IOHandler {
 		JsonWriter.writeObject(invertedIndex.wordStems, path);
 	}
 
+	// TODO Remove
 	/**
 	 * Sends inverted index to {@link JsonWriter#writeObjectObject(Map, Path)} to write to {@code path}.
 	 * @param path The output file path to write to
@@ -109,3 +117,9 @@ public class IOHandler {
 		JsonWriter.writeObjectObject(invertedIndex.invertedIndex, path);
 	}
 }
+
+/* TODO 
+ * Description	Resource	Path	Location	Type
+Javadoc: Map cannot be resolved to a type	IOHandler.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 93	Java Problem
+Javadoc: Map cannot be resolved to a type	IOHandler.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 103	Java Problem
+*/
