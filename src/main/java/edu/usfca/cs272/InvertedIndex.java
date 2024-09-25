@@ -23,10 +23,10 @@ public class InvertedIndex {
 	protected final TreeMap<String, Integer> wordStems;
 
 	/** Stores words with their file paths and word positions */
-	protected final Map<String, Map<String, Collection<Integer>>> invertedIndex;
+	protected final Map<String, Map<String, Collection<Integer>>> invertedIndex; // TODO Don't upcast here
 
 	/** Keeps track of the word position in each file. Stored in inverted index. */
-	protected int wordPosition = 1;
+	protected int wordPosition = 1;  // TODO Remove
 
 	/**
 	 * Default constructor that initializes a new word counter and inverted index.
@@ -43,8 +43,9 @@ public class InvertedIndex {
 	 * @param line The line to read
 	 * @param snowballStemmer The stemmer to use
 	 * @param path Where the file to be read is
-	 * @returns {@code true} if the add was successful
+	 * @return {@code true} if the add was successful
 	 */
+	// TODO addCount(String location, int count) (don't put if not > 0)
 	public boolean addWordCounts(String line, SnowballStemmer snowballStemmer, Path path) {
 		this.wordStems.put(
 			path.toString(),
@@ -61,11 +62,19 @@ public class InvertedIndex {
 	 * @param path Where the file to be read is
 	 */
 	public void buildInvertedIndex(String line, SnowballStemmer snowballStemmer, Path path) {
-		ArrayList<String> words = FileStemmer.listStems(line, snowballStemmer);
+		ArrayList<String> words = FileStemmer.listStems(line, snowballStemmer); // TODO Move to IOHandler...
 		for (String word : words) {
 			addWordPosition(word.toLowerCase(), path.toString());
 		}
 	}
+	
+	/* TODO CHange to this instead:
+	public boolean addWords(List<String> words, String location) {
+		for (String word : words) {
+			addWordPosition(...)
+		}
+	}
+	*/
 
 	/**
 	 * Adds the word and its path to the inverted index.
@@ -73,20 +82,31 @@ public class InvertedIndex {
 	 * @param path Where the word was found
 	 * @return {@code true} if the add was successful
 	 */
-	public boolean addWordPosition(String word, String path) {
+	public boolean addWordPosition(String word, String path) { // TODO Pass in the position here
 		var innerMap = this.invertedIndex.get(word);
 		if (innerMap == null) {
 			innerMap = new TreeMap<>();
+			// TODO this.invertedIndex.put(word, innerMap);
 		}
 
 		var innerCollection = innerMap.get(path);
-		TreeSet<Integer> innerList = (innerCollection == null) ? new TreeSet<>() : new TreeSet<>(innerCollection);
+		
+		// TODO Have an if statement instead, so can move the put inside the if statement
+		TreeSet<Integer> innerList = (innerCollection == null) ? new TreeSet<>() : new TreeSet<>(innerCollection); // TODO If don't upcast, won't need the copy here
 
-		innerList.add(this.wordPosition++);
+		innerList.add(this.wordPosition++); // TODO return this
 		innerMap.put(path.toString(), innerList);
 
 		this.invertedIndex.put(word, innerMap);
 
 		return true;
 	}
+	
+	/*
+	 * Start adding other generally useful methods
+	 * 
+	 * Think about each data structure
+	 * And has/contains methods, num/size methods, get/view methods
+	 * toString
+	 */
 }
