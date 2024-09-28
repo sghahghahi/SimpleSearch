@@ -56,8 +56,7 @@ public class Driver {
 		if (argParser.hasFlag(COUNTS)) {
 			Path path = argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP));
 			try {
-				// TODO JsonWriter.writeObject(invertedIndex.wordStems, path);
-				IOHandler.countFlag(path, invertedIndex);
+				JsonWriter.writeObject(invertedIndex.wordStems, path);
 			} catch (IOException e) {
 				System.err.println("Unable to write word counts to path: " + path);
 			}
@@ -66,8 +65,7 @@ public class Driver {
 		if (argParser.hasFlag(INDEX)) {
 			Path path = argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP));
 			try {
-				// TODO JsonWriter.writeObjectObject(invertedIndex.invertedIndex, path);
-				IOHandler.indexFlag(path, invertedIndex);
+				JsonWriter.writeObjectObject(invertedIndex.invertedIndex, path);
 			} catch (IOException e) {
 				System.err.println("Unable to write inverted index to path: " + path);
 			}
