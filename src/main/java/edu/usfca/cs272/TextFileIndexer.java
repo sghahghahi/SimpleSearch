@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -66,10 +65,10 @@ public class TextFileIndexer {
 	}
 
 	/**
-	 * TODO Description
+	 * Checks if the file at {@code path} ends in either {@code .txt} or {@code .text} (case-insensitive)
 	 *
 	 * @param path The file path to check
-	 * @return If the file at {@code path} ends with {@code .txt} or {@code .text} (case-insensitive).
+	 * @return {@code true} if the file at {@code path} ends with {@code .txt} or {@code .text} (case-insensitive).
 	 */
 	public static boolean isTextFile(Path path) {
 		String lowerCasePath = path.toString().toLowerCase();
@@ -95,9 +94,3 @@ public class TextFileIndexer {
 		}
 	}
 }
-
-/* TODO
- * Description	Resource	Path	Location	Type
-Javadoc: Map cannot be resolved to a type	IOHandler.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 93	Java Problem
-Javadoc: Map cannot be resolved to a type	IOHandler.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 103	Java Problem
-*/
