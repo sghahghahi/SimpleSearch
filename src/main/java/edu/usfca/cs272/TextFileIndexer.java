@@ -13,10 +13,10 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 /** Class that handles anything I/O related. All methods are {@code static}. */
-public class IOHandler { // TODO Refactor name TextFileIndexer
+public class TextFileIndexer {
 
 	/** No need to instantiate this class because all methods are {@code static} */
-	private IOHandler() {}
+	private TextFileIndexer() {}
 
 	/**
 	 * Reads file from {@code path}.

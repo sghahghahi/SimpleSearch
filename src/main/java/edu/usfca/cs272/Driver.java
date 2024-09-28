@@ -45,7 +45,7 @@ public class Driver {
 		if (argParser.hasFlag(TEXT)) {
 			Path path = argParser.getPath(TEXT);
 			try {
-				IOHandler.textFlag(path, invertedIndex);
+				TextFileIndexer.textFlag(path, invertedIndex);
 			} catch (IOException e) {
 				System.err.println("Unable to index the files from path: " + path);
 			} catch (NullPointerException e) {
