@@ -94,28 +94,6 @@ public class TextFileIndexer {
 			indexFile(path, invertedIndex);
 		}
 	}
-
-	// TODO Remove
-	/**
-	 * Sends word counts to {@link JsonWriter#writeObject(Map, Path)} to write to {@code path}.
-	 * @param path The output file path to write to
-	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
-	 * @throws IOException if an IO error occurs
-	 */
-	public static void countFlag(Path path, InvertedIndex invertedIndex) throws IOException {
-		JsonWriter.writeObject(invertedIndex.wordStems, path);
-	}
-
-	// TODO Remove
-	/**
-	 * Sends inverted index to {@link JsonWriter#writeObjectObject(Map, Path)} to write to {@code path}.
-	 * @param path The output file path to write to
-	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
-	 * @throws IOException If an IO error occurs
-	 */
-	public static void indexFlag(Path path, InvertedIndex invertedIndex) throws IOException {
-		JsonWriter.writeObjectObject(invertedIndex.invertedIndex, path);
-	}
 }
 
 /* TODO
