@@ -82,20 +82,25 @@ public class JsonWriter {
 	public static void writeArray(Collection<? extends Number> elements,
 			Writer writer, int indent) throws IOException {
 
-		writeIndent("[\n", writer, 0);
-
-		var iterator = elements.iterator();
-		while (iterator.hasNext()) {
-			var element = iterator.next();
-
-			if (iterator.hasNext()) {
-				writeIndent(element.toString() + ",\n", writer, indent + 1);
-			} else {
-				writeIndent(element.toString() + "\n", writer, indent + 1);
-			}
-
+		if (elements.isEmpty()) {
+			writeIndent("[\n]", writer, 0);
+			return;
 		}
 
+		writeIndent("[\n", writer, 0);
+
+		boolean firstElement = true;
+		for (var element : elements) {
+			if (firstElement) {
+				firstElement = false;
+			} else {
+				writeIndent(",\n", writer, 0);
+			}
+
+			writeIndent(element.toString(), writer, indent + 1);
+		}
+
+		writeIndent("\n", writer, 0);
 		writeIndent("]", writer, indent);
 	}
 
@@ -150,21 +155,28 @@ public class JsonWriter {
 	public static void writeObject(Map<String, ? extends Number> elements,
 			Writer writer, int indent) throws IOException {
 
-		writeIndent("{\n", writer, 0);
-
-		int i = 0;
-		for (var element : elements.entrySet()) {
-			writeQuote(element.getKey(), writer, indent + 1);
-			writeIndent(": ", writer, 0);
-
-			// Omit a trailing comma if we're at the last element
-			if (++i == elements.size()) {
-				writeIndent(element.getValue().toString() + "\n", writer, 0);
-			} else {
-				writeIndent(element.getValue().toString() + ",\n", writer, 0);
-			}
+		if (elements.isEmpty()) {
+			writeIndent("{\n}", writer, 0);
+			return;
 		}
 
+		writeIndent("{\n", writer, 0);
+
+		boolean firstElement = true;
+		for (var element : elements.entrySet()) {
+			if (firstElement) {
+				firstElement = false;
+			} else {
+				writeIndent(",\n", writer, 0);
+			}
+
+			writeIndent(writer, indent + 1);
+			writeQuote(element.getKey().toString(), writer, 0);
+			writeIndent(": ", writer, 0);
+			writeIndent(element.getValue().toString(), writer, 0);
+		}
+
+		writeIndent("\n", writer, 0);
 		writeIndent("}", writer, indent);
 	}
 
@@ -222,22 +234,28 @@ public class JsonWriter {
 			Map<String, ? extends Collection<? extends Number>> elements,
 			Writer writer, int indent) throws IOException {
 
+		if (elements.isEmpty()) {
+			writeIndent("{\n}", writer, 0);
+			return;
+		}
+
 		writeIndent("{\n", writer, 0);
 
-		int i = 0;
+		boolean firstElement = true;
 		for (var element : elements.entrySet()) {
-			writeQuote(element.getKey(), writer, indent + 1);
-			writeIndent(": ", writer, 0);
-			writeArray(element.getValue(), writer, indent + 1);
-
-			// Omit a trailing comma if we're at the last element
-			if (++i == elements.size()) {
-				writeIndent("\n", writer, 0);
+			if (firstElement) {
+				firstElement = false;
 			} else {
 				writeIndent(",\n", writer, 0);
 			}
+
+			writeIndent(writer, indent + 1);
+			writeQuote(element.getKey(), writer, 0);
+			writeIndent(": ", writer, 0);
+			writeArray(element.getValue(), writer, indent + 1);
 		}
 
+		writeIndent("\n", writer, 0);
 		writeIndent("}", writer, indent);
 	}
 
@@ -297,22 +315,25 @@ public class JsonWriter {
 			Collection<? extends Map<String, ? extends Number>> elements,
 			Writer writer, int indent) throws IOException {
 
+		if (elements.isEmpty()) {
+			writeIndent("[\n]", writer, 0);
+			return;
+		}
+
 		writeIndent("[\n", writer, 0);
 
-		var iterator = elements.iterator();
-		while (iterator.hasNext()) {
-			var element = iterator.next();
-			writeIndent(writer, indent + 1);
-			writeObject(element, writer, indent + 1);
-
-			// Omit a trailing comma if we're at the last element
-			if (iterator.next() == null) {
-				writeIndent("\n", writer, 0);
+		boolean firstElement = true;
+		for (var element : elements) {
+			if (firstElement) {
+				firstElement = false;
 			} else {
 				writeIndent(",\n", writer, 0);
 			}
+
+			writeObject(element, writer, indent + 1);
 		}
 
+		writeIndent("\n", writer, 0);
 		writeIndent("]", writer, indent);
 	}
 
@@ -367,21 +388,27 @@ public class JsonWriter {
 	 * @throws IOException if an IO error occurs
 	 */
 	public static void writeObjectObject(Map<String, Map<String, Collection<Integer>>> elements, BufferedWriter writer, int indent) throws IOException {
+		if (elements.isEmpty()) {
+			writeIndent("{\n}", writer, 0);
+			return;
+		}
+
 		writeIndent("{\n", writer, 0);
 
-		int i = 0;
+		boolean firstElement = true;
 		for (var element : elements.entrySet()) {
-			writeQuote(element.getKey(), writer, indent + 1);
-			writeIndent(": ", writer, 0);
-			writeObjectArrays(element.getValue(), writer, indent + 1);
-
-			if (++i == elements.size()) {
-				writeIndent("\n", writer, 0);
+			if (firstElement) {
+				firstElement = false;
 			} else {
 				writeIndent(",\n", writer, 0);
 			}
+
+			writeQuote(element.getKey(), writer, indent + 1);
+			writeIndent(": ", writer, 0);
+			writeObjectArrays(element.getValue(), writer, indent + 1);
 		}
 
+		writeIndent("\n", writer, 0);
 		writeIndent("}", writer, indent);
 	}
 
