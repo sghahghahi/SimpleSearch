@@ -25,7 +25,7 @@ public class TextFileIndexer {
 	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void readFile(Path path, InvertedIndex invertedIndex) throws IOException { // TODO indexFile
+	public static void indexFile(Path path, InvertedIndex invertedIndex) throws IOException {
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
@@ -58,7 +58,7 @@ public class TextFileIndexer {
 					if (isTextFile(path)) {
 						// Reset word position to 1 every time we read from a new file
 						invertedIndex.wordPosition = 1;
-						readFile(path, invertedIndex);
+						indexFile(path, invertedIndex);
 					}
 				}
 			}
@@ -91,7 +91,7 @@ public class TextFileIndexer {
 		if (Files.isDirectory(path)) {
 			readDir(path, invertedIndex);
 		} else {
-			readFile(path, invertedIndex);
+			indexFile(path, invertedIndex);
 		}
 	}
 
