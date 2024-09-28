@@ -37,7 +37,7 @@ public class TextFileIndexer {
 				invertedIndex.addWordCounts(line, snowballStemmer, path);
 				invertedIndex.buildInvertedIndex(line, snowballStemmer, path);
 			}
-			
+
 			// TODO Update the count once
 		}
 	}
@@ -49,11 +49,11 @@ public class TextFileIndexer {
 	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void readDir(Path dirPath, InvertedIndex invertedIndex) throws IOException { // TODO indexDirectory
+	public static void indexDirectory(Path dirPath, InvertedIndex invertedIndex) throws IOException {
 		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirPath)) {
 			for (Path path : dirStream) {
 				if (Files.isDirectory(path)) {
-					readDir(path, invertedIndex);
+					indexDirectory(path, invertedIndex);
 				} else {
 					if (isTextFile(path)) {
 						// Reset word position to 1 every time we read from a new file
@@ -67,7 +67,7 @@ public class TextFileIndexer {
 
 	/**
 	 * TODO Description
-	 * 
+	 *
 	 * @param path The file path to check
 	 * @return If the file at {@code path} ends with {@code .txt} or {@code .text} (case-insensitive).
 	 */
@@ -89,7 +89,7 @@ public class TextFileIndexer {
 	 */
 	public static void textFlag(Path path, InvertedIndex invertedIndex) throws IOException { // TODO indexPath
 		if (Files.isDirectory(path)) {
-			readDir(path, invertedIndex);
+			indexDirectory(path, invertedIndex);
 		} else {
 			indexFile(path, invertedIndex);
 		}
@@ -118,7 +118,7 @@ public class TextFileIndexer {
 	}
 }
 
-/* TODO 
+/* TODO
  * Description	Resource	Path	Location	Type
 Javadoc: Map cannot be resolved to a type	IOHandler.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 93	Java Problem
 Javadoc: Map cannot be resolved to a type	IOHandler.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 103	Java Problem
