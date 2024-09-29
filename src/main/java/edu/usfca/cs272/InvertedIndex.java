@@ -58,7 +58,7 @@ public class InvertedIndex {
 	 * @return {@code true} if the add was successfull
 	 */
 	public boolean addWords(List<String> stemmedWords, String location, int wordPosition) {
-		for (String stemmedWord: stemmedWords) {
+		for (String stemmedWord : stemmedWords) {
 			addWordPosition(stemmedWord, location, wordPosition++);
 		}
 
@@ -99,9 +99,10 @@ public class InvertedIndex {
 
 	/**
 	 * Returns the number of key/value pairs in the {@code TreeMap}
+	 * storing file paths and the number of stems at each path
 	 * @return The number of key/value pairs
 	 */
-	public int size() {
+	public int countSize() {
 		return this.wordStems.size();
 	}
 
@@ -125,6 +126,16 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * Returns {@code true} if {@code path} is in the {@code TreeMap}
+	 * storing file paths and the number of stems at each path
+	 * @param path - The path to look up in the {@code TreeMap}
+	 * @return {@code true} if {@code path} is in the {@code TreeMap}
+	 */
+	public boolean containsPath(String path) {
+		return this.wordStems.containsKey(path);
+	}
+
+	/**
 	 * Returns a view of the inverted index
 	 * @return An unmodifiable view of the inverted index
 	 */
@@ -132,11 +143,44 @@ public class InvertedIndex {
 		return Collections.unmodifiableMap(this.invertedIndex);
 	}
 
+	/**
+	 * Returns a {@code TreeMap} containing file paths where {@code word} was found and
+	 * how many times it occured in the file
+	 * @param word - The word to find in the inverted index
+	 * @return An unmodifiable {@code TreeMap} containing file paths and word counts
+	 * for the specified {@code word} or {@code null} if {@code word} is not
+	 * in the inverted index
+	 */
+	public Map<String, TreeSet<Integer>> getPaths(String word) {
+		return Collections.unmodifiableMap(this.invertedIndex.get(word));
+	}
 
-	/*
-	 * Start adding other generally useful methods
-	 *
-	 * Think about each data structure
-	 * And has/contains methods, num/size methods, get/view methods
-	 * toString
-	 */}
+	/**
+	 * Returns the number of key/value pairs in the inverted index
+	 * @return The number of words in the inverted index
+	 */
+	public int indexSize() {
+		return this.invertedIndex.size();
+	}
+
+	/**
+	 * Returns {@code true} if {@wcode word} is in the inverted index
+	 * @param word - The word to look up in the inverted index
+	 * @return {@code true} if {@code word} is in the inverted index
+	 */
+	public boolean containsWord(String word) {
+		return this.invertedIndex.containsKey(word);
+	}
+
+	/**
+	 * String representation of the inverted index that outputs
+	 * the current amount of words stored in it
+	 */
+	@Override
+	public String toString() {
+		return String.format(
+			"Inverted index currently has %d words stored.",
+			indexSize()
+		);
+	}
+}
