@@ -1,6 +1,8 @@
 package edu.usfca.cs272;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -14,10 +16,10 @@ import java.util.TreeSet;
 public class InvertedIndex {
 
 	/** {@code TreeMap} to store file path and word count key/value pairs */
-	protected final TreeMap<String, Integer> wordStems;
+	private final TreeMap<String, Integer> wordStems;
 
 	/** Stores words with their file paths and word positions */
-	protected final TreeMap<String, TreeMap<String, TreeSet<Integer>>> invertedIndex;
+	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> invertedIndex;
 
 	/**
 	 * Default constructor that initializes a new word counter and inverted index.
@@ -86,6 +88,15 @@ public class InvertedIndex {
 
 		return innerList.add(wordPosition);
 	}
+
+	public Map<String, Integer> getCounts() {
+		return Collections.unmodifiableMap(this.wordStems);
+	}
+
+	public Map<String, TreeMap<String, TreeSet<Integer>>> getIndex() {
+		return Collections.unmodifiableMap(this.invertedIndex);
+	}
+
 
 	/*
 	 * Start adding other generally useful methods
