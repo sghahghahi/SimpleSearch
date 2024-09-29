@@ -41,9 +41,10 @@ public class Driver {
 	public static void main(String[] args) {
 		ArgumentParser argParser = new ArgumentParser(args);
 		InvertedIndex invertedIndex = new InvertedIndex();
+		Path path;
 
 		if (argParser.hasFlag(TEXT)) {
-			Path path = argParser.getPath(TEXT);
+			path = argParser.getPath(TEXT);
 			try {
 				TextFileIndexer.indexPath(path, invertedIndex);
 			} catch (IOException e) {
@@ -54,7 +55,7 @@ public class Driver {
 		}
 
 		if (argParser.hasFlag(COUNTS)) {
-			Path path = argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP));
+			path = argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP));
 			try {
 				JsonWriter.writeObject(invertedIndex.getCounts(), path);
 			} catch (IOException e) {
@@ -63,7 +64,7 @@ public class Driver {
 		}
 
 		if (argParser.hasFlag(INDEX)) {
-			Path path = argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP));
+			path = argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP));
 			try {
 				JsonWriter.writeObjectObject(invertedIndex.getIndex(), path);
 			} catch (IOException e) {
