@@ -4,7 +4,7 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
 import java.nio.file.Path;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -54,25 +54,19 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Adds each word in the line, its file path, and its word position in the file to an inverted index.
-	 * @param line The line to read
-	 * @param snowballStemmer The stemmer to use
-	 * @param path Where the file to be read is
+	 * Adds a {@code List} of all stemmed words at a specific {@code location} to an inverted index
+	 * @param stemmedWords - The {@code List} of <strong>stemmed</strong> words to add
+	 * @param location - Where the stemmed word was found
+	 * @param wordPosition - The word position of the {@code cleanedWord} in the file
+	 * @return {@code true} if the add was successfull
 	 */
-	public void buildInvertedIndex(String line, SnowballStemmer snowballStemmer, Path path) {
-		ArrayList<String> words = FileStemmer.listStems(line, snowballStemmer); // TODO Move to IOHandler...
-		for (String word : words) {
-			// addWordPosition(word.toLowerCase(), path.toString());
+	public boolean addWords(List<String> stemmedWords, String location, int wordPosition) {
+		for (String stemmedWord: stemmedWords) {
+			addWordPosition(stemmedWord, location, wordPosition++);
 		}
-	}
 
-	/* TODO CHange to this instead:
-	public boolean addWords(List<String> words, String location) {
-		for (String word : words) {
-			addWordPosition(...)
-		}
+		return true;
 	}
-	*/
 
 	/**
 	 * Adds the {@code word} and its {@code location} to the inverted index.
