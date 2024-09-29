@@ -62,10 +62,10 @@ public class InvertedIndex {
 	public void buildInvertedIndex(String line, SnowballStemmer snowballStemmer, Path path) {
 		ArrayList<String> words = FileStemmer.listStems(line, snowballStemmer); // TODO Move to IOHandler...
 		for (String word : words) {
-			addWordPosition(word.toLowerCase(), path.toString());
+			// addWordPosition(word.toLowerCase(), path.toString());
 		}
 	}
-	
+
 	/* TODO CHange to this instead:
 	public boolean addWords(List<String> words, String location) {
 		for (String word : words) {
@@ -75,36 +75,33 @@ public class InvertedIndex {
 	*/
 
 	/**
-	 * Adds the word and its path to the inverted index.
-	 * @param word The word to add
-	 * @param path Where the word was found
+	 * Adds the {@code word} and its {@code location} to the inverted index.
+	 * @param word - The word to add
+	 * @param location - Where the word was found
+	 * @param wordPosition - The position of the {@code word} in the file
 	 * @return {@code true} if the add was successful
 	 */
-	public boolean addWordPosition(String word, String path) { // TODO Pass in the position here
+	public boolean addWordPosition(String word, String location, int wordPosition) {
 		var innerMap = this.invertedIndex.get(word);
 		if (innerMap == null) {
 			innerMap = new TreeMap<>();
-			// TODO this.invertedIndex.put(word, innerMap);
+			this.invertedIndex.put(word, innerMap);
 		}
 
-		var innerCollection = innerMap.get(path);
-		
-		// TODO Have an if statement instead, so can move the put inside the if statement
-		TreeSet<Integer> innerList = (innerCollection == null) ? new TreeSet<>() : new TreeSet<>(innerCollection); // TODO If don't upcast, won't need the copy here
+		TreeSet<Integer> innerList = innerMap.get(location);
 
-		innerList.add(this.wordPosition++); // TODO return this
-		innerMap.put(path.toString(), innerList);
+		if (innerList == null) {
+			innerList = new TreeSet<>();
+			innerMap.put(location.toString(), innerList);
+		}
 
-		this.invertedIndex.put(word, innerMap);
-
-		return true;
+		return innerList.add(wordPosition);
 	}
-	
+
 	/*
 	 * Start adding other generally useful methods
-	 * 
+	 *
 	 * Think about each data structure
 	 * And has/contains methods, num/size methods, get/view methods
 	 * toString
-	 */
-}
+	 */}
