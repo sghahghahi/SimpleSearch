@@ -5,8 +5,6 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import java.nio.file.Path;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -23,7 +21,7 @@ public class InvertedIndex {
 	protected final TreeMap<String, Integer> wordStems;
 
 	/** Stores words with their file paths and word positions */
-	protected final Map<String, Map<String, Collection<Integer>>> invertedIndex; // TODO Don't upcast here
+	protected final TreeMap<String, TreeMap<String, TreeSet<Integer>>> invertedIndex;
 
 	/** Keeps track of the word position in each file. Stored in inverted index. */
 	protected int wordPosition = 1;  // TODO Remove
