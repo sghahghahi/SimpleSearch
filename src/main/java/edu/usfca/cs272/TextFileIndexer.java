@@ -30,11 +30,17 @@ public class TextFileIndexer {
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
 			String line = null;
 			// TODO Track the word count/position here
+			int wordPosition = 1;
 
 			while ((line = reader.readLine()) != null) {
 				// TODO Customize how we build here instead of using listStems... copy/paste part of addStems and change to add directly to the index (never to any collection)
-				invertedIndex.addWordCounts(line, snowballStemmer, path);
-				invertedIndex.buildInvertedIndex(line, snowballStemmer, path);
+				String[] cleanedWords = FileStemmer.parse(line);
+				for (String cleanWord : cleanedWords) {
+					invertedIndex.addWordPosition(
+						snowballStemmer.stem(cleanWord).toString(),
+						path.toString(), wordPosition++
+					);
+				}
 			}
 
 			// TODO Update the count once
