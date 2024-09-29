@@ -90,7 +90,7 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Get a view of the location/word count key/value pair map
+	 * Returns a view of the location/word count key/value pair map
 	 * @return An unmodifiable view of the location/word count key/value pair map
 	 */
 	public Map<String, Integer> getCounts() {
@@ -98,15 +98,15 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * The number of paths in the {@code TreeMap} that stores location/word count key/value pairs
-	 * @return The nuymber of paths
+	 * Returns the number of key/value pairs in the {@code TreeMap}
+	 * @return The number of key/value pairs
 	 */
-	public int numPaths() {
+	public int size() {
 		return this.wordStems.size();
 	}
 
 	/**
-	 * The number of stems found at {@code path}
+	 * Returns the number of stems found at {@code path}
 	 * @param path - Where the stems were found
 	 * @return The number of stems found at {@code path}
 	 * or {@code -1} if {@code path} is not in the {@code TreeMap}
@@ -116,7 +116,16 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Get a view of the inverted index
+	 * Returns {@code true} if this {@code TreeMap} does not contain
+	 * any key/value pairs
+	 * @return {@code true} if this {@code TreeMap} contains no key/value pairs
+	 */
+	public boolean isEmpty() {
+		return this.wordStems.isEmpty();
+	}
+
+	/**
+	 * Returns a view of the inverted index
 	 * @return An unmodifiable view of the inverted index
 	 */
 	public Map<String, TreeMap<String, TreeSet<Integer>>> getIndex() {
