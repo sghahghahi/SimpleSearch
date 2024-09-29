@@ -89,10 +89,18 @@ public class InvertedIndex {
 		return innerList.add(wordPosition);
 	}
 
+	/**
+	 * Get a view of the location/word count key/value pair map
+	 * @return An unmodifiable view of the location/word count key/value pair map
+	 */
 	public Map<String, Integer> getCounts() {
 		return Collections.unmodifiableMap(this.wordStems);
 	}
 
+	/**
+	 * Get a view of the inverted index
+	 * @return An unmodifiable view of the inverted index
+	 */
 	public Map<String, TreeMap<String, TreeSet<Integer>>> getIndex() {
 		return Collections.unmodifiableMap(this.invertedIndex);
 	}
