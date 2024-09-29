@@ -1,9 +1,5 @@
 package edu.usfca.cs272;
 
-import opennlp.tools.stemmer.snowball.SnowballStemmer;
-
-import java.nio.file.Path;
-
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -23,9 +19,6 @@ public class InvertedIndex {
 	/** Stores words with their file paths and word positions */
 	protected final TreeMap<String, TreeMap<String, TreeSet<Integer>>> invertedIndex;
 
-	/** Keeps track of the word position in each file. Stored in inverted index. */
-	protected int wordPosition = 1;  // TODO Remove
-
 	/**
 	 * Default constructor that initializes a new word counter and inverted index.
 	 */
@@ -35,19 +28,21 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Reads the given line and adds the path and number of word stems
-	 * as a key/value pair to the word stems {@code Map}
-	 * Builds an inverted index if the {@code -index} flag is present.
-	 * @param line The line to read
-	 * @param snowballStemmer The stemmer to use
-	 * @param path Where the file to be read is
+	 * Adds the {@code location} and number of stems found in it to
+	 * our {@code TreeMap} that stores them as key/value pairs.
+	 * @param location - Where the stems are found
+	 * @param count - The number of stems
 	 * @return {@code true} if the add was successful
 	 */
-	// TODO addCount(String location, int count) (don't put if not > 0)
-	public boolean addWordCounts(String line, SnowballStemmer snowballStemmer, Path path) {
+	public boolean addCount(String location, int count) {
+		if (count == 0) {
+			return false;
+		}
+
+		// this.wordStems.put(location, count);
 		this.wordStems.put(
-			path.toString(),
-			this.wordStems.getOrDefault(path.toString(), 0) + FileStemmer.listStems(line, snowballStemmer).size()
+			location,
+			this.wordStems.getOrDefault(location, 0) + count
 		);
 
 		return true;
