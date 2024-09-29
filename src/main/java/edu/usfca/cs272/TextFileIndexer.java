@@ -28,22 +28,21 @@ public class TextFileIndexer {
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
-			String line = null;
-			// TODO Track the word count/position here
 			int wordPosition = 1;
+			String line = null;
 
 			while ((line = reader.readLine()) != null) {
-				// TODO Customize how we build here instead of using listStems... copy/paste part of addStems and change to add directly to the index (never to any collection)
 				String[] cleanedWords = FileStemmer.parse(line);
+
 				for (String cleanWord : cleanedWords) {
 					invertedIndex.addWordPosition(
 						snowballStemmer.stem(cleanWord).toString(),
 						path.toString(), wordPosition++
 					);
 				}
-			}
 
-			// TODO Update the count once
+				invertedIndex.addCount(path.toString(), cleanedWords.length);
+			}
 		}
 	}
 
@@ -61,8 +60,6 @@ public class TextFileIndexer {
 					indexDirectory(path, invertedIndex);
 				} else {
 					if (isTextFile(path)) {
-						// Reset word position to 1 every time we read from a new file
-						invertedIndex.wordPosition = 1;
 						indexFile(path, invertedIndex);
 					}
 				}
