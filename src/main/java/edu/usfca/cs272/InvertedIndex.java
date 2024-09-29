@@ -98,6 +98,24 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * The number of paths in the {@code TreeMap} that stores location/word count key/value pairs
+	 * @return The nuymber of paths
+	 */
+	public int numPaths() {
+		return this.wordStems.size();
+	}
+
+	/**
+	 * The number of stems found at {@code path}
+	 * @param path - Where the stems were found
+	 * @return The number of stems found at {@code path}
+	 * or {@code -1} if {@code path} is not in the {@code TreeMap}
+	 */
+	public int numStems(String path) {
+		return this.wordStems.getOrDefault(path, -1);
+	}
+
+	/**
 	 * Get a view of the inverted index
 	 * @return An unmodifiable view of the inverted index
 	 */
