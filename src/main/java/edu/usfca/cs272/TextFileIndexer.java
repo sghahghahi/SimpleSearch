@@ -89,7 +89,7 @@ public class TextFileIndexer {
 	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void textFlag(Path path, InvertedIndex invertedIndex) throws IOException { // TODO indexPath
+	public static void indexPath(Path path, InvertedIndex invertedIndex) throws IOException {
 		if (Files.isDirectory(path)) {
 			indexDirectory(path, invertedIndex);
 		} else {
