@@ -66,6 +66,7 @@ public class Driver {
 		if (argParser.hasFlag(INDEX)) {
 			path = argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP));
 			try {
+				// TODO invertedIndex.indexJson(path);
 				JsonWriter.writeObjectObject(invertedIndex.getIndex(), path);
 			} catch (IOException e) {
 				System.err.println("Unable to write inverted index to path: " + path);

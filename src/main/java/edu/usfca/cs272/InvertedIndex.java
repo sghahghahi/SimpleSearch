@@ -64,6 +64,10 @@ public class InvertedIndex {
 
 		return true;
 	}
+	
+	/*
+	 * TODO Change path to location (document, source)
+	 */
 
 	/**
 	 * Adds the {@code word} and its {@code location} to the inverted index.
@@ -83,7 +87,7 @@ public class InvertedIndex {
 
 		if (innerList == null) {
 			innerList = new TreeSet<>();
-			innerMap.put(location.toString(), innerList);
+			innerMap.put(location, innerList);
 		}
 
 		return innerList.add(wordPosition);
@@ -134,12 +138,18 @@ public class InvertedIndex {
 	public boolean containsPath(String path) {
 		return this.wordStems.containsKey(path);
 	}
+	
+	/* TODO 
+	public void indexJson(Path path) throws IOException {
+		JsonWriter.writeObjectObject(this.invertedIndex, path);
+	}
+	*/
 
 	/**
 	 * Returns a view of the inverted index
 	 * @return An unmodifiable view of the inverted index
 	 */
-	public Map<String, TreeMap<String, TreeSet<Integer>>> getIndex() {
+	public Map<String, TreeMap<String, TreeSet<Integer>>> getIndex() { // TODO Remove
 		return Collections.unmodifiableMap(this.invertedIndex);
 	}
 
@@ -151,15 +161,23 @@ public class InvertedIndex {
 	 * for the specified {@code word} or {@code null} if {@code word} is not
 	 * in the inverted index
 	 */
-	public Map<String, TreeSet<Integer>> getPaths(String word) {
+	public Map<String, TreeSet<Integer>> getPaths(String word) { // TODO Remove
 		return Collections.unmodifiableMap(this.invertedIndex.get(word));
 	}
+	
+	/* TODO 
+	getWords --> unmodifiable view of the invertedIndex.keySet
+	getLocations --> given a word, returns the keyset of the innermap
+	getPositions --> given a word and location, returns the inner most positions
+	
+	make more size and contains methods for each levle of nesting in the inverted index
+	*/
 
 	/**
 	 * Returns the number of key/value pairs in the inverted index
 	 * @return The number of words in the inverted index
 	 */
-	public int indexSize() {
+	public int indexSize() { // TODO numWords
 		return this.invertedIndex.size();
 	}
 

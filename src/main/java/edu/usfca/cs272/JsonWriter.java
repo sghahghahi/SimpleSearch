@@ -86,6 +86,13 @@ public class JsonWriter {
 	public static void writeArray(Collection<? extends Number> elements,
 			Writer writer, int indent) throws IOException {
 
+		/*
+		 * TODO Don't need isEmpty as a special case
+		 * Can do this without an if within the loop
+		 * 
+		 * Try iterators and while loops
+		 */
+		
 		if (elements.isEmpty()) {
 			writeIndent("[\n]", writer, 0);
 			return;
@@ -391,6 +398,8 @@ public class JsonWriter {
 	 * the initial indentation level
 	 * @throws IOException if an IO error occurs
 	 */
+	// TODO Change BufferedWriter to Writer
+	// TODO Try to figure out the generic type
 	public static void writeObjectObject(Map<String, TreeMap<String, TreeSet<Integer>>> elements, BufferedWriter writer, int indent) throws IOException {
 		if (elements.isEmpty()) {
 			writeIndent("{\n}", writer, 0);
@@ -438,7 +447,7 @@ public class JsonWriter {
 	 *
 	 * @param args unused
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) { // TODO Remove
 		Set<Integer> empty = Collections.emptySet();
 		Set<Integer> single = Set.of(42);
 		List<Integer> simple = List.of(65, 66, 67);
