@@ -30,6 +30,7 @@ public class TextFileIndexer {
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
 			int wordPosition = 1;
 			String line = null;
+			// TODO String location = path.toString();
 
 			while ((line = reader.readLine()) != null) {
 				String[] cleanedWords = FileStemmer.parse(line);

@@ -215,7 +215,7 @@ public class FileStemmer {
 	 * @param args unused
 	 * @throws IOException if an I/O error occurs
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException { // TODO Remove
 		// demonstrates how to use split, clean, and parse
 		System.out.println("____PARSING DEMO____");
 		System.out.println();
