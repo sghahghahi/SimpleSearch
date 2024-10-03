@@ -82,8 +82,7 @@ public class ArgumentParser {
 	public final void parse(String[] args) {
 		int lastFlagIndex = -1; // Initialize at -1 instead of 0 because index 0 is not guaranteed to be a flag
 		String prevArg = null;	// Keeps track of the previous arg when iterating through `args`. Updates after each loop iteration
-
-		// TODO this.map.isEmpty() check this before the loop
+		boolean emptyMap = this.map.isEmpty();
 
 		for (int i = 0; i < args.length; i++) {
 			String currArg = args[i];
@@ -98,7 +97,7 @@ public class ArgumentParser {
 			 * If the previous arg was also a value, ignore `currArg` since the only time we can add a value to the map is if a flag precedes it
 			 */
 			} else if (isValue(currArg)) {
-				if (!(this.map.isEmpty() || isValue(prevArg))) { // TODO Remove the empty check here
+				if (!(emptyMap || isValue(prevArg))) {
 					this.map.put(args[lastFlagIndex], currArg);
 				}
 			}
