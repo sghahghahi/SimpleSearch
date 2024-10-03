@@ -15,10 +15,10 @@ import java.util.TreeSet;
  */
 public class InvertedIndex {
 
-	/** {@code TreeMap} to store file path and word count key/value pairs */
+	/** {@code TreeMap} to store file location and word count key/value pairs */
 	private final TreeMap<String, Integer> wordStems;
 
-	/** Stores words with their file paths and word positions */
+	/** Stores words with their file locations and word positions */
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> invertedIndex;
 
 	/**
@@ -64,10 +64,6 @@ public class InvertedIndex {
 
 		return true;
 	}
-	
-	/*
-	 * TODO Change path to location (document, source)
-	 */
 
 	/**
 	 * Adds the {@code word} and its {@code location} to the inverted index.
@@ -103,7 +99,7 @@ public class InvertedIndex {
 
 	/**
 	 * Returns the number of key/value pairs in the {@code TreeMap}
-	 * storing file paths and the number of stems at each path
+	 * storing file locations and the number of stems at each location
 	 * @return The number of key/value pairs
 	 */
 	public int countSize() {
@@ -111,13 +107,13 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Returns the number of stems found at {@code path}
-	 * @param path - Where the stems were found
-	 * @return The number of stems found at {@code path}
-	 * or {@code -1} if {@code path} is not in the {@code TreeMap}
+	 * Returns the number of stems found at {@code location}
+	 * @param location - Where the stems were found
+	 * @return The number of stems found at {@code location}
+	 * or {@code -1} if {@code location} is not in the {@code TreeMap}
 	 */
-	public int numStems(String path) {
-		return this.wordStems.getOrDefault(path, -1);
+	public int numStems(String location) {
+		return this.wordStems.getOrDefault(location, -1);
 	}
 
 	/**
@@ -130,18 +126,18 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Returns {@code true} if {@code path} is in the {@code TreeMap}
-	 * storing file paths and the number of stems at each path
-	 * @param path - The path to look up in the {@code TreeMap}
-	 * @return {@code true} if {@code path} is in the {@code TreeMap}
+	 * Returns {@code true} if {@code location} is in the {@code TreeMap}
+	 * storing file locations and the number of stems at each location
+	 * @param location - The location to look up in the {@code TreeMap}
+	 * @return {@code true} if {@code location} is in the {@code TreeMap}
 	 */
-	public boolean containsPath(String path) {
-		return this.wordStems.containsKey(path);
+	public boolean containsLocation(String location) {
+		return this.wordStems.containsKey(location);
 	}
-	
-	/* TODO 
-	public void indexJson(Path path) throws IOException {
-		JsonWriter.writeObjectObject(this.invertedIndex, path);
+
+	/* TODO
+	public void indexJson(Path location) throws IOException {
+		JsonWriter.writeObjectObject(this.invertedIndex, location);
 	}
 	*/
 
@@ -154,22 +150,22 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Returns a {@code TreeMap} containing file paths where {@code word} was found and
+	 * Returns a {@code TreeMap} containing file locations where {@code word} was found and
 	 * how many times it occured in the file
 	 * @param word - The word to find in the inverted index
-	 * @return An unmodifiable {@code TreeMap} containing file paths and word counts
+	 * @return An unmodifiable {@code TreeMap} containing file locations and word counts
 	 * for the specified {@code word} or {@code null} if {@code word} is not
 	 * in the inverted index
 	 */
-	public Map<String, TreeSet<Integer>> getPaths(String word) { // TODO Remove
+	public Map<String, TreeSet<Integer>> getLocations(String word) { // TODO Remove
 		return Collections.unmodifiableMap(this.invertedIndex.get(word));
 	}
-	
-	/* TODO 
+
+	/* TODO
 	getWords --> unmodifiable view of the invertedIndex.keySet
 	getLocations --> given a word, returns the keyset of the innermap
 	getPositions --> given a word and location, returns the inner most positions
-	
+
 	make more size and contains methods for each levle of nesting in the inverted index
 	*/
 
