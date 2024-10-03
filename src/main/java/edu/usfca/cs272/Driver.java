@@ -41,35 +41,35 @@ public class Driver {
 	public static void main(String[] args) {
 		ArgumentParser argParser = new ArgumentParser(args);
 		InvertedIndex invertedIndex = new InvertedIndex();
-		Path path;
+		Path location;
 
 		if (argParser.hasFlag(TEXT)) {
-			path = argParser.getPath(TEXT);
+			location = argParser.getPath(TEXT);
 			try {
-				TextFileIndexer.indexPath(path, invertedIndex);
+				TextFileIndexer.indexLocation(location, invertedIndex);
 			} catch (IOException e) {
-				System.err.println("Unable to index the files from path: " + path);
+				System.err.println("Unable to index the files from location: " + location);
 			} catch (NullPointerException e) {
 				System.err.println("No input file was provided after '-text' flag.");
 			}
 		}
 
 		if (argParser.hasFlag(COUNTS)) {
-			path = argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP));
+			location = argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP));
 			try {
-				JsonWriter.writeObject(invertedIndex.getCounts(), path);
+				JsonWriter.writeObject(invertedIndex.getCounts(), location);
 			} catch (IOException e) {
-				System.err.println("Unable to write word counts to path: " + path);
+				System.err.println("Unable to write word counts to location: " + location);
 			}
 		}
 
 		if (argParser.hasFlag(INDEX)) {
-			path = argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP));
+			location = argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP));
 			try {
 				// TODO invertedIndex.indexJson(path);
-				JsonWriter.writeObjectObject(invertedIndex.getIndex(), path);
+				JsonWriter.writeObjectObject(invertedIndex.getIndex(), location);
 			} catch (IOException e) {
-				System.err.println("Unable to write inverted index to path: " + path);
+				System.err.println("Unable to write inverted index to location: " + location);
 			}
 		}
 	}
