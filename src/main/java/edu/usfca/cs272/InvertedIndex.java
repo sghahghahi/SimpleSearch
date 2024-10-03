@@ -1,8 +1,13 @@
 package edu.usfca.cs272;
 
+import java.io.IOException;
+
+import java.nio.file.Path;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -55,7 +60,7 @@ public class InvertedIndex {
 	 * @param stemmedWords - The {@code List} of <strong>stemmed</strong> words to add
 	 * @param location - Where the stemmed word was found
 	 * @param wordPosition - The word position of the {@code cleanedWord} in the file
-	 * @return {@code true} if the add was successfull
+	 * @return {@code true} if the add was successful
 	 */
 	public boolean addWords(List<String> stemmedWords, String location, int wordPosition) {
 		for (String stemmedWord : stemmedWords) {
@@ -135,45 +140,33 @@ public class InvertedIndex {
 		return this.wordStems.containsKey(location);
 	}
 
-	/* TODO
+	public void indexCounts(Path location) throws IOException {
+		JsonWriter.writeObject(this.wordStems, location);
+	}
+
+	/* Methods for inverted index */
+
 	public void indexJson(Path location) throws IOException {
 		JsonWriter.writeObjectObject(this.invertedIndex, location);
 	}
-	*/
-
-	/**
-	 * Returns a view of the inverted index
-	 * @return An unmodifiable view of the inverted index
-	 */
-	public Map<String, TreeMap<String, TreeSet<Integer>>> getIndex() { // TODO Remove
-		return Collections.unmodifiableMap(this.invertedIndex);
-	}
-
-	/**
-	 * Returns a {@code TreeMap} containing file locations where {@code word} was found and
-	 * how many times it occured in the file
-	 * @param word - The word to find in the inverted index
-	 * @return An unmodifiable {@code TreeMap} containing file locations and word counts
-	 * for the specified {@code word} or {@code null} if {@code word} is not
-	 * in the inverted index
-	 */
-	public Map<String, TreeSet<Integer>> getLocations(String word) { // TODO Remove
-		return Collections.unmodifiableMap(this.invertedIndex.get(word));
-	}
 
 	/* TODO
-	getWords --> unmodifiable view of the invertedIndex.keySet
-	getLocations --> given a word, returns the keyset of the innermap
-	getPositions --> given a word and location, returns the inner most positions
-
 	make more size and contains methods for each levle of nesting in the inverted index
 	*/
+
+	/**
+	 * Returns a view of the words stored in our word counts data structure
+	 * @return An unmodifiable view of the kes in the word counts data structure
+	 */
+	public Set<String> getWords() {
+		return Collections.unmodifiableSet(this.wordStems.keySet());
+	}
 
 	/**
 	 * Returns the number of key/value pairs in the inverted index
 	 * @return The number of words in the inverted index
 	 */
-	public int indexSize() { // TODO numWords
+	public int numWords() {
 		return this.invertedIndex.size();
 	}
 
@@ -187,14 +180,45 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * Returns a {@code Set} of locations mapped to a specific {@code word}
+	 * @param word - The word to look up in the inverted index
+	 * @return An unmodifiable view of the locations mapped to {@code word} or
+	 * {@code null} if {@code word} is not in the inverted index
+	 */
+	public Set<String> getLocations(String word) {
+		if (!containsWord(word)) {
+			return null;
+		}
+
+		return Collections.unmodifiableSet(this.invertedIndex.get(word).keySet());
+	}
+
+	/**
+	 * Returns the positions of {@code word} at {@code location}
+	 * @param word - The word to look up in the inverted index
+	 * @param location - Where {@code word} was found
+	 * @return An unmodifiable view of the word positions of {@code word} found at {@code location} or
+	 * {@code null} if either {@code word} or {@code location} is not in the inverted index
+	 */
+	public Set<Integer> getPositions(String word, String location) {
+		if (!containsWord(word) || this.invertedIndex.get(word).containsKey(location)) {
+			return null;
+		}
+
+		return Collections.unmodifiableSet(this.invertedIndex.get(word).get(location));
+	}
+
+	/**
 	 * String representation of the inverted index that outputs
 	 * the current amount of words stored in it
 	 */
 	@Override
 	public String toString() {
+		int size = numWords();
 		return String.format(
-			"Inverted index currently has %d words stored.",
-			indexSize()
+			"Inverted index currently has %d %s stored",
+			size,
+			size == 1 ? "word" : "words"
 		);
 	}
 }
