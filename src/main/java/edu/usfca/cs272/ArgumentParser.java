@@ -2,6 +2,7 @@ package edu.usfca.cs272;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -83,7 +84,7 @@ public class ArgumentParser {
 		String prevArg = null;	// Keeps track of the previous arg when iterating through `args`. Updates after each loop iteration
 
 		// TODO this.map.isEmpty() check this before the loop
-		
+
 		for (int i = 0; i < args.length; i++) {
 			String currArg = args[i];
 
@@ -226,23 +227,5 @@ public class ArgumentParser {
 	@Override
 	public String toString() {
 		return this.map.toString();
-	}
-
-	/**
-	 * Demonstrates this class.
-	 *
-	 * @param args the arguments to test
-	 */
-	public static void main(String[] args) { // TODO Remove
-		// Feel free to modify or delete this method for debugging
-		if (args.length < 1) {
-			args = new String[] { "-max", "false", "-min", "0", "-min", "-10", "hello", "-@debug",
-					"-f", "output.txt", "-verbose" };
-		}
-
-		// expected output:
-		// {-max=false, -min=-10, -verbose=null, -f=output.txt, -@debug=null}
-		ArgumentParser map = new ArgumentParser(args);
-		System.out.println(map);
 	}
 }

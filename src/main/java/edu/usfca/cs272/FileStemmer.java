@@ -1,21 +1,22 @@
 package edu.usfca.cs272;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
-
 import java.io.BufferedReader;
 import java.io.IOException;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.text.Normalizer;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import opennlp.tools.stemmer.Stemmer;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
+import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 /**
  * Utility class for parsing, cleaning, and stemming text and text files into
@@ -207,78 +208,5 @@ public class FileStemmer {
 
 			return stems;
 		}
-	}
-
-	/**
-	 * Demonstrates this class.
-	 *
-	 * @param args unused
-	 * @throws IOException if an I/O error occurs
-	 */
-	public static void main(String[] args) throws IOException { // TODO Remove
-		// demonstrates how to use split, clean, and parse
-		System.out.println("____PARSING DEMO____");
-		System.out.println();
-
-		String sally = """
-				Sally Sue...\t sells 76 sea-shells
-				at THE sEa_shorE soirée!""";
-
-		System.out.println("Original:");
-		System.out.println(sally);
-		System.out.println();
-
-		System.out.println("Cleaned:");
-		System.out.println(clean(sally));
-		System.out.println();
-
-		System.out.println(" Split: " + Arrays.toString(split(sally)));
-		System.out.println("Parsed: " + Arrays.toString(parse(sally)));
-		System.out.println();
-
-		// demonstrates how to use stemmer
-		System.out.println("____STEMMER DEMO____");
-		System.out.println();
-
-		Stemmer stemmer = new SnowballStemmer(ENGLISH);
-		String demo = "practicing";
-		String stem = stemmer.stem(demo).toString();
-
-		System.out.println("Word: " + demo);
-		System.out.println("Stem: " + stem);
-		System.out.println();
-
-		// demonstrates how to use list/uniqueStems methods
-		System.out.println("____STEMMING TEXT____");
-		System.out.println();
-
-		String practice = """
-				practic practical practice practiced practicer practices
-				practicing practis practisants practise practised practiser
-				practisers practises practising practitioner practitioners
-				""";
-
-		System.out.println("Original: \n" + practice);
-		System.out.println("  List: " + listStems(practice));
-		System.out.println("Unique: " + uniqueStems(practice));
-		System.out.println();
-
-		// demonstrates stemming files
-		System.out.println("____STEMMING FILE____");
-		System.out.println();
-
-		Path base = Path.of("src", "test", "resources", "stemmer");
-		Path file = base.resolve("cleaner.txt");
-		String input = Files.readString(file, UTF_8);
-
-		System.out.println("Original:\n" + input);
-
-		System.out.println("       List: " + listStems(file));
-		System.out.println("     Unique: " + uniqueStems(file));
-		System.out.println("List Unique: " + listUniqueStems(file));
-	}
-
-	/** Prevent instantiating this class of static methods. */
-	private FileStemmer() {
 	}
 }

@@ -12,10 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -89,10 +86,10 @@ public class JsonWriter {
 		/*
 		 * TODO Don't need isEmpty as a special case
 		 * Can do this without an if within the loop
-		 * 
+		 *
 		 * Try iterators and while loops
 		 */
-		
+
 		if (elements.isEmpty()) {
 			writeIndent("[\n]", writer, 0);
 			return;
@@ -437,39 +434,6 @@ public class JsonWriter {
 		}
 	}
 
-	/**
-	 * Empty private constructor to pass style check
-	 */
+	/** No need to instantiate this class because all methods are {@code static} */
 	private JsonWriter() {}
-
-	/**
-	 * Demonstrates this class.
-	 *
-	 * @param args unused
-	 */
-	public static void main(String[] args) { // TODO Remove
-		Set<Integer> empty = Collections.emptySet();
-		Set<Integer> single = Set.of(42);
-		List<Integer> simple = List.of(65, 66, 67);
-
-		System.out.println("\nArrays:");
-		System.out.println(writeArray(empty));
-		System.out.println(writeArray(single));
-		System.out.println(writeArray(simple));
-
-		System.out.println("\nObjects:");
-		System.out.println(writeObject(Collections.emptyMap()));
-		System.out.println(writeObject(Map.of("hello", 42)));
-		System.out.println(writeObject(Map.of("hello", 42, "world", 67)));
-
-		System.out.println("\nNested Arrays:");
-		System.out.println(writeObjectArrays(Collections.emptyMap()));
-		System.out.println(writeObjectArrays(Map.of("hello", single)));
-		System.out.println(writeObjectArrays(Map.of("hello", single, "world", simple)));
-
-		System.out.println("\nNested Objects:");
-		System.out.println(writeArrayObjects(Collections.emptyList()));
-		System.out.println(writeArrayObjects(Set.of(Map.of("hello", 3.12))));
-		System.out.println(writeArrayObjects(Set.of(Map.of("hello", 3.12, "world", 2.04), Map.of("apple", 0.04))));
-	}
 }
