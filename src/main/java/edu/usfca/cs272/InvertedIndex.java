@@ -46,7 +46,6 @@ public class InvertedIndex {
 			return false;
 		}
 
-		// this.wordStems.put(location, count);
 		this.wordStems.put(
 			location,
 			this.wordStems.getOrDefault(location, 0) + count
@@ -107,7 +106,7 @@ public class InvertedIndex {
 	 * storing file locations and the number of stems at each location
 	 * @return The number of key/value pairs
 	 */
-	public int countSize() {
+	public int numCounts() {
 		return this.wordStems.size();
 	}
 
@@ -137,6 +136,10 @@ public class InvertedIndex {
 	 * @return {@code true} if {@code location} is in the {@code TreeMap}
 	 */
 	public boolean containsLocation(String location) {
+		if (location == null) {
+			return false;
+		}
+
 		return this.wordStems.containsKey(location);
 	}
 
@@ -150,9 +153,41 @@ public class InvertedIndex {
 		JsonWriter.writeObjectObject(this.invertedIndex, location);
 	}
 
-	/* TODO
-	make more size and contains methods for each levle of nesting in the inverted index
-	*/
+	/* TODO make more size and contains methods for each level of nesting in the inverted index */
+
+	/**
+	 * Returns the number of locations where {@code word} was found
+	 * @param word - The word to look up locations for
+	 * @return The number of locations where {@code word} was found
+	 * or {@code -1} if {@code word} is not in the inverted index
+	 */
+	public int numLocations(String word) {
+		if ( word == null || !containsWord(word)) {
+			return -1;
+		}
+
+		return this.invertedIndex.get(word).size();
+	}
+
+	/**
+	 * Returns the number of word positions that {@code word} was found in {@code location}
+	 * @param word - The word to look up in the inverted index
+	 * @param location - The location associated with {@code word} in the inverted index
+	 * @return The number of word positions that {@code word} was found in {@code location}
+	 * or {@code -1} if either {@code word} or {@code location} are not in the inverted index
+	 */
+	public int numPositions(String word, String location) {
+		if (
+			word == null ||
+			location == null ||
+			!containsWord(word) ||
+			!containsLocation(location)
+		) {
+			return -1;
+		}
+
+		return this.invertedIndex.get(word).get(location).size();
+	}
 
 	/**
 	 * Returns a view of the words stored in our word counts data structure
@@ -176,6 +211,10 @@ public class InvertedIndex {
 	 * @return {@code true} if {@code word} is in the inverted index
 	 */
 	public boolean containsWord(String word) {
+		if (word == null) {
+			return false;
+		}
+
 		return this.invertedIndex.containsKey(word);
 	}
 
@@ -186,7 +225,8 @@ public class InvertedIndex {
 	 * {@code null} if {@code word} is not in the inverted index
 	 */
 	public Set<String> getLocations(String word) {
-		if (!containsWord(word)) {
+		if (
+			word == null || !containsWord(word)) {
 			return null;
 		}
 
@@ -201,7 +241,12 @@ public class InvertedIndex {
 	 * {@code null} if either {@code word} or {@code location} is not in the inverted index
 	 */
 	public Set<Integer> getPositions(String word, String location) {
-		if (!containsWord(word) || this.invertedIndex.get(word).containsKey(location)) {
+		if (
+			word == null ||
+			location == null ||
+			!containsWord(word) ||
+			!containsLocation(location)
+		) {
 			return null;
 		}
 
@@ -216,7 +261,7 @@ public class InvertedIndex {
 	public String toString() {
 		int size = numWords();
 		return String.format(
-			"Inverted index currently has %d %s stored",
+			"Inverted index currently has %d %s stored.",
 			size,
 			size == 1 ? "word" : "words"
 		);
