@@ -30,7 +30,7 @@ public class TextFileIndexer {
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
 			int wordPosition = 1;
 			String line = null;
-			// TODO String location = path.toString();
+			String location = path.toString();
 
 			while ((line = reader.readLine()) != null) {
 				String[] cleanedWords = FileStemmer.parse(line);
@@ -38,30 +38,30 @@ public class TextFileIndexer {
 				for (String cleanWord : cleanedWords) {
 					invertedIndex.addWordPosition(
 						snowballStemmer.stem(cleanWord).toString(),
-						path.toString(), wordPosition++
+						location, wordPosition++
 					);
 				}
 
-				invertedIndex.addCount(path.toString(), cleanedWords.length);
+				invertedIndex.addCount(location, cleanedWords.length);
 			}
 		}
 	}
 
 	/**
-	 * Recursively reads all files and subdirectories from {@code dirPath}.
+	 * Recursively reads all files and subdirectories from {@code dirLocation}.
 	 * Only reads files if they end in {@code .txt} or {@code .text} (case-insensitive).
-	 * @param dirPath path of directory to traverse
+	 * @param dirLocation location of directory to traverse
 	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void indexDirectory(Path dirPath, InvertedIndex invertedIndex) throws IOException {
-		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirPath)) {
-			for (Path path : dirStream) {
-				if (Files.isDirectory(path)) {
-					indexDirectory(path, invertedIndex);
+	public static void indexDirectory(Path dirLocation, InvertedIndex invertedIndex) throws IOException {
+		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirLocation)) {
+			for (Path location : dirStream) {
+				if (Files.isDirectory(location)) {
+					indexDirectory(location, invertedIndex);
 				} else {
-					if (isTextFile(path)) {
-						indexFile(path, invertedIndex);
+					if (isTextFile(location)) {
+						indexFile(location, invertedIndex);
 					}
 				}
 			}
@@ -69,32 +69,32 @@ public class TextFileIndexer {
 	}
 
 	/**
-	 * Checks if the file at {@code path} ends in either {@code .txt} or {@code .text} (case-insensitive)
+	 * Checks if the file at {@code location} ends in either {@code .txt} or {@code .text} (case-insensitive)
 	 *
-	 * @param path The file path to check
-	 * @return {@code true} if the file at {@code path} ends with {@code .txt} or {@code .text} (case-insensitive).
+	 * @param location The file location to check
+	 * @return {@code true} if the file at {@code location} ends with {@code .txt} or {@code .text} (case-insensitive).
 	 */
-	public static boolean isTextFile(Path path) {
-		String lowerCasePath = path.toString().toLowerCase();
+	public static boolean isTextFile(Path location) {
+		String lowerCaseLocation = location.toString().toLowerCase();
 
 		return (
-			lowerCasePath.endsWith(".txt") ||
-			lowerCasePath.endsWith(".text")
+			lowerCaseLocation.endsWith(".txt") ||
+			lowerCaseLocation.endsWith(".text")
 		);
 	}
 
 	/**
 	 * Reads {@code path}.
-	 * Sends the directory or file at {@code path} to its appropriate method.
-	 * @param path The path of either a directory or file
+	 * Sends the directory or file at {@code location} to its appropriate method.
+	 * @param location The location of either a directory or file
 	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void indexPath(Path path, InvertedIndex invertedIndex) throws IOException {
-		if (Files.isDirectory(path)) {
-			indexDirectory(path, invertedIndex);
+	public static void indexLocation(Path location, InvertedIndex invertedIndex) throws IOException {
+		if (Files.isDirectory(location)) {
+			indexDirectory(location, invertedIndex);
 		} else {
-			indexFile(path, invertedIndex);
+			indexFile(location, invertedIndex);
 		}
 	}
 }
