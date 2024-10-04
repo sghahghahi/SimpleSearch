@@ -31,6 +31,16 @@ public class Driver {
 	/** File name to write inverted index to if no file path included after {@code -index} flag. Will write file in the current working directory. */
 	public static final String INDEX_BACKUP = "index.json";
 
+	/** {@code -query} flag passed as an argument to this program. File path to query (next argument). Will trigger an exact search for each of the multi-lines of queries in the file. */
+	public static final String QUERY = "-query";
+
+	/** {@code -results} flag passed as an argument to this program. File path to write search results to (next argument) not necessary. */
+	/** If results flag not provided, should still calculate the search results but not output them */
+	public static final String RESULTS = "-results";
+
+	/** File name to write search results to if no file path included after {@code -results} flag. Will write this file in the current working directory. */
+	public static final String RESULTS_BACKUP = "results.json";
+
 	/**
 	 * Initializes the classes necessary based on the provided command-line
 	 * arguments. This includes (but is not limited to) how to build or search an
@@ -70,6 +80,16 @@ public class Driver {
 			} catch (IOException e) {
 				System.err.println("Unable to write inverted index to location: " + location);
 			}
+		}
+
+		if (argParser.hasFlag(QUERY)) {
+			location = argParser.getPath(QUERY);
+			// Call method that performs search
+		}
+
+		if (argParser.hasFlag(RESULTS)) {
+			location = argParser.getPath(RESULTS, Path.of(CURR_DIR, RESULTS_BACKUP));
+			// Call method that writes output (use try catch for IOException)
 		}
 	}
 }
