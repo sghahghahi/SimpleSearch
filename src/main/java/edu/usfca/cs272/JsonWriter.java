@@ -1,19 +1,18 @@
 package edu.usfca.cs272;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -83,29 +82,18 @@ public class JsonWriter {
 	public static void writeArray(Collection<? extends Number> elements,
 			Writer writer, int indent) throws IOException {
 
-		/*
-		 * TODO Don't need isEmpty as a special case
-		 * Can do this without an if within the loop
-		 *
-		 * Try iterators and while loops
-		 */
+		writeIndent("[", writer, 0);
 
-		if (elements.isEmpty()) {
-			writeIndent("[\n]", writer, 0);
-			return;
+		var iterator = elements.iterator();
+		if (iterator.hasNext()) {
+			writeIndent("\n", writer, 0);
+			writeIndent(iterator.next().toString(), writer, indent + 1);
 		}
 
-		writeIndent("[\n", writer, 0);
-
-		boolean firstElement = true;
-		for (var element : elements) {
-			if (firstElement) {
-				firstElement = false;
-			} else {
-				writeIndent(",\n", writer, 0);
-			}
-
-			writeIndent(element.toString(), writer, indent + 1);
+		while (iterator.hasNext()) {
+			String element = iterator.next().toString();
+			writeIndent(",\n", writer, 0);
+			writeIndent(element, writer, indent + 1);
 		}
 
 		writeIndent("\n", writer, 0);
@@ -163,23 +151,21 @@ public class JsonWriter {
 	public static void writeObject(Map<String, ? extends Number> elements,
 			Writer writer, int indent) throws IOException {
 
-		if (elements.isEmpty()) {
-			writeIndent("{\n}", writer, 0);
-			return;
+		writeIndent("{", writer, 0);
+
+		var iterator = elements.entrySet().iterator();
+		if (iterator.hasNext()) {
+			var element = iterator.next();
+			writeIndent("\n", writer, 0);
+			writeQuote(element.getKey().toString(), writer, indent + 1);
+			writeIndent(": ", writer, 0);
+			writeIndent(element.getValue().toString(), writer, 0);
 		}
 
-		writeIndent("{\n", writer, 0);
-
-		boolean firstElement = true;
-		for (var element : elements.entrySet()) {
-			if (firstElement) {
-				firstElement = false;
-			} else {
-				writeIndent(",\n", writer, 0);
-			}
-
-			writeIndent(writer, indent + 1);
-			writeQuote(element.getKey().toString(), writer, 0);
+		while (iterator.hasNext()) {
+			var element = iterator.next();
+			writeIndent(",\n", writer, 0);
+			writeQuote(element.getKey().toString(), writer, indent + 1);
 			writeIndent(": ", writer, 0);
 			writeIndent(element.getValue().toString(), writer, 0);
 		}
@@ -242,23 +228,22 @@ public class JsonWriter {
 			Map<String, ? extends Collection<? extends Number>> elements,
 			Writer writer, int indent) throws IOException {
 
-		if (elements.isEmpty()) {
-			writeIndent("{\n}", writer, 0);
-			return;
+
+		writeIndent("{", writer, 0);
+
+		var iterator = elements.entrySet().iterator();
+		if (iterator.hasNext()) {
+			var element = iterator.next();
+			writeIndent("\n", writer, 0);
+			writeQuote(element.getKey().toString(), writer, indent + 1);
+			writeIndent(": ", writer, 0);
+			writeArray(element.getValue(), writer, indent + 1);
 		}
 
-		writeIndent("{\n", writer, 0);
-
-		boolean firstElement = true;
-		for (var element : elements.entrySet()) {
-			if (firstElement) {
-				firstElement = false;
-			} else {
-				writeIndent(",\n", writer, 0);
-			}
-
-			writeIndent(writer, indent + 1);
-			writeQuote(element.getKey(), writer, 0);
+		while (iterator.hasNext()) {
+			var element = iterator.next();
+			writeIndent(",\n", writer, 0);
+			writeQuote(element.getKey().toString(), writer, indent + 1);
 			writeIndent(": ", writer, 0);
 			writeArray(element.getValue(), writer, indent + 1);
 		}
@@ -323,21 +308,18 @@ public class JsonWriter {
 			Collection<? extends Map<String, ? extends Number>> elements,
 			Writer writer, int indent) throws IOException {
 
-		if (elements.isEmpty()) {
-			writeIndent("[\n]", writer, 0);
-			return;
+		writeIndent("[", writer, 0);
+
+		var iterator = elements.iterator();
+		if (iterator.hasNext()) {
+			var element = iterator.next();
+			writeIndent("\n", writer, 0);
+			writeObject(element, writer, indent + 1);
 		}
 
-		writeIndent("[\n", writer, 0);
-
-		boolean firstElement = true;
-		for (var element : elements) {
-			if (firstElement) {
-				firstElement = false;
-			} else {
-				writeIndent(",\n", writer, 0);
-			}
-
+		while (iterator.hasNext()) {
+			var element = iterator.next();
+			writeIndent(",\n", writer, 0);
 			writeObject(element, writer, indent + 1);
 		}
 
@@ -385,7 +367,6 @@ public class JsonWriter {
 		}
 	}
 
-
 	/**
 	 * Writes the elements as a pretty JSON array with nested Maps to file.
 	 * @param elements The elements to write
@@ -395,24 +376,21 @@ public class JsonWriter {
 	 * the initial indentation level
 	 * @throws IOException if an IO error occurs
 	 */
-	// TODO Change BufferedWriter to Writer
-	// TODO Try to figure out the generic type
-	public static void writeObjectObject(Map<String, TreeMap<String, TreeSet<Integer>>> elements, BufferedWriter writer, int indent) throws IOException {
-		if (elements.isEmpty()) {
-			writeIndent("{\n}", writer, 0);
-			return;
+	public static void writeObjectObject(Map<String, ? extends AbstractMap<String, TreeSet<Integer>>> elements, Writer writer, int indent) throws IOException {
+		writeIndent("{", writer, 0);
+
+		var iterator = elements.entrySet().iterator();
+		if (iterator.hasNext()) {
+			var element = iterator.next();
+			writeIndent("\n", writer, 0);
+			writeQuote(element.getKey(), writer, indent + 1);
+			writeIndent(": ", writer, 0);
+			writeObjectArrays(element.getValue(), writer, indent + 1);
 		}
 
-		writeIndent("{\n", writer, 0);
-
-		boolean firstElement = true;
-		for (var element : elements.entrySet()) {
-			if (firstElement) {
-				firstElement = false;
-			} else {
-				writeIndent(",\n", writer, 0);
-			}
-
+		while (iterator.hasNext()) {
+			var element = iterator.next();
+			writeIndent(",\n", writer, 0);
 			writeQuote(element.getKey(), writer, indent + 1);
 			writeIndent(": ", writer, 0);
 			writeObjectArrays(element.getValue(), writer, indent + 1);
@@ -428,7 +406,7 @@ public class JsonWriter {
 	 * @param path The file path to write to
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void writeObjectObject(Map<String, TreeMap<String, TreeSet<Integer>>> elements, Path path) throws IOException {
+	public static void writeObjectObject(Map<String, ? extends AbstractMap<String, TreeSet<Integer>>> elements, Path path) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
 			writeObjectObject(elements, writer, 0);
 		}
