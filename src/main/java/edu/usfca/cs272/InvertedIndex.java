@@ -153,8 +153,6 @@ public class InvertedIndex {
 		JsonWriter.writeObjectObject(this.invertedIndex, location);
 	}
 
-	/* TODO make more size and contains methods for each level of nesting in the inverted index */
-
 	/**
 	 * Returns the number of locations where {@code word} was found
 	 * @param word - The word to look up locations for
@@ -162,7 +160,7 @@ public class InvertedIndex {
 	 * or {@code -1} if {@code word} is not in the inverted index
 	 */
 	public int numLocations(String word) {
-		if ( word == null || !containsWord(word)) {
+		if (word == null || !containsWord(word)) {
 			return -1;
 		}
 
