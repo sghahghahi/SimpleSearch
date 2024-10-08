@@ -12,7 +12,9 @@ import java.nio.file.Path;
 
 import java.util.AbstractMap;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -136,6 +138,30 @@ public class JsonWriter {
 		catch (IOException e) {
 			return null;
 		}
+	}
+
+	public static void writeObject(TreeMap<String, String> elements, Writer writer, int indent) throws IOException {
+		writeIndent("{", writer, indent);
+
+		var iterator = elements.entrySet().iterator();
+		if (iterator.hasNext()) {
+			var element = iterator.next();
+			writeIndent("\n", writer, 0);
+			writeQuote(element.getKey(), writer, indent + 1);
+			writeIndent(": ", writer,  0);
+			writeIndent(element.getValue(), writer, 0);
+		}
+
+		while (iterator.hasNext()) {
+			var element = iterator.next();
+			writeIndent(",\n", writer, 0);
+			writeQuote(element.getKey(), writer, indent + 1);
+			writeIndent(": ", writer, 0);
+			writeIndent(element.getValue(), writer, 0);
+		}
+
+		writeIndent("\n", writer, 0);
+		writeIndent("}", writer, indent);
 	}
 
 	/**
@@ -292,6 +318,24 @@ public class JsonWriter {
 		}
 	}
 
+	public static void writeArrayObjects(List<TreeMap<String, String>> elements, Writer writer, int indent) throws IOException {
+		writeIndent("[", writer, 0);
+
+		var iterator = elements.iterator();
+		if (iterator.hasNext()) {
+			writeIndent("\n", writer, 0);
+			writeObject(iterator.next(), writer, indent + 1);
+		}
+
+		while (iterator.hasNext()) {
+			writeIndent(",\n", writer, 0);
+			writeObject(iterator.next(), writer, indent + 1);
+		}
+
+		writeIndent("\n", writer, 0);
+		writeIndent("]", writer, indent);
+	}
+
 	/**
 	 * Writes the elements as a pretty JSON array with nested objects. The generic
 	 * notation used allows this method to be used for any type of collection with
@@ -410,6 +454,36 @@ public class JsonWriter {
 	public static void writeObjectObject(Map<String, ? extends AbstractMap<String, TreeSet<Integer>>> elements, Path path) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
 			writeObjectObject(elements, writer, 0);
+		}
+	}
+
+	public static void writeSearchResults(Map<String, List<TreeMap<String, String>>> searchResults, Writer writer, int indent) throws IOException {
+		writeIndent("{", writer, 0);
+
+		var iterator = searchResults.entrySet().iterator();
+		if (iterator.hasNext()) {
+			var element = iterator.next();
+			writeIndent("\n", writer, 0);
+			writeQuote(element.getKey(), writer, indent + 1);
+			writeIndent(": ", writer, 0);
+			writeArrayObjects(element.getValue(), writer, indent + 1);
+		}
+
+		while (iterator.hasNext()) {
+			var element = iterator.next();
+			writeIndent(",\n", writer, 0);
+			writeQuote(element.getKey(), writer, indent + 1);
+			writeIndent(": ", writer, 0);
+			writeArrayObjects(element.getValue(), writer, indent + 1);
+		}
+
+		writeIndent("\n", writer, 0);
+		writeIndent("}", writer, indent);
+	}
+
+	public static void writeSearchResults(Map<String, List<TreeMap<String, String>>> searchResults, Path path) throws IOException {
+		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
+			writeSearchResults(searchResults, writer, 0);
 		}
 	}
 

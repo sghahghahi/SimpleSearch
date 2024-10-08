@@ -31,6 +31,15 @@ public class Driver {
 	/** File name to write inverted index to if no file path included after {@code -index} flag. Will write file in the current working directory. */
 	public static final String INDEX_BACKUP = "index.json";
 
+	/** {@code -query} flag passed as an argument to this program. File path to query (next argument). Will trigger an exact search for each of the multi-lines of queries in the file. */
+	public static final String QUERY = "-query";
+
+	/** {@code -results} flag passed as an argument to this program. File path to write search results to (next argument) not necessary. */
+	public static final String RESULTS = "-results";
+
+	/** File name to write search results to if no file path included after {@code -results} flag. Will write this file in the current working directory. */
+	public static final String RESULTS_BACKUP = "results.json";
+
 	/**
 	 * Initializes the classes necessary based on the provided command-line
 	 * arguments. This includes (but is not limited to) how to build or search an
@@ -41,6 +50,8 @@ public class Driver {
 	public static void main(String[] args) {
 		ArgumentParser argParser = new ArgumentParser(args);
 		InvertedIndex invertedIndex = new InvertedIndex();
+		QueryParser queryParser = new QueryParser(invertedIndex);
+
 		Path location;
 
 		if (argParser.hasFlag(TEXT)) {
@@ -69,6 +80,26 @@ public class Driver {
 				invertedIndex.indexJson(location);
 			} catch (IOException e) {
 				System.err.println("Unable to write inverted index to location: " + location);
+			}
+		}
+
+		if (argParser.hasFlag(QUERY)) {
+			location = argParser.getPath(QUERY);
+			try {
+				queryParser.queryLocation(location, argParser.getPath(TEXT));
+			} catch (IOException e) {
+				// TODO
+				System.err.println("Error");
+			}
+		}
+
+		if (argParser.hasFlag(RESULTS)) {
+			location = argParser.getPath(RESULTS, Path.of(CURR_DIR, RESULTS_BACKUP));
+			try {
+				queryParser.queryJson(location);
+			} catch (IOException e) {
+				// TODO
+				System.err.println("Caught IOException in main() from QueryParser.java");
 			}
 		}
 	}
