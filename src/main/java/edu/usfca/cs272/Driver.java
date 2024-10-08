@@ -73,3 +73,9 @@ public class Driver {
 		}
 	}
 }
+
+/* TODO
+Description	Resource	Path	Location	Type
+Javadoc: Missing comment for public declaration	InvertedIndex.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 146	Java Problem
+Javadoc: Missing comment for public declaration	InvertedIndex.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 152	Java Problem
+*/

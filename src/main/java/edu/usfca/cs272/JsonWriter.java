@@ -155,7 +155,7 @@ public class JsonWriter {
 
 		var iterator = elements.entrySet().iterator();
 		if (iterator.hasNext()) {
-			var element = iterator.next();
+			var element = iterator.next(); // TODO Can make a writeEntry for this repeated logic (do for one of them, up to you if you do it for all)
 			writeIndent("\n", writer, 0);
 			writeQuote(element.getKey().toString(), writer, indent + 1);
 			writeIndent(": ", writer, 0);
@@ -376,6 +376,7 @@ public class JsonWriter {
 	 * the initial indentation level
 	 * @throws IOException if an IO error occurs
 	 */
+	// TODO Could make AbstractMap, TreeSet, and Integer more generic
 	public static void writeObjectObject(Map<String, ? extends AbstractMap<String, TreeSet<Integer>>> elements, Writer writer, int indent) throws IOException {
 		writeIndent("{", writer, 0);
 
