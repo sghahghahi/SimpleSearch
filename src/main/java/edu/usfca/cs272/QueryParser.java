@@ -18,15 +18,28 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 public class QueryParser {
+	/** Nested structure to store metadata about search results conducted on our inverted index */
 	private final TreeMap<String, List<TreeMap<String, String>>> searchResults;
 
+	/** Inverted index object to reference */
 	private final InvertedIndex invertedIndex;
 
+	/**
+	 * Constrcutor that initializes our search result metadata data structure to an empty {@code TreeMap}
+	 * @param invertedIndex - The inverted index object to reference. We are not constructing a new inverted index in this class.
+	 *  This inverted index is passed from the caller and is assumed to be properly initialized and populated
+	 */
 	public QueryParser(InvertedIndex invertedIndex) {
 		this.searchResults= new TreeMap<>();
 		this.invertedIndex = invertedIndex;
 	}
 
+	/**
+	 * Gets the search query from the passed file. Performs a search of the query words on the inverted index
+	 * @param queryLocation - Where to find the query words
+	 * @param lookupLocation - Where the words associated with the query stems are located
+	 * @throws IOException - If an IO error occurs
+	 */
 	public void queryLocation(Path queryLocation, Path lookupLocation) throws IOException {
 		TreeSet<String> queryStems;
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
@@ -40,6 +53,11 @@ public class QueryParser {
 		}
 	}
 
+	/**
+	 * Returns a space-separated {@code String} of the query stems
+	 * @param queryStems - The query stems to Stringify
+	 * @return The space-separated query {@code String}
+	 */
 	public String extractQueryString(TreeSet<String> queryStems) {
 		StringBuilder queryString = new StringBuilder();
 
@@ -50,6 +68,11 @@ public class QueryParser {
 		return queryString.toString().strip();
 	}
 
+	/**
+	 * Performs a search of {@code queryStems} on the inverted index
+	 * @param queryStems - The query stems to search
+	 * @param location - Where the words associated with {@code queryStems} are located
+	 */
 	public void search(TreeSet<String> queryStems, String location) {
 		int wordCount = this.invertedIndex.numCounts();
 
@@ -63,11 +86,10 @@ public class QueryParser {
 
 		String queryString = extractQueryString(queryStems);
 
-
-		List<TreeMap<String, String>> innerStack = this.searchResults.get(queryString);
-		if (innerStack == null) {
-			innerStack = new Stack<>();
-			this.searchResults.put(queryString, innerStack);
+		List<TreeMap<String, String>> innerList = this.searchResults.get(queryString);
+		if (innerList == null) {
+			innerList = new Stack<>();
+			this.searchResults.put(queryString, innerList);
 		}
 
 		TreeMap<String, String> innerMap = new TreeMap<>();
@@ -75,13 +97,24 @@ public class QueryParser {
 		innerMap.put("score", FORMATTER.format(score));
 		innerMap.put("where", "\"" + location + "\"");
 
-		innerStack.add(innerMap);
+		innerList.add(innerMap);
 	}
 
+	/**
+	 * Calculates the score for a search result
+	 * @param matches - Number of matches for the current result
+	 * @param wordCount - Number of stems
+	 * @return The score of the search result based on this calculation: {@code matches / wordcount}
+	 */
 	public double calculateScore(int matches, int wordCount) {
 		return matches / wordCount;
 	}
 
+	/**
+	 * Writes the search result as a pretty JSON object
+	 * @param location - Where to write the results to
+	 * @throws IOException If an IO error occurs
+	 */
 	public void queryJson(Path location) throws IOException {
 		JsonWriter.writeSearchResults(this.searchResults, location);
 	}
