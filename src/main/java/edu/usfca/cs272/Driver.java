@@ -102,10 +102,5 @@ public class Driver {
 				System.err.println("Caught IOException in main() from QueryParser.java");
 			}
 		}
-
-		if (argParser.hasFlag(RESULTS)) {
-			location = argParser.getPath(RESULTS, Path.of(CURR_DIR, RESULTS_BACKUP));
-			// Call method that writes output (use try catch for IOException)
-		}
 	}
 }
