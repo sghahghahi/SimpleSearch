@@ -61,12 +61,12 @@ public class InvertedIndex {
 	 * @param wordPosition - The word position of the {@code cleanedWord} in the file
 	 * @return {@code true} if the add was successful
 	 */
-	public boolean addWords(List<String> stemmedWords, String location, int wordPosition) {
+	public boolean addWords(List<String> stemmedWords, String location, int wordPosition) { // TODO public int
 		for (String stemmedWord : stemmedWords) {
 			addWordPosition(stemmedWord, location, wordPosition++);
 		}
 
-		return true;
+		return true; // TODO wordPosition
 	}
 
 	/**
@@ -77,13 +77,13 @@ public class InvertedIndex {
 	 * @return {@code true} if the add was successful
 	 */
 	public boolean addWordPosition(String word, String location, int wordPosition) {
-		var innerMap = this.invertedIndex.get(word);
+		var innerMap = this.invertedIndex.get(word); // TODO locations
 		if (innerMap == null) {
 			innerMap = new TreeMap<>();
 			this.invertedIndex.put(word, innerMap);
 		}
 
-		TreeSet<Integer> innerList = innerMap.get(location);
+		TreeSet<Integer> innerList = innerMap.get(location); // TODO positions
 
 		if (innerList == null) {
 			innerList = new TreeSet<>();
@@ -136,20 +136,20 @@ public class InvertedIndex {
 	 * @return {@code true} if {@code location} is in the {@code TreeMap}
 	 */
 	public boolean containsLocation(String location) {
-		if (location == null) {
+		if (location == null) { // TODO Remove?
 			return false;
 		}
 
 		return this.wordStems.containsKey(location);
 	}
 
-	public void indexCounts(Path location) throws IOException {
+	public void indexCounts(Path location) throws IOException { // TODO Javadoc
 		JsonWriter.writeObject(this.wordStems, location);
 	}
 
 	/* Methods for inverted index */
 
-	public void indexJson(Path location) throws IOException {
+	public void indexJson(Path location) throws IOException { // TODO Javadoc
 		JsonWriter.writeObjectObject(this.invertedIndex, location);
 	}
 
@@ -165,6 +165,13 @@ public class InvertedIndex {
 		}
 
 		return this.invertedIndex.get(word).size();
+		
+		/* TODO Go for more efficient, avoid reusing the contains
+		var locations = invertedIndex.get(word);
+		return locations == null ? 0 : locations.size();
+		
+		Fix all the others here too
+		*/
 	}
 
 	/**
@@ -215,6 +222,9 @@ public class InvertedIndex {
 
 		return this.invertedIndex.containsKey(word);
 	}
+	
+	// TODO containsLocation(String word, String location ) --> this one accesses the invertedIndex
+	// TODO containsPOistion(word, location, position)
 
 	/**
 	 * Returns a {@code Set} of locations mapped to a specific {@code word}
@@ -225,7 +235,7 @@ public class InvertedIndex {
 	public Set<String> getLocations(String word) {
 		if (
 			word == null || !containsWord(word)) {
-			return null;
+			return null; // TODO Collections.emptySet();
 		}
 
 		return Collections.unmodifiableSet(this.invertedIndex.get(word).keySet());

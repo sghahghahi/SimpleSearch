@@ -42,8 +42,10 @@ public class TextFileIndexer {
 					);
 				}
 
-				invertedIndex.addCount(location, cleanedWords.length);
+				invertedIndex.addCount(location, cleanedWords.length); // TODO Okay but could update once
 			}
+			
+			// TODO Could update the count once here based on the wordPosition (might be off by one)
 		}
 	}
 
