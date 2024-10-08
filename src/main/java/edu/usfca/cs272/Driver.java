@@ -35,7 +35,6 @@ public class Driver {
 	public static final String QUERY = "-query";
 
 	/** {@code -results} flag passed as an argument to this program. File path to write search results to (next argument) not necessary. */
-	/** If results flag not provided, should still calculate the search results but not output them */
 	public static final String RESULTS = "-results";
 
 	/** File name to write search results to if no file path included after {@code -results} flag. Will write this file in the current working directory. */
@@ -51,6 +50,8 @@ public class Driver {
 	public static void main(String[] args) {
 		ArgumentParser argParser = new ArgumentParser(args);
 		InvertedIndex invertedIndex = new InvertedIndex();
+		QueryParser queryParser = new QueryParser(invertedIndex);
+
 		Path location;
 
 		if (argParser.hasFlag(TEXT)) {
@@ -84,7 +85,22 @@ public class Driver {
 
 		if (argParser.hasFlag(QUERY)) {
 			location = argParser.getPath(QUERY);
-			// Call method that performs search
+			try {
+				queryParser.queryLocation(location, argParser.getPath(TEXT));
+			} catch (IOException e) {
+				// TODO
+				System.err.println("Error");
+			}
+		}
+
+		if (argParser.hasFlag(RESULTS)) {
+			location = argParser.getPath(RESULTS, Path.of(CURR_DIR, RESULTS_BACKUP));
+			try {
+				queryParser.queryJson(location);
+			} catch (IOException e) {
+				// TODO
+				System.err.println("Caught IOException in main() from QueryParser.java");
+			}
 		}
 
 		if (argParser.hasFlag(RESULTS)) {
