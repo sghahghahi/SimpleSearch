@@ -91,8 +91,9 @@ public class Driver {
 					queryParser.checkLocation(location, textLocation);
 				}
 			} catch (IOException e) {
-				// TODO
-				System.err.println("Caught IOException in Driver.main() from -query flag");
+				System.err.println("Unable to read search queries from location: " + location);
+			} catch (NullPointerException e) {
+				System.err.println("No input file was provided after '-query' flag.");
 			}
 		}
 
@@ -101,8 +102,7 @@ public class Driver {
 			try {
 				queryParser.queryJson(location);
 			} catch (IOException e) {
-				// TODO
-				System.err.println("Caught IOException in Driver.main() from -results flag");
+				System.err.println("Unable to write search results to location: " + location);
 			}
 		}
 	}
