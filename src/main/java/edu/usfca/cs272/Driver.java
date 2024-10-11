@@ -86,10 +86,13 @@ public class Driver {
 		if (argParser.hasFlag(QUERY)) {
 			location = argParser.getPath(QUERY);
 			try {
-				queryParser.queryLocation(location, argParser.getPath(TEXT));
+				Path textLocation = argParser.getPath(TEXT);
+				if (textLocation != null) {
+					queryParser.checkLocation(location, textLocation);
+				}
 			} catch (IOException e) {
 				// TODO
-				System.err.println("Error");
+				System.err.println("Caught IOException in Driver.main() from -query flag");
 			}
 		}
 
@@ -99,14 +102,8 @@ public class Driver {
 				queryParser.queryJson(location);
 			} catch (IOException e) {
 				// TODO
-				System.err.println("Caught IOException in main() from QueryParser.java");
+				System.err.println("Caught IOException in Driver.main() from -results flag");
 			}
 		}
 	}
 }
-
-/* TODO
-Description	Resource	Path	Location	Type
-Javadoc: Missing comment for public declaration	InvertedIndex.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 146	Java Problem
-Javadoc: Missing comment for public declaration	InvertedIndex.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 152	Java Problem
-*/
