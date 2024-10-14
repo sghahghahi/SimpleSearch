@@ -10,11 +10,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * Outputs several simple data structures in "pretty" JSON format where newlines
@@ -409,7 +407,7 @@ public class JsonWriter {
 	 * @throws IOException if an IO error occurs
 	 */
 	// TODO Could make AbstractMap, TreeSet, and Integer more generic
-	public static void writeObjectObject(Map<String, ? extends AbstractMap<String, TreeSet<Integer>>> elements, Writer writer, int indent) throws IOException {
+	public static void writeObjectObject(Map<String, ? extends Map<String, ? extends Collection<Integer>>> elements, Writer writer, int indent) throws IOException {
 		writeIndent("{", writer, 0);
 
 		var iterator = elements.entrySet().iterator();
@@ -439,7 +437,7 @@ public class JsonWriter {
 	 * @param path The file path to write to
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void writeObjectObject(Map<String, ? extends AbstractMap<String, TreeSet<Integer>>> elements, Path path) throws IOException {
+	public static void writeObjectObject(Map<String, ? extends Map<String, ? extends Collection<Integer>>> elements, Path path) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
 			writeObjectObject(elements, writer, 0);
 		}
