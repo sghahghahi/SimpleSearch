@@ -6,13 +6,11 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Outputs several simple data structures in "pretty" JSON format where newlines
@@ -66,6 +64,44 @@ public class JsonWriter {
 		writer.write('"');
 		writer.write(element);
 		writer.write('"');
+	}
+
+	/**
+	 * Writes the {@code key} and {@code value} as a key/value pair separated by a {@code :}
+	 * @param key - The key to write
+	 * @param value - The value to write
+	 * @param writer - The writer to use
+	 * @param indent - The indentation level. Will write at whatever indentation level is passed to this method
+	 * @throws IOException If an IO error occurs
+	 */
+	public static void writeEntry(String key, String value, Writer writer, int indent) throws IOException {
+		writeQuote(key, writer, indent);
+		writeIndent(": ", writer, 0);
+		writeIndent(value.toString(), writer, 0);
+	}
+
+	/**
+	 * Writes the {@code key} and {@code value} as a key/value pair separated by a {@code :}
+	 * @param key
+	 * @param elements
+	 * @throws IOException
+	 */
+	public static void writeObejctArrayEntry(String key, Collection<? extends Number> value, Writer writer, int indent) throws IOException {
+		writeQuote(key, writer, indent);
+		writeIndent(": ", writer, 0);
+		writeArray(value, writer, indent);
+	}
+
+	/**
+	 * Writes the {@code key} and {@code value} as a key/value pair separated by a {@code :}
+	 * @param key
+	 * @param elements
+	 * @throws IOException
+	 */
+	public static void writeObjectObjectEntry(String key, Map<String, ? extends Collection<? extends Number>> value, Writer writer, int indent) throws IOException {
+		writeQuote(key, writer, indent);
+		writeIndent(": ", writer, 0);
+		writeObjectArrays(value, writer, indent);
 	}
 
 	/**
@@ -138,30 +174,28 @@ public class JsonWriter {
 	}
 
 	/**
-	 * TODO
-	 * @param elements
-	 * @param writer
-	 * @param indent
-	 * @throws IOException
+	 * Writes the elements as a pretty JSON object.
+	 * @param elements - The elements to write
+	 * @param writer - The writer to use
+	 * @param indent - The initial indent level; the first bracket is not indented,
+	 *   inner elements are indented by one, and the last bracket is indented at
+	 *   the initial indentation level
+	 * @throws IOException If an IO error occurs
 	 */
-	public static void writeObject(TreeMap<String, String> elements, Writer writer, int indent) throws IOException {
+	public static void writeStringObject(Map<String, String> elements, Writer writer, int indent) throws IOException {
 		writeIndent("{", writer, indent);
 
 		var iterator = elements.entrySet().iterator();
 		if (iterator.hasNext()) {
 			var element = iterator.next();
 			writeIndent("\n", writer, 0);
-			writeQuote(element.getKey(), writer, indent + 1);
-			writeIndent(": ", writer,  0);
-			writeIndent(element.getValue(), writer, 0);
+			writeEntry(element.getKey(), element.getValue(), writer, indent + 1);
 		}
 
 		while (iterator.hasNext()) {
 			var element = iterator.next();
 			writeIndent(",\n", writer, 0);
-			writeQuote(element.getKey(), writer, indent + 1);
-			writeIndent(": ", writer, 0);
-			writeIndent(element.getValue(), writer, 0);
+			writeEntry(element.getKey(), element.getValue(), writer, indent + 1);
 		}
 
 		writeIndent("\n", writer, 0);
@@ -185,19 +219,15 @@ public class JsonWriter {
 
 		var iterator = elements.entrySet().iterator();
 		if (iterator.hasNext()) {
-			var element = iterator.next(); // TODO Can make a writeEntry for this repeated logic (do for one of them, up to you if you do it for all)
+			var element = iterator.next();
 			writeIndent("\n", writer, 0);
-			writeQuote(element.getKey().toString(), writer, indent + 1);
-			writeIndent(": ", writer, 0);
-			writeIndent(element.getValue().toString(), writer, 0);
+			writeEntry(element.getKey(), element.getValue().toString(), writer, indent + 1);
 		}
 
 		while (iterator.hasNext()) {
 			var element = iterator.next();
 			writeIndent(",\n", writer, 0);
-			writeQuote(element.getKey().toString(), writer, indent + 1);
-			writeIndent(": ", writer, 0);
-			writeIndent(element.getValue().toString(), writer, 0);
+			writeEntry(element.getKey(), element.getValue().toString(), writer, indent + 1);
 		}
 
 		writeIndent("\n", writer, 0);
@@ -265,17 +295,13 @@ public class JsonWriter {
 		if (iterator.hasNext()) {
 			var element = iterator.next();
 			writeIndent("\n", writer, 0);
-			writeQuote(element.getKey().toString(), writer, indent + 1);
-			writeIndent(": ", writer, 0);
-			writeArray(element.getValue(), writer, indent + 1);
+			writeObejctArrayEntry(element.getKey(), element.getValue(), writer, indent + 1);
 		}
 
 		while (iterator.hasNext()) {
 			var element = iterator.next();
 			writeIndent(",\n", writer, 0);
-			writeQuote(element.getKey().toString(), writer, indent + 1);
-			writeIndent(": ", writer, 0);
-			writeArray(element.getValue(), writer, indent + 1);
+			writeObejctArrayEntry(element.getKey(), element.getValue(), writer, indent + 1);
 		}
 
 		writeIndent("\n", writer, 0);
@@ -406,25 +432,20 @@ public class JsonWriter {
 	 * the initial indentation level
 	 * @throws IOException if an IO error occurs
 	 */
-	// TODO Could make AbstractMap, TreeSet, and Integer more generic
-	public static void writeObjectObject(Map<String, ? extends Map<String, ? extends Collection<Integer>>> elements, Writer writer, int indent) throws IOException {
+	public static void writeObjectObject(Map<String, ? extends Map<String, ? extends Collection<? extends Number>>> elements, Writer writer, int indent) throws IOException {
 		writeIndent("{", writer, 0);
 
 		var iterator = elements.entrySet().iterator();
 		if (iterator.hasNext()) {
 			var element = iterator.next();
 			writeIndent("\n", writer, 0);
-			writeQuote(element.getKey(), writer, indent + 1);
-			writeIndent(": ", writer, 0);
-			writeObjectArrays(element.getValue(), writer, indent + 1);
+			writeObjectObjectEntry(element.getKey(), element.getValue(), writer, indent + 1);
 		}
 
 		while (iterator.hasNext()) {
 			var element = iterator.next();
 			writeIndent(",\n", writer, 0);
-			writeQuote(element.getKey(), writer, indent + 1);
-			writeIndent(": ", writer, 0);
-			writeObjectArrays(element.getValue(), writer, indent + 1);
+			writeObjectObjectEntry(element.getKey(), element.getValue(), writer, indent + 1);
 		}
 
 		writeIndent("\n", writer, 0);
@@ -437,7 +458,7 @@ public class JsonWriter {
 	 * @param path The file path to write to
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void writeObjectObject(Map<String, ? extends Map<String, ? extends Collection<Integer>>> elements, Path path) throws IOException {
+	public static void writeObjectObject(Map<String, ? extends Map<String, ? extends Collection<? extends Number>>> elements, Path path) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(path, UTF_8)) {
 			writeObjectObject(elements, writer, 0);
 		}
