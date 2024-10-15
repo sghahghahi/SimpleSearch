@@ -115,7 +115,7 @@ public class SearchResultWriter {
 		map.put("count", Integer.toString(result.count));
 		map.put("score", FORMATTER.format(result.score));
 		map.put("where", result.location);
-		writeObject(map, writer, indent);
+		writeStringObject(map, writer, indent);
 	}
 
 	/** Default constructor to prevent instantiation since all methods are {@code static} */
