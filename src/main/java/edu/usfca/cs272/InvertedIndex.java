@@ -137,10 +137,6 @@ public class InvertedIndex {
 	 * @return {@code true} if {@code location} is in the {@code TreeMap}
 	 */
 	public boolean containsLocation(String location) {
-		if (location == null) { // TODO Remove? My comment here: We want to let this happen if location is somehow null. It shouldn't be null by the time it gets here
-			return false;
-		}
-
 		return this.wordStems.containsKey(location);
 	}
 
@@ -149,7 +145,7 @@ public class InvertedIndex {
 	 * @param location - Where to write the word stems data structure to
 	 * @throws IOException If an IO error occurs
 	 */
-	public void indexCounts(Path location) throws IOException { // TODO Javadoc
+	public void indexCounts(Path location) throws IOException {
 		JsonWriter.writeObject(this.wordStems, location);
 	}
 
@@ -162,7 +158,7 @@ public class InvertedIndex {
 	 * @param location - Where to write the inverted index to
 	 * @throws IOException If an IO error occurs
 	 */
-	public void indexJson(Path location) throws IOException { // TODO Javadoc
+	public void indexJson(Path location) throws IOException {
 		JsonWriter.writeObjectObject(this.invertedIndex, location);
 	}
 
@@ -250,7 +246,7 @@ public class InvertedIndex {
 	public Set<String> getLocations(String word) {
 		if (
 			word == null || !containsWord(word)) {
-			return null; // TODO Collections.emptySet();
+				return Collections.emptySet();
 		}
 
 		return Collections.unmodifiableSet(this.invertedIndex.get(word).keySet());
