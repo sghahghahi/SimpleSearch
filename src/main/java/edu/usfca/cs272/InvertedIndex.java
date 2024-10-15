@@ -114,10 +114,9 @@ public class InvertedIndex {
 	 * Returns the number of stems found at {@code location}
 	 * @param location - Where the stems were found
 	 * @return The number of stems found at {@code location}
-	 * or {@code -1} if {@code location} is not in the {@code TreeMap}
 	 */
 	public int numStems(String location) {
-		return this.wordStems.getOrDefault(location, -1);
+		return this.wordStems.getOrDefault(location, 0);
 	}
 
 	/**
@@ -148,7 +147,7 @@ public class InvertedIndex {
 		JsonWriter.writeObject(this.wordStems, location);
 	}
 
-	/* Methods for inverted index */
+	/* TODO: Methods for inverted index */
 	// Organize methods by data structure by name
 	// Ex: all num methods for inverted index together, all get methods for inverted index together, same for word stems
 
@@ -165,14 +164,10 @@ public class InvertedIndex {
 	 * Returns the number of locations where {@code word} was found
 	 * @param word - The word to look up locations for
 	 * @return The number of locations where {@code word} was found
-	 * or {@code -1} if {@code word} is not in the inverted index
 	 */
 	public int numLocations(String word) {
-		if (word == null || !containsWord(word)) {
-			return -1;
-		}
-
-		return this.invertedIndex.get(word).size();
+		var locations = this.invertedIndex.get(word);
+		return locations == null ? 0 : locations.size();
 
 		/* TODO Go for more efficient, avoid reusing the contains
 		var locations = invertedIndex.get(word);
@@ -205,14 +200,6 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Returns a view of the words stored in our word counts data structure
-	 * @return An unmodifiable view of the kes in the word counts data structure
-	 */
-	public Set<String> getWords() {
-		return Collections.unmodifiableSet(this.wordStems.keySet());
-	}
-
-	/**
 	 * Returns the number of key/value pairs in the inverted index
 	 * @return The number of words in the inverted index
 	 */
@@ -221,31 +208,22 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Returns {@code true} if {@wcode word} is in the inverted index
-	 * @param word - The word to look up in the inverted index
-	 * @return {@code true} if {@code word} is in the inverted index
+	 * Returns a view of the words stored in our word counts data structure
+	 * @return An unmodifiable view of the kes in the word counts data structure
 	 */
-	public boolean containsWord(String word) {
-		if (word == null) {
-			return false;
-		}
-
-		return this.invertedIndex.containsKey(word);
+	public Set<String> getWords() {
+		return Collections.unmodifiableSet(this.wordStems.keySet());
 	}
-
-	// TODO containsLocation(String word, String location ) --> this one accesses the invertedIndex
-	// TODO containsPOistion(word, location, position)
 
 	/**
 	 * Returns a {@code Set} of locations mapped to a specific {@code word}
 	 * @param word - The word to look up in the inverted index
 	 * @return An unmodifiable view of the locations mapped to {@code word} or
-	 * {@code null} if {@code word} is not in the inverted index
+	 * an empty {@code Set} if {@code word} is not in the inverted index
 	 */
 	public Set<String> getLocations(String word) {
-		if (
-			word == null || !containsWord(word)) {
-				return Collections.emptySet();
+		if (word == null || !containsWord(word)) {
+			return Collections.emptySet();
 		}
 
 		return Collections.unmodifiableSet(this.invertedIndex.get(word).keySet());
@@ -269,6 +247,51 @@ public class InvertedIndex {
 		}
 
 		return Collections.unmodifiableSet(this.invertedIndex.get(word).get(location));
+	}
+
+	/**
+	 * Returns {@code true} if {@wcode word} is in the inverted index
+	 * @param word - The word to look up in the inverted index
+	 * @return {@code true} if {@code word} is in the inverted index
+	 */
+	public boolean containsWord(String word) {
+		return this.invertedIndex.containsKey(word);
+	}
+
+	/**
+	 * Checks the inverted index if {@code location} at {@code word} exists
+	 * @param word - The word to look up in the inverted index
+	 * @param location - The location corresponding to {@code word}
+	 * @return {@code true} if {@code location} is in the inverted index
+	 */
+	public boolean containsLocation(String word, String location) {
+		var wordLocations = this.invertedIndex.get(word);
+		if (wordLocations == null) {
+			return false;
+		}
+
+		return wordLocations.containsKey(location);
+	}
+
+	/**
+	 * TODO
+	 * @param word
+	 * @param location
+	 * @param position
+	 * @return
+	 */
+	public boolean containsPosition(String word, String location, int position) {
+		var where = this.invertedIndex.get(word);
+		if (where == null) {
+			return false;
+		}
+
+		var locations = where.get(location);
+		if (locations == null) {
+			return false;
+		}
+
+		return locations.contains(position);
 	}
 
 	/**
