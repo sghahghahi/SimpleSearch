@@ -59,10 +59,8 @@ public class TextFileIndexer {
 			for (Path location : dirStream) {
 				if (Files.isDirectory(location)) {
 					indexDirectory(location, invertedIndex);
-				} else {
-					if (isTextFile(location)) {
-						indexFile(location, invertedIndex);
-					}
+				} else if (isTextFile(location)) {
+					indexFile(location, invertedIndex);
 				}
 			}
 		}
