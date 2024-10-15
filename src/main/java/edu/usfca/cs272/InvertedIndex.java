@@ -66,8 +66,7 @@ public class InvertedIndex {
 			addWordPosition(stemmedWord, location, wordPosition++);
 		}
 
-		// return true; // TODO wordPosition
-		return wordPosition - 1; // Or return wordPosition? Off by one?
+		return wordPosition - 1;
 	}
 
 	/**
