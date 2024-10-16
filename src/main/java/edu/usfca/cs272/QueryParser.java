@@ -60,10 +60,10 @@ public class QueryParser {
 	}
 
 	/**
-	 * TODO
-	 * @param queryLocation
-	 * @param lookupLocation
-	 * @throws IOException
+	 * Checks to see if {@code queryLocation} is a directory or a file. Handles file accordingly
+	 * @param queryLocation - The path to the query file
+	 * @param lookupLocation - The path to the file to build the inverted index from
+	 * @throws IOException If an IO error occurs
 	 */
 	public void checkLocation(Path queryLocation, Path lookupLocation) throws IOException {
 		if (Files.isDirectory(lookupLocation)) {
@@ -74,10 +74,10 @@ public class QueryParser {
 	}
 
 	/**
-	 * TODO
-	 * @param queryLocation
-	 * @param lookupLocation
-	 * @throws IOException
+	 * Recursively traverses {@code queryLocation} and processes each file ending in either {@code .txt} or {@code .text}
+	 * @param queryLocation - The path to the query file
+	 * @param lookupLocation - The path to the file where the inverted index is built
+	 * @throws IOException If an IO error occurs
 	 */
 	public void queryDirectory(Path queryLocation, Path lookupLocation) throws IOException {
 		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(lookupLocation)) {
@@ -175,8 +175,8 @@ public class QueryParser {
 	}
 
 	/**
-	 * TODO
-	 * @param searchResults
+	 * Removes duplicates from the {@code List} of {@code SearchResult} objects
+	 * @param searchResults - The {@code List} of {@code SearchResult} objects
 	 */
 	private static void removeDuplicates(List<SearchResult> searchResults) {
 		HashSet<String> seenLocations = new HashSet<>();
@@ -210,13 +210,5 @@ public class QueryParser {
 	 */
 	public void queryJson(Path location) throws IOException {
 		SearchResultWriter.writeSearchResults(this.searchResults, location);
-	}
-
-	// TODO
-	@Override
-	public String toString() {
-		return String.format(
-			""
-		);
 	}
 }

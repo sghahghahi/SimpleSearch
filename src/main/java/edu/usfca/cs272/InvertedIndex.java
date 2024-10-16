@@ -164,13 +164,6 @@ public class InvertedIndex {
 	public int numLocations(String word) {
 		var locations = this.invertedIndex.get(word);
 		return locations == null ? 0 : locations.size();
-
-		/* TODO Go for more efficient, avoid reusing the contains
-		var locations = invertedIndex.get(word);
-		return locations == null ? 0 : locations.size();
-
-		Fix all the others here too
-		*/
 	}
 
 	/**
