@@ -9,11 +9,12 @@ import java.io.Writer;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.DecimalFormat;
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.util.List;
+import java.text.DecimalFormat;
+
+import java.util.Collection;
+import java.util.Map;
 import java.util.TreeMap;
 
 public class SearchResultWriter {
@@ -22,13 +23,13 @@ public class SearchResultWriter {
 	private static final DecimalFormat FORMATTER = new DecimalFormat("0.00000000");
 
 	/**
-	 * TODO
-	 * @param searchResults
-	 * @param writer
-	 * @param indent
-	 * @throws IOException
+	 * Writes search results as pretty JSON obejcts
+	 * @param searchResults - The search results to write
+	 * @param writer - The writer to use
+	 * @param indent - The indentation level
+	 * @throws IOException If an IO error occurs
 	 */
-	public static void writeSearchResults(TreeMap<String, List<SearchResult>> searchResults, Writer writer, int indent) throws IOException {
+	public static void writeSearchResults(Map<String, ? extends Collection<SearchResult>> searchResults, Writer writer, int indent) throws IOException {
 		writeIndent("{", writer, 0);
 
 		var iterator = searchResults.entrySet().iterator();
@@ -48,26 +49,26 @@ public class SearchResultWriter {
 	}
 
 	/**
-	 * TODO
-	 * @param searchResults
-	 * @param location
-	 * @throws IOException
+	 * Writes search results as pretty JSON objects
+	 * @param searchResults - The search results to write
+	 * @param location - Where to write the search results
+	 * @throws IOException If an IO error occurs
 	 */
-	public static void writeSearchResults(TreeMap<String, List<QueryParser.SearchResult>> searchResults, Path location) throws IOException {
+	public static void writeSearchResults(Map<String, ? extends Collection<SearchResult>> searchResults, Path location) throws IOException {
 		try (BufferedWriter writer = Files.newBufferedWriter(location, UTF_8)) {
 			writeSearchResults(searchResults, writer, 0);
 		}
 	}
 
 	/**
-	 * TODO
-	 * @param key
-	 * @param results
-	 * @param writer
-	 * @param indent
-	 * @throws IOException
+	 * Writes the {@code key} and {@code values} as a key/value pair separated by a {@code :} as a pretty JSON object
+	 * @param key - The query string to write
+	 * @param results - The search results corresponding to the {@code key}
+	 * @param writer - The writer to use
+	 * @param indent - The indentation level
+	 * @throws IOException If an IO error occurs
 	 */
-	private static void writeEntry(String key, List<SearchResult> results, Writer writer, int indent) throws IOException {
+	private static void writeEntry(String key, Collection<SearchResult> results, Writer writer, int indent) throws IOException {
 		writeIndent("\n", writer, 0);
 		writeQuote(key, writer, indent + 1);
 		writeIndent(": ", writer, 0);
@@ -82,13 +83,13 @@ public class SearchResultWriter {
 	}
 
 	/**
-	 * TODO
-	 * @param results
-	 * @param writer
-	 * @param indent
-	 * @throws IOException
+	 * Writes a {@code List} of search results as pretty JSON objects
+	 * @param results - The search results to write
+	 * @param writer - The writer to use
+	 * @param indent - The indentation level
+	 * @throws IOException If an IO error occurs
 	 */
-	private static void writeList(List<SearchResult> results, Writer writer, int indent) throws IOException {
+	private static void writeList(Collection<SearchResult> results, Writer writer, int indent) throws IOException {
 		var iterator = results.iterator();
 		while (iterator.hasNext()) {
 			writeIndent("\n", writer, 0);
@@ -104,11 +105,11 @@ public class SearchResultWriter {
 	}
 
 	/**
-	 * TODO
-	 * @param result
-	 * @param writer
-	 * @param indent
-	 * @throws IOException
+	 * Writes an individual search result as a pretty JSON object
+	 * @param result - The search result to write
+	 * @param writer - The writer to use
+	 * @param indent - The indentation level
+	 * @throws IOException If an IO error occurs
 	 */
 	private static void writeSearchResult(SearchResult result, Writer writer, int indent) throws IOException {
 		TreeMap<String, String> map = new TreeMap<>();
