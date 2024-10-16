@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -102,6 +103,14 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * Returns a view of the words stored in our word counts data structure
+	 * @return An unmodifiable view of the keys in the word counts data structure
+	 */
+	public Set<String> getStemLocations() {
+		return Collections.unmodifiableSet(this.wordStems.keySet());
+	}
+
+	/**
 	 * Returns the number of key/value pairs in the {@code TreeMap}
 	 * storing file locations and the number of stems at each location
 	 * @return The number of key/value pairs
@@ -171,21 +180,9 @@ public class InvertedIndex {
 	 * @param word - The word to look up in the inverted index
 	 * @param location - The location associated with {@code word} in the inverted index
 	 * @return The number of word positions that {@code word} was found in {@code location}
-	 * or {@code -1} if either {@code word} or {@code location} are not in the inverted index
 	 */
 	public int numPositions(String word, String location) {
-		if (
-			word == null ||
-			location == null ||
-			!containsWord(word) ||
-			!containsLocation(location)
-		) {
-			return -1;
-		}
-
-		var numPositions = this.invertedIndex.get(word).get(location);
-		return numPositions == null ? -1 : numPositions.size(); // Need a method that checks/gets this (mentioned in code review)
-		// return this.invertedIndex.get(word).get(location).size();
+		return getPositions(word, location).size();
 	}
 
 	/**
@@ -197,11 +194,19 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * Returns a view of the words stored in our word counts data structure
-	 * @return An unmodifiable view of the kes in the word counts data structure
+	 * Returns the number of words in the inverted index that start with {@code prefix}. Helpful when conducting a partial search
+	 * @param prefix - The prefix to check against
+	 * @return The number of words in the inverted index that start with {@code prefix}
 	 */
-	public Set<String> getWords() {
-		return Collections.unmodifiableSet(this.wordStems.keySet());
+	public int numWordsPrefix(String prefix) {
+		HashSet<String> foundWords = new HashSet<>();
+		for (String word : this.invertedIndex.keySet()) {
+			if (word.startsWith(prefix)) {
+				foundWords.add(word);
+			}
+		}
+
+		return foundWords.size();
 	}
 
 	/**
@@ -237,6 +242,14 @@ public class InvertedIndex {
 		}
 
 		return Collections.unmodifiableSet(wordPositions);
+	}
+
+	/**
+	 * Returns an unmodifiable view of the words in the inverted index
+	 * @return An unmodifiable view of the words (keys) in the inverted index
+	 */
+	public Set<String> getWords() {
+		return Collections.unmodifiableSet(this.invertedIndex.keySet());
 	}
 
 	/**
