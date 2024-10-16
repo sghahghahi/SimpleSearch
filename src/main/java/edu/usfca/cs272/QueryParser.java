@@ -8,11 +8,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -20,8 +20,8 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 public class QueryParser {
-	/** {@code TreeMap} that stores a query string and a {@code List} of {@code SearchResult} objects */
-	private final TreeMap<String, List<SearchResult>> searchResults;
+	/** {@code TreeMap} that maps each query string to a {@code Map} of locations and its {@code SearchResult} objects */
+	private final TreeMap<String, Map<String, SearchResult>> searchResults;
 
 	/** Initialized and populated inverted index object to reference */
 	private final InvertedIndex invertedIndex;
@@ -157,18 +157,25 @@ public class QueryParser {
 		double score = calculateScore(matches, wordCount);
 		String queryString = extractQueryString(queryStems);
 
-		List<SearchResult> searchResults = this.searchResults.get(queryString);
-		if (searchResults == null) {
-			searchResults = new ArrayList<>();
-			this.searchResults.put(queryString, searchResults);
+		Map<String, SearchResult> queryResults = this.searchResults.get(queryString);
+		if (queryResults == null) {
+			queryResults = new HashMap<>();
+			this.searchResults.put(queryString, queryResults);
 		}
 
 		if (matches != 0 && score != 0) {
-			SearchResult searchResult = new SearchResult(matches, score, "\"" + location.toString() + "\"");
-			searchResults.add(searchResult);
+			String locationStr = location.toString();
+			SearchResult existingResult = queryResults.get(locationStr);
 
-			removeDuplicates(searchResults);
-			sortSearchResults(searchResults);
+			if (existingResult == null) {
+				SearchResult searchResult = new SearchResult(matches, score, "\"" + locationStr + "\"");
+				queryResults.put(locationStr, searchResult);
+			} else {
+				if (score > existingResult.score || (score == existingResult.score && matches > existingResult.count)) {
+					existingResult.count = matches;
+					existingResult.score = score;
+				}
+			}
 		}
 	}
 
@@ -191,24 +198,32 @@ public class QueryParser {
 					int numPositions = this.invertedIndex.numPositions(word, location.toString());
 					matches += numPositions;
 				}
+
 			}
 		}
 
 		double score = calculateScore(matches, wordCount);
 		String queryString = extractQueryString(queryStems);
 
-		List<SearchResult> searchResults = this.searchResults.get(queryString);
-		if (searchResults == null) {
-			searchResults = new ArrayList<>();
-			this.searchResults.put(queryString, searchResults);
+		Map<String, SearchResult> queryResults = this.searchResults.get(queryString);
+		if (queryResults == null) {
+			queryResults = new HashMap<>();
+			this.searchResults.put(queryString, queryResults);
 		}
 
 		if (matches != 0 && score != 0) {
-			SearchResult searchResult = new SearchResult(matches, score, "\"" + location.toString() + "\"");
-			searchResults.add(searchResult);
+			String locationStr = location.toString();
+			SearchResult existingResult = queryResults.get(locationStr);
 
-			removeDuplicates(searchResults);
-			sortSearchResults(searchResults);
+			if (existingResult == null) {
+				SearchResult searchResult = new SearchResult(matches, score, "\"" + locationStr + "\"");
+				queryResults.put(locationStr, searchResult);
+			} else {
+				if (score > existingResult.score || (score == existingResult.score && matches > existingResult.count)) {
+					existingResult.count = matches;
+					existingResult.score = score;
+				}
+			}
 		}
 	}
 
@@ -220,18 +235,6 @@ public class QueryParser {
 	 */
 	private double calculateScore(int matches, int wordCount) {
 		return (double) matches / wordCount;
-	}
-
-	/**
-	 * This is a slow, inefficient approach to ranking search results (removing duplicates).
-	 * Ideally, we wouldn't allow duplicates when adding to the {@code List} of {@code SearchResult} objects
-	 * Removes duplicates from the {@code List} of {@code SearchResult} objects
-	 * @param searchResults - The {@code List} of {@code SearchResult} objects
-	 */
-	private static void removeDuplicates(List<SearchResult> searchResults) {
-		Collections.reverse(searchResults);
-		HashSet<String> seenLocations = new HashSet<>();
-		searchResults.removeIf(result -> !seenLocations.add(result.location));
 	}
 
 	/**
@@ -268,6 +271,18 @@ public class QueryParser {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void queryJson(Path location) throws IOException {
-		SearchResultWriter.writeSearchResults(this.searchResults, location);
+		Map<String, List<SearchResult>> sortedResults = new TreeMap<>();
+
+		for (var element : this.searchResults.entrySet()) {
+			String query = element.getKey();
+			Map<String, SearchResult> resultsMap = element.getValue();
+
+			List<SearchResult> reusltsList = new ArrayList<>(resultsMap.values());
+			sortSearchResults(reusltsList);
+
+			sortedResults.put(query, reusltsList);
+		}
+
+		SearchResultWriter.writeSearchResults(sortedResults, location);
 	}
 }
