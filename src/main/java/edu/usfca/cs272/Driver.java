@@ -31,7 +31,7 @@ public class Driver {
 	/** File name to write inverted index to if no file path included after {@code -index} flag. Will write file in the current working directory. */
 	public static final String INDEX_BACKUP = "index.json";
 
-	/** {@code -query} flag passed as an argument to this program. File path to query (next argument). Will trigger an exact search for each of the multi-lines of queries in the file. */
+	/** {@code -query} flag passed as an argument to this program. File path to query (next argument). Will trigger a search for each of the multi-line queries in the file. */
 	public static final String QUERY = "-query";
 
 	/** {@code -results} flag passed as an argument to this program. File path to write search results to (next argument) not necessary. */
@@ -39,6 +39,9 @@ public class Driver {
 
 	/** File name to write search results to if no file path included after {@code -results} flag. Will write this file in the current working directory. */
 	public static final String RESULTS_BACKUP = "results.json";
+
+	/** {@code -partial} flag passed as an argument to this program. Will trigger a partial search for each of the multi-line queries in the query file */
+	public static final String PARTIAL = "-partial";
 
 	/**
 	 * Initializes the classes necessary based on the provided command-line
@@ -88,10 +91,26 @@ public class Driver {
 			try {
 				Path textLocation = argParser.getPath(TEXT);
 				if (textLocation != null) {
+					queryParser.setSearchType(true);
 					queryParser.checkLocation(location, textLocation);
 				}
 			} catch (IOException e) {
 				System.err.println("Unable to read search queries from location: " + location);
+			} catch (NullPointerException e) {
+				System.err.println("No input file was provided after '-query' flag.");
+			}
+		}
+
+		if (argParser.hasFlag(PARTIAL)) {
+			location = argParser.getPath(QUERY);
+			try {
+				Path textLocation = argParser.getPath(TEXT);
+				if (textLocation != null) {
+					queryParser.setSearchType(false);
+					queryParser.checkLocation(location, textLocation);
+				}
+			} catch (IOException e) {
+				System.err.println("Unable to perform partial search from query file: " + location);
 			} catch (NullPointerException e) {
 				System.err.println("No input file was provided after '-query' flag.");
 			}
