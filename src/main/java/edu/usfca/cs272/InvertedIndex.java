@@ -147,10 +147,6 @@ public class InvertedIndex {
 		JsonWriter.writeObject(this.wordStems, location);
 	}
 
-	/* TODO: Methods for inverted index */
-	// Organize methods by data structure by name
-	// Ex: all num methods for inverted index together, all get methods for inverted index together, same for word stems
-
 	/**
 	 * Writes the inverted index as a pretty JSON object
 	 * @param location - Where to write the inverted index to
@@ -234,19 +230,20 @@ public class InvertedIndex {
 	 * @param word - The word to look up in the inverted index
 	 * @param location - Where {@code word} was found
 	 * @return An unmodifiable view of the word positions of {@code word} found at {@code location} or
-	 * {@code null} if either {@code word} or {@code location} is not in the inverted index
+	 * an empty {@code Set} if {@code word} or {@code location} are not in the inverted index
 	 */
 	public Set<Integer> getPositions(String word, String location) {
-		if (
-			word == null ||
-			location == null ||
-			!containsWord(word) ||
-			!containsLocation(location)
-		) {
-			return null;
+		var locations = this.invertedIndex.get(word);
+		if (locations == null) {
+			return Collections.emptySet();
 		}
 
-		return Collections.unmodifiableSet(this.invertedIndex.get(word).get(location));
+		var wordPositions = locations.get(location);
+		if (wordPositions == null) {
+			return Collections.emptySet();
+		}
+
+		return Collections.unmodifiableSet(wordPositions);
 	}
 
 	/**
@@ -274,24 +271,24 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * TODO
-	 * @param word
-	 * @param location
-	 * @param position
-	 * @return
+	 * Checks the inverted index for a specific position where {@code word} was found at {@code location}
+	 * @param word - The word to look up in the inverted index
+	 * @param location - The location associated with {@code word}
+	 * @param position - The position to check within {@code location} for {@code word} in the inverted index
+	 * @return {@code true} if {@code position} was found in the inverted index at {@code location} for {@code word}
 	 */
 	public boolean containsPosition(String word, String location, int position) {
-		var where = this.invertedIndex.get(word);
-		if (where == null) {
-			return false;
-		}
-
-		var locations = where.get(location);
+		var locations = this.invertedIndex.get(word);
 		if (locations == null) {
 			return false;
 		}
 
-		return locations.contains(position);
+		var wordPositions = locations.get(location);
+		if (wordPositions == null) {
+			return false;
+		}
+
+		return wordPositions.contains(position);
 	}
 
 	/**
