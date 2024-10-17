@@ -29,7 +29,6 @@ public class QueryParser {
 	/** Flag to specify whether an exact search or partial search should be executed. Defaults to exact search */
 	private boolean exactSearch;
 
-
 	/** Stemmer to use file-wide */
 	private final SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 
@@ -157,29 +156,7 @@ public class QueryParser {
 			matches += numPositions;
 		}
 
-		double score = calculateScore(matches, wordCount);
-		String queryString = extractQueryString(queryStems);
-
-		Map<String, SearchResult> queryResults = this.searchResults.get(queryString);
-		if (queryResults == null) {
-			queryResults = new HashMap<>();
-			this.searchResults.put(queryString, queryResults);
-		}
-
-		if (matches != 0 && score != 0) {
-			String locationStr = location.toString();
-			SearchResult existingResult = queryResults.get(locationStr);
-
-			if (existingResult == null) {
-				SearchResult searchResult = new SearchResult(matches, score, "\"" + locationStr + "\"");
-				queryResults.put(locationStr, searchResult);
-			} else {
-				if (score > existingResult.score || (score == existingResult.score && matches > existingResult.count)) {
-					existingResult.count = matches;
-					existingResult.score = score;
-				}
-			}
-		}
+		addSearchResult(queryStems, location.toString(), matches, wordCount);
 	}
 
 	/**
@@ -205,6 +182,17 @@ public class QueryParser {
 			}
 		}
 
+		addSearchResult(queryStems, location.toString(), matches, wordCount);
+	}
+
+	/**
+	 * Adds a {@code SearchResult} object to the {@code Map} of {@code SearchResult} objects
+	 * @param queryStems - The stems from the query file
+	 * @param location - The file location where matches from each stem in {@code queryStems} was found
+	 * @param matches - The number of matches from a stem in {@code wordStems} to a word in the inverted index
+	 * @param wordCount - The total number of words found at {@code location}
+	 */
+	private void addSearchResult(Set<String> queryStems, String location, int matches, int wordCount) {
 		double score = calculateScore(matches, wordCount);
 		String queryString = extractQueryString(queryStems);
 
@@ -215,17 +203,15 @@ public class QueryParser {
 		}
 
 		if (matches != 0 && score != 0) {
-			String locationStr = location.toString();
-			SearchResult existingResult = queryResults.get(locationStr);
+			SearchResult existingResult = queryResults.get(location);
 
 			if (existingResult == null) {
-				SearchResult searchResult = new SearchResult(matches, score, "\"" + locationStr + "\"");
-				queryResults.put(locationStr, searchResult);
-			} else {
-				if (score > existingResult.score || (score == existingResult.score && matches > existingResult.count)) {
+				SearchResult searchResult = new SearchResult(matches, score, "\"" + location + "\"");
+				queryResults.put(location, searchResult);
+
+			} else if (score > existingResult.score || (score == existingResult.score && matches > existingResult.count)) {
 					existingResult.count = matches;
 					existingResult.score = score;
-				}
 			}
 		}
 	}
