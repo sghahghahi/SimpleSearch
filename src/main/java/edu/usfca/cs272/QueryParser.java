@@ -29,6 +29,10 @@ public class QueryParser {
 	/** Flag to specify whether an exact search or partial search should be executed. Defaults to exact search */
 	private boolean exactSearch;
 
+
+	/** Stemmer to use file-wide */
+	private final SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
+
 	/** Class that represents a search result */
 	class SearchResult {
 		int count;
@@ -105,7 +109,6 @@ public class QueryParser {
 	 */
 	private void queryLocation(Path queryLocation, Path lookupLocation) throws IOException {
 		TreeSet<String> queryStems;
-		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
 			String line = null;
