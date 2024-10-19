@@ -34,6 +34,22 @@ public class InvertedIndex {
 		this.wordStems = new TreeMap<>();
 		this.invertedIndex = new TreeMap<>();
 	}
+	
+	/* TODO 
+	public List<QueryParser.SearchResult> exactSearch(Set<String> queryStems) {
+		Map<String, QueryParser.SearchResult> lookup = 
+				
+		for query in queryStems
+			if this exists in the index
+				get all the locations for this match
+		
+		
+		Create the list of results, sort them, and return them
+	}
+	
+	move partial in here too
+	*/
+	
 
 	/**
 	 * Adds the {@code location} and number of stems found in it to

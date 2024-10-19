@@ -33,7 +33,7 @@ public class QueryParser {
 	private final SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 
 	/** Class that represents a search result */
-	class SearchResult {
+	class SearchResult { // TODO public and non-static, but inside of inverted index instead, and implement comparable
 		int count;
 		double score;
 		String location;
@@ -68,6 +68,11 @@ public class QueryParser {
 		this.exactSearch = true;
 	}
 
+	/*
+	 * TODO Don't need directory traversal for query file parsing, for now until after
+	 * multithreading, don't worry about supporting this (just process a single file at a time)
+	 */
+	
 	/**
 	 * Checks to see if {@code queryLocation} is a directory or a file. Handles file accordingly
 	 * @param queryLocation - The path to the query file
@@ -129,6 +134,7 @@ public class QueryParser {
 	 * @return The space-separated query {@code String}
 	 */
 	private String extractQueryString(Set<String> queryStems) {
+		// TODO String.join(" ", queryStems)
 		StringBuilder queryString = new StringBuilder();
 
 		for (String queryStem : queryStems) {

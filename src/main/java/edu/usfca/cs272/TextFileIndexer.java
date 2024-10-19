@@ -11,6 +11,10 @@ import java.nio.file.Path;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
+/*
+ * TODO Could take a similar instance-based approach here too
+ */
+
 /** Class that handles anything I/O related. All methods are {@code static}. */
 public class TextFileIndexer {
 

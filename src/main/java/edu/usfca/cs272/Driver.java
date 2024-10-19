@@ -3,6 +3,8 @@ package edu.usfca.cs272;
 import java.io.IOException;
 import java.nio.file.Path;
 
+// TODO Double-check Javadoc comments
+
 /**
  * Class responsible for running this project based on the provided command-line
  * arguments. See the README for details.
@@ -92,6 +94,7 @@ public class Driver {
 				Path textLocation = argParser.getPath(TEXT);
 				if (textLocation != null) {
 					queryParser.setSearchType(true);
+					// TODO queryParser.setSearchType(!argParser.hasFlag(PARTIAL));
 					queryParser.checkLocation(location, textLocation);
 				}
 			} catch (IOException e) {
@@ -101,7 +104,7 @@ public class Driver {
 			}
 		}
 
-		if (argParser.hasFlag(PARTIAL)) {
+		if (argParser.hasFlag(PARTIAL)) { // TODO Should be able to remove?
 			location = argParser.getPath(QUERY);
 			try {
 				Path textLocation = argParser.getPath(TEXT);
