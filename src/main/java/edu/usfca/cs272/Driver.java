@@ -94,26 +94,11 @@ public class Driver {
 				Path textLocation = argParser.getPath(TEXT);
 				if (textLocation != null) {
 					queryParser.setSearchType(true);
-					// TODO queryParser.setSearchType(!argParser.hasFlag(PARTIAL));
+					queryParser.setSearchType(!argParser.hasFlag(PARTIAL));
 					queryParser.checkLocation(location, textLocation);
 				}
 			} catch (IOException e) {
 				System.err.println("Unable to read search queries from location: " + location);
-			} catch (NullPointerException e) {
-				System.err.println("No input file was provided after '-query' flag.");
-			}
-		}
-
-		if (argParser.hasFlag(PARTIAL)) { // TODO Should be able to remove?
-			location = argParser.getPath(QUERY);
-			try {
-				Path textLocation = argParser.getPath(TEXT);
-				if (textLocation != null) {
-					queryParser.setSearchType(false);
-					queryParser.checkLocation(location, textLocation);
-				}
-			} catch (IOException e) {
-				System.err.println("Unable to perform partial search from query file: " + location);
 			} catch (NullPointerException e) {
 				System.err.println("No input file was provided after '-query' flag.");
 			}
