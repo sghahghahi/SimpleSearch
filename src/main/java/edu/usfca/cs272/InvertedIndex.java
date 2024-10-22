@@ -36,14 +36,14 @@ public class InvertedIndex {
 		this.invertedIndex = new TreeMap<>();
 	}
 
-	/** TODO */
+	/** Class that represents a search result */
 	public class SearchResult implements Comparable<SearchResult> {
 		protected int count;
 		protected double score;
 		protected String location;
 
 		/**
-		 * TODO
+		 * Constructor that takes in a count, score, and location to be stored as part of a search result
 		 * @param count
 		 * @param score
 		 * @param location
@@ -55,10 +55,10 @@ public class InvertedIndex {
 		}
 
 		/**
-		 * TODO
+		 * Default constructor that sets all fields to {@code 0}
 		 */
 		public SearchResult() {
-			this(0, 0, new String());
+			this(0, 0, "");
 		}
 
 		@Override
@@ -152,17 +152,10 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * TODO
-	 * @param location
-	 * @throws IOException
-	 */
-	public void queryJson(Path location) throws IOException {}
-
-	/**
-	 * TODO
-	 * @param matches
-	 * @param wordCount
-	 * @return
+	 * Calculates the score for a search result
+	 * @param matches - Number of matches for the current result
+	 * @param wordCount - Number of stems
+	 * @return The score of the search result based on this calculation: {@code matches / wordCount}
 	 */
 	private double calculateScore(int matches, int wordCount) {
 		return (double) matches / wordCount;

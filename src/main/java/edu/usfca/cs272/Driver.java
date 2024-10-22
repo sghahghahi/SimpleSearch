@@ -106,7 +106,6 @@ public class Driver {
 			location = argParser.getPath(RESULTS, Path.of(CURR_DIR, RESULTS_BACKUP));
 			try {
 				queryParser.queryJson(location);
-				// invertedIndex.queryJson(location);
 			} catch (IOException e) {
 				System.err.println("Unable to write search results to location: " + location);
 			}

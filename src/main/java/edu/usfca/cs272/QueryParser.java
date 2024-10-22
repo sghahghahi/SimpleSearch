@@ -17,7 +17,6 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 public class QueryParser {
 	/** {@code TreeMap} that maps each query string to a {@code Map} of locations and its {@code SearchResult} objects */
-	// private final TreeMap<String, Map<String, SearchResult>> searchResults;
 	private final TreeMap<String, List<InvertedIndex.SearchResult>> searchResults;
 
 	/** Initialized and populated inverted index object to reference */
