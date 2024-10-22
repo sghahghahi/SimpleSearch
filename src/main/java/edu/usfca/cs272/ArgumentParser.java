@@ -9,6 +9,7 @@ import java.util.Objects;
 /**
  * Parses and stores command-line arguments into simple flag/value pairs.
  *
+ * @author Shyon Ghahghahi
  * @author CS 272 Software Development (University of San Francisco)
  * @version Fall 2024
  */

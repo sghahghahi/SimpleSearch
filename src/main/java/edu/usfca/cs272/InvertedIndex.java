@@ -14,7 +14,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Class responsible for for calculating word counts and building an inverted index.
+ * Class responsible for calculating word counts and building an inverted index.
  *
  * @author Shyon Ghahghahi
  * @author CS 272 Software Development (University of San Francisco)

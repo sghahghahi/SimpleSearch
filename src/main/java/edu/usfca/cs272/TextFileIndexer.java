@@ -12,6 +12,13 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 /** Class that handles anything I/O related. */
+/**
+ * Class responsible for indexing text files in order to build an in-memory inverted index
+ *
+ * @author Shyon Ghahghahi
+ * @author CS 272 Software Development (University of San Francisco)
+ * @version Fall 2024
+ */
 public class TextFileIndexer {
 
 	/** {@code InvertedIndex} object to reference class-wide */

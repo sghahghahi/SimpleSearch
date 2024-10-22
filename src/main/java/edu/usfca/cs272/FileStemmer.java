@@ -22,6 +22,7 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
  * Utility class for parsing, cleaning, and stemming text and text files into
  * collections of processed words.
  *
+ * @author Shyon Ghahghahi
  * @author CS 272 Software Development (University of San Francisco)
  * @version Fall 2024
  */

@@ -15,6 +15,13 @@ import java.util.TreeSet;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
+/**
+ * Class responsible for parsing query files
+ *
+ * @author Shyon Ghahghahi
+ * @author CS 272 Software Development (University of San Francisco)
+ * @version Fall 2024
+ */
 public class QueryParser {
 	/** {@code TreeMap} that maps each query string to a {@code Map} of locations and its {@code SearchResult} objects */
 	private final TreeMap<String, List<InvertedIndex.SearchResult>> searchResults;
@@ -29,7 +36,7 @@ public class QueryParser {
 	private final SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 
 	/**
-	 * Constrcutor that initializes our search result metadata data structure to an empty {@code TreeMap}
+	 * Constructor that initializes our search result metadata data structure to an empty {@code TreeMap}
 	 * @param invertedIndex - The inverted index object to reference. We are not constructing a new inverted index in this class.
 	 * This inverted index is passed from the caller and is assumed to be properly initialized and populated
 	 */
@@ -42,7 +49,7 @@ public class QueryParser {
 	/**
 	 * Gets the search query from the passed file. Performs a search of the query words on the inverted index
 	 * @param queryLocation - Where to find the query words
-	 * @throws IOException - If an IO error occurs
+	 * @throws IOException If an IO error occurs
 	 */
 	public void queryLocation(Path queryLocation) throws IOException {
 		TreeSet<String> queryStems;

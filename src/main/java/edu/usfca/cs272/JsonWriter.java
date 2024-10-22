@@ -19,6 +19,7 @@ import java.util.Map;
  * Warning: This class is not thread-safe. If multiple threads access this class
  * concurrently, access must be synchronized externally.
  *
+ * @author Shyon Ghahghahi
  * @author CS 272 Software Development (University of San Francisco)
  * @version Fall 2024
  */
@@ -82,9 +83,9 @@ public class JsonWriter {
 
 	/**
 	 * Writes the {@code key} and {@code value} as a key/value pair separated by a {@code :}
-	 * @param key
-	 * @param elements
-	 * @throws IOException
+	 * @param key - The key to write
+	 * @param value - The {@code Collection} to write
+	 * @throws IOException If an IO error occurs
 	 */
 	public static void writeObejctArrayEntry(String key, Collection<? extends Number> value, Writer writer, int indent) throws IOException {
 		writeQuote(key, writer, indent);
@@ -94,9 +95,9 @@ public class JsonWriter {
 
 	/**
 	 * Writes the {@code key} and {@code value} as a key/value pair separated by a {@code :}
-	 * @param key
-	 * @param elements
-	 * @throws IOException
+	 * @param key - The key to write
+	 * @param value - The {@code Collection} to write
+	 * @throws IOException If an IO error occurs
 	 */
 	public static void writeObjectObjectEntry(String key, Map<String, ? extends Collection<? extends Number>> value, Writer writer, int indent) throws IOException {
 		writeQuote(key, writer, indent);

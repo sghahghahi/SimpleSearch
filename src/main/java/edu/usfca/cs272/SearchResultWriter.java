@@ -17,6 +17,13 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Class responsible for writing {@code SearchResult} objects as pretty JSON objects
+ *
+ * @author Shyon Ghahghahi
+ * @author CS 272 Software Development (University of San Francisco)
+ * @version Fall 2024
+ */
 public class SearchResultWriter {
 
 	/** Format {@code double}s to 8 decimals */
