@@ -77,7 +77,7 @@ public class JsonWriter {
 	public static void writeEntry(String key, String value, Writer writer, int indent) throws IOException {
 		writeQuote(key, writer, indent);
 		writeIndent(": ", writer, 0);
-		writeIndent(value.toString(), writer, 0);
+		writeIndent(value, writer, 0);
 	}
 
 	/**
