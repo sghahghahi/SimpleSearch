@@ -1,7 +1,7 @@
 package edu.usfca.cs272;
 
 import static edu.usfca.cs272.JsonWriter.*;
-import edu.usfca.cs272.QueryParser.SearchResult;
+import edu.usfca.cs272.InvertedIndex.SearchResult;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

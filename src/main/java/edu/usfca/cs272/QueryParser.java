@@ -1,5 +1,7 @@
 package edu.usfca.cs272;
 
+import edu.usfca.cs272.InvertedIndex.SearchResult;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -10,6 +12,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Set;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +24,8 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 public class QueryParser {
 	/** {@code TreeMap} that maps each query string to a {@code Map} of locations and its {@code SearchResult} objects */
-	private final TreeMap<String, Map<String, SearchResult>> searchResults;
+	// private final TreeMap<String, Map<String, SearchResult>> searchResults;
+	private final TreeMap<String, List<InvertedIndex.SearchResult>> searchResults;
 
 	/** Initialized and populated inverted index object to reference */
 	private final InvertedIndex invertedIndex;
@@ -32,37 +36,12 @@ public class QueryParser {
 	/** Stemmer to use file-wide */
 	private final SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 
-	/** Class that represents a search result */
-	class SearchResult { // TODO public and non-static, but inside of inverted index instead, and implement comparable
-		int count;
-		double score;
-		String location;
-
-		public SearchResult(int count, double score, String location) {
-			this.count = count;
-			this.score = score;
-			this.location = location;
-		}
-
-		public SearchResult() {
-			this(0, 0, null);
-		}
-
-		@Override
-		public String toString() {
-			return String.format(
-				"This search was conducted at location: %s",
-				this.location
-			);
-		}
-	}
-
 	/**
 	 * Constrcutor that initializes our search result metadata data structure to an empty {@code TreeMap}
 	 * @param invertedIndex - The inverted index object to reference. We are not constructing a new inverted index in this class.
 	 * This inverted index is passed from the caller and is assumed to be properly initialized and populated
 	 */
-	public QueryParser(InvertedIndex invertedIndex /* boolean exactSearch */ ) {
+	public QueryParser(InvertedIndex invertedIndex) {
 		this.searchResults= new TreeMap<>();
 		this.invertedIndex = invertedIndex;
 		this.exactSearch = true;
@@ -72,7 +51,7 @@ public class QueryParser {
 	 * TODO Don't need directory traversal for query file parsing, for now until after
 	 * multithreading, don't worry about supporting this (just process a single file at a time)
 	 */
-	
+
 	/**
 	 * Checks to see if {@code queryLocation} is a directory or a file. Handles file accordingly
 	 * @param queryLocation - The path to the query file
@@ -117,10 +96,15 @@ public class QueryParser {
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-				queryStems = FileStemmer.uniqueStems(line, snowballStemmer);
+				queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
 
 				if (this.exactSearch) {
-					exactSearch(queryStems, lookupLocation);
+					// this.invertedIndex.exactSearch(queryStems, lookupLocation);
+					List<InvertedIndex.SearchResult> searchResults = this.invertedIndex.exactSearch(queryStems);
+					String queryString = extractQueryString(queryStems);
+					if (!queryString.isBlank()) {
+						this.searchResults.put(queryString, searchResults);
+					}
 				} else {
 					partialSearch(queryStems, lookupLocation);
 				}
@@ -134,35 +118,16 @@ public class QueryParser {
 	 * @return The space-separated query {@code String}
 	 */
 	private String extractQueryString(Set<String> queryStems) {
-		// TODO String.join(" ", queryStems)
-		StringBuilder queryString = new StringBuilder();
+		String result = String.join(" ", queryStems);
+		return result;
+		// // TODO String.join(" ", queryStems)
+		// StringBuilder queryString = new StringBuilder();
 
-		for (String queryStem : queryStems) {
-			queryString.append(queryStem + " ");
-		}
+		// for (String queryStem : queryStems) {
+		// 	queryString.append(queryStem + " ");
+		// }
 
-		return queryString.toString().strip();
-	}
-
-	/**
-	 * Performs an exact search of {@code queryStems} on the inverted index
-	 * @param queryStems - The query stems to search
-	 * @param location - Where the words associated with {@code queryStems} are located
-	 */
-	private void exactSearch(Set<String> queryStems, Path location) {
-		if (queryStems.isEmpty()) {
-			return;
-		}
-
-		int wordCount = this.invertedIndex.numStems(location.toString());
-		int matches = 0;
-
-		for (String queryStem : queryStems) {
-			int numPositions = this.invertedIndex.numPositions(queryStem, location.toString());
-			matches += numPositions;
-		}
-
-		addSearchResult(queryStems, location.toString(), matches, wordCount);
+		// return queryString.toString().strip();
 	}
 
 	/**
@@ -212,7 +177,7 @@ public class QueryParser {
 			SearchResult existingResult = queryResults.get(location);
 
 			if (existingResult == null) {
-				SearchResult searchResult = new SearchResult(matches, score, "\"" + location + "\"");
+				InvertedIndex.SearchResult searchResult = new InvertedIndex.SearchResult(matches, score, "\"" + location + "\"");
 				queryResults.put(location, searchResult);
 
 			} else if (score > existingResult.score || (score == existingResult.score && matches > existingResult.count)) {
@@ -266,18 +231,21 @@ public class QueryParser {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void queryJson(Path location) throws IOException {
-		Map<String, List<SearchResult>> sortedResults = new TreeMap<>();
+		// Map<String, List<SearchResult>> sortedResults = new TreeMap<>();
 
-		for (var element : this.searchResults.entrySet()) {
-			String query = element.getKey();
-			Map<String, SearchResult> resultsMap = element.getValue();
+		// for (var element : this.searchResults.entrySet()) {
+		// 	String query = element.getKey();
+		// 	Map<String, SearchResult> resultsMap = element.getValue();
 
-			List<SearchResult> reusltsList = new ArrayList<>(resultsMap.values());
-			sortSearchResults(reusltsList);
+		// 	List<SearchResult> resultsList = new ArrayList<>(resultsMap.values());
 
-			sortedResults.put(query, reusltsList);
-		}
+		// 	sortSearchResults(resultsList);
+		// 	Collections.sort(resultsList);
 
-		SearchResultWriter.writeSearchResults(sortedResults, location);
+		// 	sortedResults.put(query, resultsList);
+		// }
+
+		// SearchResultWriter.writeSearchResults(sortedResults, location);
+		SearchResultWriter.writeSearchResults(this.searchResults, location);
 	}
 }

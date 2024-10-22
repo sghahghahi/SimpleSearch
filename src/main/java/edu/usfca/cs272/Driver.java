@@ -93,7 +93,6 @@ public class Driver {
 			try {
 				Path textLocation = argParser.getPath(TEXT);
 				if (textLocation != null) {
-					queryParser.setSearchType(true);
 					queryParser.setSearchType(!argParser.hasFlag(PARTIAL));
 					queryParser.checkLocation(location, textLocation);
 				}
@@ -108,6 +107,7 @@ public class Driver {
 			location = argParser.getPath(RESULTS, Path.of(CURR_DIR, RESULTS_BACKUP));
 			try {
 				queryParser.queryJson(location);
+				// invertedIndex.queryJson(location);
 			} catch (IOException e) {
 				System.err.println("Unable to write search results to location: " + location);
 			}
