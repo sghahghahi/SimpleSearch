@@ -117,16 +117,6 @@ public class QueryParser {
 	}
 
 	/**
-	 * Calculates the score for a search result
-	 * @param matches - Number of matches for the current result
-	 * @param wordCount - Number of stems
-	 * @return The score of the search result based on this calculation: {@code matches / wordcount}
-	 */
-	private double calculateScore(int matches, int wordCount) {
-		return (double) matches / wordCount;
-	}
-
-	/**
 	 * Sets the search type to either exact or partial
 	 * @param exactSearch - The search type. {@code true} represents an exact search, {@code false} represents a partial search
 	 */

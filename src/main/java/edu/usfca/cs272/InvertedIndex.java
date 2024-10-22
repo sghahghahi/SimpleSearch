@@ -325,23 +325,6 @@ public class InvertedIndex {
 		return this.invertedIndex.size();
 	}
 
-	// TODO delete?
-	// /**
-	//  * Returns the number of words in the inverted index that start with {@code prefix}. Helpful when conducting a partial search
-	//  * @param prefix - The prefix to check against
-	//  * @return The number of words in the inverted index that start with {@code prefix}
-	//  */
-	// public int numWordsPrefix(String prefix) {
-	// 	HashSet<String> foundWords = new HashSet<>();
-	// 	for (String word : this.invertedIndex.keySet()) {
-	// 		if (word.startsWith(prefix)) {
-	// 			foundWords.add(word);
-	// 		}
-	// 	}
-
-	// 	return foundWords.size();
-	// }
-
 	/**
 	 * Returns a {@code Set} of locations mapped to a specific {@code word}
 	 * @param word - The word to look up in the inverted index
