@@ -89,21 +89,22 @@ public class InvertedIndex {
 		for (String queryStem : queryStems) {
 			if (containsWord(queryStem)) {
 				for (String location : getLocations(queryStem)) {
-					int numStems = numStems(location);
 					int matches = numPositions(queryStem, location);
 
-					double score = calculateScore(matches, numStems);
-					SearchResult currentResult = new SearchResult(matches, score, location);
-
 					SearchResult existingResult = lookup.get(location);
-					if (existingResult != null && currentResult.location.equals(existingResult.location)) {
-						currentResult.count += existingResult.count;
-						currentResult.score += existingResult.score;
+					if (existingResult == null) {
+						existingResult = new SearchResult(0, 0, location);
+						lookup.put(location, existingResult);
 					}
 
-					lookup.put(location, currentResult);
+					existingResult.count += matches;
 				}
 			}
+		}
+
+		for (SearchResult result : lookup.values()) {
+			int numStems = numStems(result.location);
+			result.score = calculateScore(result.count, numStems);
 		}
 
 		List<SearchResult> searchResults = new ArrayList<>(lookup.values());
@@ -125,22 +126,23 @@ public class InvertedIndex {
 			for (String word : getWords()) {
 				if (word.startsWith(queryStem)) {
 					for (String location : getLocations(word)) {
-						int numStems = numStems(location);
 						int matches = numPositions(word, location);
 
-						double score = calculateScore(matches, numStems);
-						SearchResult currentResult = new SearchResult(matches, score, location);
-
 						SearchResult existingResult = lookup.get(location);
-						if (existingResult != null && currentResult.location.equals(existingResult.location)) {
-							currentResult.count += existingResult.count;
-							currentResult.score += existingResult.score;
+						if (existingResult == null) {
+							existingResult = new SearchResult(0, 0, location);
+							lookup.put(location, existingResult);
 						}
 
-						lookup.put(location, currentResult);
+						existingResult.count += matches;
 					}
 				}
 			}
+		}
+
+		for (SearchResult result : lookup.values()) {
+			int numStems = numStems(result.location);
+			result.score = calculateScore(result.count, numStems);
 		}
 
 		List<SearchResult> searchResults = new ArrayList<>(lookup.values());
