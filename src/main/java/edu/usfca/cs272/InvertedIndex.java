@@ -38,9 +38,9 @@ public class InvertedIndex {
 
 	/** TODO */
 	public class SearchResult implements Comparable<SearchResult> {
-		public int count;
-		public double score;
-		public String location;
+		protected int count;
+		protected double score;
+		protected String location;
 
 		/**
 		 * TODO
@@ -58,7 +58,7 @@ public class InvertedIndex {
 		 * TODO
 		 */
 		public SearchResult() {
-			this(0, 0, "\"\"");
+			this(0, 0, new String());
 		}
 
 		@Override
@@ -93,7 +93,7 @@ public class InvertedIndex {
 					int matches = numPositions(queryStem, location);
 
 					double score = calculateScore(matches, numStems);
-					SearchResult currentResult = new SearchResult(matches, score, "\"" + location + "\"");
+					SearchResult currentResult = new SearchResult(matches, score, location);
 
 					SearchResult existingResult = lookup.get(location);
 					if (existingResult != null && currentResult.location.equals(existingResult.location)) {
@@ -129,7 +129,7 @@ public class InvertedIndex {
 						int matches = numPositions(word, location);
 
 						double score = calculateScore(matches, numStems);
-						SearchResult currentResult = new SearchResult(matches, score, "\"" + location + "\"");
+						SearchResult currentResult = new SearchResult(matches, score, location);
 
 						SearchResult existingResult = lookup.get(location);
 						if (existingResult != null && currentResult.location.equals(existingResult.location)) {

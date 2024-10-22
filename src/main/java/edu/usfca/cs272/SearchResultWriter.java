@@ -115,7 +115,7 @@ public class SearchResultWriter {
 		TreeMap<String, String> map = new TreeMap<>();
 		map.put("count", Integer.toString(result.count));
 		map.put("score", FORMATTER.format(result.score));
-		map.put("where", result.location);
+		map.put("where", "\"" + result.location + "\"");
 		writeStringObject(map, writer, indent);
 	}
 
