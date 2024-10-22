@@ -28,16 +28,12 @@ public class InvertedIndex {
 	/** Stores words with their file locations and word positions */
 	private final TreeMap<String, TreeMap<String, TreeSet<Integer>>> invertedIndex;
 
-	/** TODO */
-	private final TreeMap<String, Map<String, SearchResult>> searchResults;
-
 	/**
-	 * TODO Default constructor that initializes a new word counter and inverted index.
+	 * Default constructor that initializes a new word counter and inverted index.
 	 */
 	public InvertedIndex() {
 		this.wordStems = new TreeMap<>();
 		this.invertedIndex = new TreeMap<>();
-		this.searchResults = new TreeMap<>();
 	}
 
 	/** TODO */
@@ -117,28 +113,48 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * Performs a partial search of {@code queryStems} on the inverted index
+	 * @param queryStems - The query stems to search
+	 * @return A sorted {@code List} of {@code SearchResult} objects
+	 */
+	public List<SearchResult> partialSearch(Set<String> queryStems) {
+		// Stores a location and a search result for that location
+		HashMap<String, SearchResult> lookup = new HashMap<>();
+
+		for (String queryStem : queryStems) {
+			for (String word : getWords()) {
+				if (word.startsWith(queryStem)) {
+					for (String location : getLocations(word)) {
+						int numStems = numStems(location);
+						int matches = numPositions(word, location);
+
+						double score = calculateScore(matches, numStems);
+						SearchResult currentResult = new SearchResult(matches, score, "\"" + location + "\"");
+
+						SearchResult existingResult = lookup.get(location);
+						if (existingResult != null && currentResult.location.equals(existingResult.location)) {
+							currentResult.count += existingResult.count;
+							currentResult.score += existingResult.score;
+						}
+
+						lookup.put(location, currentResult);
+					}
+				}
+			}
+		}
+
+		List<SearchResult> searchResults = new ArrayList<>(lookup.values());
+		Collections.sort(searchResults);
+
+		return searchResults;
+	}
+
+	/**
 	 * TODO
 	 * @param location
 	 * @throws IOException
 	 */
-	public void queryJson(Path location) throws IOException {
-
-	}
-
-	/* TODO
-	public List<QueryParser.SearchResult> exactSearch(Set<String> queryStems) {
-		Map<String, QueryParser.SearchResult> lookup =
-
-		for query in queryStems
-			if this exists in the index
-				get all the locations for this match and loop from there
-
-
-		Create the list of results, sort them, and return them
-	}
-
-	move partial in here too
-	*/
+	public void queryJson(Path location) throws IOException {}
 
 	/**
 	 * TODO

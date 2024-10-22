@@ -1,7 +1,5 @@
 package edu.usfca.cs272;
 
-import edu.usfca.cs272.InvertedIndex.SearchResult;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -10,12 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Set;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -98,14 +92,16 @@ public class QueryParser {
 			while ((line = reader.readLine()) != null) {
 				queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
 
+				List<InvertedIndex.SearchResult> searchResults;
 				if (this.exactSearch) {
-					List<InvertedIndex.SearchResult> searchResults = this.invertedIndex.exactSearch(queryStems);
-					String queryString = extractQueryString(queryStems);
-					if (!queryString.isBlank()) {
-						this.searchResults.put(queryString, searchResults);
-					}
+					searchResults = this.invertedIndex.exactSearch(queryStems);
 				} else {
-					partialSearch(queryStems, lookupLocation);
+					searchResults = this.invertedIndex.partialSearch(queryStems);
+				}
+
+				String queryString = extractQueryString(queryStems);
+				if (!queryString.isBlank()) {
+					this.searchResults.put(queryString, searchResults);
 				}
 			}
 		}
@@ -118,63 +114,6 @@ public class QueryParser {
 	 */
 	private String extractQueryString(Set<String> queryStems) {
 		return String.join(" ", queryStems);
-	}
-
-	/**
-	 * Performs a partial search of {@code queryStems} on the inverted index
-	 * @param queryStems - The query stems to search
-	 * @param location - Where the words associated with {@code queryStems} are located
-	 */
-	private void partialSearch(Set<String> queryStems, Path location) {
-		if (queryStems.isEmpty()) {
-			return;
-		}
-
-		int wordCount = this.invertedIndex.numStems(location.toString());
-		int matches = 0;
-
-		for (String queryStem : queryStems) {
-			for (String word : this.invertedIndex.getWords()) {
-				if (word.startsWith(queryStem)) {
-					int numPositions = this.invertedIndex.numPositions(word, location.toString());
-					matches += numPositions;
-				}
-
-			}
-		}
-
-		addSearchResult(queryStems, location.toString(), matches, wordCount);
-	}
-
-	/**
-	 * Adds a {@code SearchResult} object to the {@code Map} of {@code SearchResult} objects
-	 * @param queryStems - The stems from the query file
-	 * @param location - The file location where matches from each stem in {@code queryStems} was found
-	 * @param matches - The number of matches from a stem in {@code wordStems} to a word in the inverted index
-	 * @param wordCount - The total number of words found at {@code location}
-	 */
-	private void addSearchResult(Set<String> queryStems, String location, int matches, int wordCount) {
-		double score = calculateScore(matches, wordCount);
-		String queryString = extractQueryString(queryStems);
-
-		Map<String, SearchResult> queryResults = this.searchResults.get(queryString);
-		if (queryResults == null) {
-			queryResults = new HashMap<>();
-			this.searchResults.put(queryString, queryResults);
-		}
-
-		if (matches != 0 && score != 0) {
-			SearchResult existingResult = queryResults.get(location);
-
-			if (existingResult == null) {
-				InvertedIndex.SearchResult searchResult = new InvertedIndex.SearchResult(matches, score, "\"" + location + "\"");
-				queryResults.put(location, searchResult);
-
-			} else if (score > existingResult.score || (score == existingResult.score && matches > existingResult.count)) {
-					existingResult.count = matches;
-					existingResult.score = score;
-			}
-		}
 	}
 
 	/**
@@ -201,21 +140,6 @@ public class QueryParser {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void queryJson(Path location) throws IOException {
-		// Map<String, List<SearchResult>> sortedResults = new TreeMap<>();
-
-		// for (var element : this.searchResults.entrySet()) {
-		// 	String query = element.getKey();
-		// 	Map<String, SearchResult> resultsMap = element.getValue();
-
-		// 	List<SearchResult> resultsList = new ArrayList<>(resultsMap.values());
-
-		// 	sortSearchResults(resultsList);
-		// 	Collections.sort(resultsList);
-
-		// 	sortedResults.put(query, resultsList);
-		// }
-
-		// SearchResultWriter.writeSearchResults(sortedResults, location);
 		SearchResultWriter.writeSearchResults(this.searchResults, location);
 	}
 }
