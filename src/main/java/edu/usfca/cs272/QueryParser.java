@@ -99,7 +99,6 @@ public class QueryParser {
 				queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
 
 				if (this.exactSearch) {
-					// this.invertedIndex.exactSearch(queryStems, lookupLocation);
 					List<InvertedIndex.SearchResult> searchResults = this.invertedIndex.exactSearch(queryStems);
 					String queryString = extractQueryString(queryStems);
 					if (!queryString.isBlank()) {
@@ -118,16 +117,7 @@ public class QueryParser {
 	 * @return The space-separated query {@code String}
 	 */
 	private String extractQueryString(Set<String> queryStems) {
-		String result = String.join(" ", queryStems);
-		return result;
-		// // TODO String.join(" ", queryStems)
-		// StringBuilder queryString = new StringBuilder();
-
-		// for (String queryStem : queryStems) {
-		// 	queryString.append(queryStem + " ");
-		// }
-
-		// return queryString.toString().strip();
+		return String.join(" ", queryStems);
 	}
 
 	/**
@@ -195,26 +185,6 @@ public class QueryParser {
 	 */
 	private double calculateScore(int matches, int wordCount) {
 		return (double) matches / wordCount;
-	}
-
-	/**
-	 * Sorts the {@code List} of {@code SearchResult} objects based on their
-	 *   score, count, and location using a lambda function
-	 */
-	private void sortSearchResults(List<SearchResult> searchResults) {
-		searchResults.sort((o1, o2) -> {
-			int result = Double.compare(o2.score, o1.score);
-			if (result != 0) {
-				return result;
-			}
-
-			result = Integer.compare(o2.count, o1.count);
-			if (result != 0) {
-				return result;
-			}
-
-			return o1.location.compareTo(o2.location);
-		});
 	}
 
 	/**
