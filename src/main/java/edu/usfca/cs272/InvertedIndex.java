@@ -135,6 +135,11 @@ public class InvertedIndex {
 		return storeSearchResults(lookup);
 	}
 
+	/**
+	 * Stores {@code SearchResult} objects into a {@code List} to be sorted
+	 * @param lookup - The lookup {@code Map} that stores a location and a {@code SearchResult} object for that location
+	 * @return The sorted {@code List} of {@code SearchResult} objects to be written as pretty JSON objects
+	 */
 	private List<SearchResult> storeSearchResults(Map<String, SearchResult> lookup) {
 		for (SearchResult result : lookup.values()) {
 			int numStems = numStems(result.location);
