@@ -11,24 +11,27 @@ import java.nio.file.Path;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
-/*
- * TODO Could take a similar instance-based approach here too
- */
-
-/** Class that handles anything I/O related. All methods are {@code static}. */
+/** Class that handles anything I/O related. */
 public class TextFileIndexer {
 
-	/** No need to instantiate this class because all methods are {@code static} */
-	private TextFileIndexer() {}
+	/** {@code InvertedIndex} object to reference class-wide */
+	private final InvertedIndex invertedIndex;
+
+	/**
+	 * Instantiates this class with an {@code InvertedIndex} object to reference
+	 * @param invertedIndex - The {@code InvertedIndex} object to reference
+	 */
+	public TextFileIndexer(InvertedIndex invertedIndex) {
+		this.invertedIndex = invertedIndex;
+	}
 
 	/**
 	 * Reads file from {@code path}.
 	 * Adds {@code path} and word counts to {@code this.wordStems} to be written to a file later.
 	 * @param path File path to read from
-	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void indexFile(Path path, InvertedIndex invertedIndex) throws IOException {
+	public void indexFile(Path path) throws IOException {
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
@@ -40,14 +43,14 @@ public class TextFileIndexer {
 				String[] cleanedWords = FileStemmer.parse(line);
 
 				for (String cleanWord : cleanedWords) {
-					invertedIndex.addWordPosition(
+					this.invertedIndex.addWordPosition(
 						snowballStemmer.stem(cleanWord).toString(),
 						location, wordPosition++
 					);
 				}
 			}
 
-			invertedIndex.addCount(location, wordPosition - 1);
+			this.invertedIndex.addCount(location, wordPosition - 1);
 		}
 	}
 
@@ -58,13 +61,13 @@ public class TextFileIndexer {
 	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void indexDirectory(Path dirLocation, InvertedIndex invertedIndex) throws IOException {
+	public void indexDirectory(Path dirLocation) throws IOException {
 		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirLocation)) {
 			for (Path location : dirStream) {
 				if (Files.isDirectory(location)) {
-					indexDirectory(location, invertedIndex);
+					indexDirectory(location);
 				} else if (isTextFile(location)) {
-					indexFile(location, invertedIndex);
+					indexFile(location);
 				}
 			}
 		}
@@ -92,11 +95,11 @@ public class TextFileIndexer {
 	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
-	public static void indexLocation(Path location, InvertedIndex invertedIndex) throws IOException {
+	public void indexLocation(Path location) throws IOException {
 		if (Files.isDirectory(location)) {
-			indexDirectory(location, invertedIndex);
+			indexDirectory(location);
 		} else {
-			indexFile(location, invertedIndex);
+			indexFile(location);
 		}
 	}
 }

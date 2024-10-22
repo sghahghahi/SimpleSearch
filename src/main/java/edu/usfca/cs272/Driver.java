@@ -3,8 +3,6 @@ package edu.usfca.cs272;
 import java.io.IOException;
 import java.nio.file.Path;
 
-// TODO Double-check Javadoc comments
-
 /**
  * Class responsible for running this project based on the provided command-line
  * arguments. See the README for details.
@@ -55,6 +53,7 @@ public class Driver {
 	public static void main(String[] args) {
 		ArgumentParser argParser = new ArgumentParser(args);
 		InvertedIndex invertedIndex = new InvertedIndex();
+		TextFileIndexer textFileIndexer = new TextFileIndexer(invertedIndex);
 		QueryParser queryParser = new QueryParser(invertedIndex);
 
 		Path location;
@@ -62,7 +61,7 @@ public class Driver {
 		if (argParser.hasFlag(TEXT)) {
 			location = argParser.getPath(TEXT);
 			try {
-				TextFileIndexer.indexLocation(location, invertedIndex);
+				textFileIndexer.indexLocation(location);
 			} catch (IOException e) {
 				System.err.println("Unable to index the files from location: " + location);
 			} catch (NullPointerException e) {
