@@ -102,15 +102,7 @@ public class InvertedIndex {
 			}
 		}
 
-		for (SearchResult result : lookup.values()) {
-			int numStems = numStems(result.location);
-			result.score = calculateScore(result.count, numStems);
-		}
-
-		List<SearchResult> searchResults = new ArrayList<>(lookup.values());
-		Collections.sort(searchResults);
-
-		return searchResults;
+		return storeSearchResults(lookup);
 	}
 
 	/**
@@ -140,6 +132,10 @@ public class InvertedIndex {
 			}
 		}
 
+		return storeSearchResults(lookup);
+	}
+
+	private List<SearchResult> storeSearchResults(Map<String, SearchResult> lookup) {
 		for (SearchResult result : lookup.values()) {
 			int numStems = numStems(result.location);
 			result.score = calculateScore(result.count, numStems);
