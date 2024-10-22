@@ -94,7 +94,7 @@ public class Driver {
 				Path textLocation = argParser.getPath(TEXT);
 				if (textLocation != null) {
 					queryParser.setSearchType(!argParser.hasFlag(PARTIAL));
-					queryParser.checkLocation(location, textLocation);
+					queryParser.queryLocation(location);
 				}
 			} catch (IOException e) {
 				System.err.println("Unable to read search queries from location: " + location);

@@ -3,7 +3,6 @@ package edu.usfca.cs272;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -41,50 +40,12 @@ public class QueryParser {
 		this.exactSearch = true;
 	}
 
-	/*
-	 * TODO Don't need directory traversal for query file parsing, for now until after
-	 * multithreading, don't worry about supporting this (just process a single file at a time)
-	 */
-
-	/**
-	 * Checks to see if {@code queryLocation} is a directory or a file. Handles file accordingly
-	 * @param queryLocation - The path to the query file
-	 * @param lookupLocation - The path to the file to build the inverted index from
-	 * @throws IOException If an IO error occurs
-	 */
-	public void checkLocation(Path queryLocation, Path lookupLocation) throws IOException {
-		if (Files.isDirectory(lookupLocation)) {
-			queryDirectory(queryLocation, lookupLocation);
-		} else {
-			queryLocation(queryLocation, lookupLocation);
-		}
-	}
-
-	/**
-	 * Recursively traverses {@code queryLocation} and processes each file ending in either {@code .txt} or {@code .text}
-	 * @param queryLocation - The path to the query file
-	 * @param lookupLocation - The path to the file where the inverted index is built
-	 * @throws IOException If an IO error occurs
-	 */
-	private void queryDirectory(Path queryLocation, Path lookupLocation) throws IOException {
-		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(lookupLocation)) {
-			for (Path location : dirStream) {
-				if (Files.isDirectory(location)) {
-					queryDirectory(queryLocation, location);
-				} else if (TextFileIndexer.isTextFile(location)) {
-					queryLocation(queryLocation, location);
-				}
-			}
-		}
-	}
-
 	/**
 	 * Gets the search query from the passed file. Performs a search of the query words on the inverted index
 	 * @param queryLocation - Where to find the query words
-	 * @param lookupLocation - Where the words associated with the query stems are located
 	 * @throws IOException - If an IO error occurs
 	 */
-	private void queryLocation(Path queryLocation, Path lookupLocation) throws IOException {
+	public void queryLocation(Path queryLocation) throws IOException {
 		TreeSet<String> queryStems;
 
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
