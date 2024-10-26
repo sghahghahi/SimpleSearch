@@ -38,9 +38,13 @@ public class InvertedIndex {
 
 	/** Class that represents a search result */
 	public class SearchResult implements Comparable<SearchResult> {
+		// TODO private, create some get methods 
+		
 		protected int count;
 		protected double score;
-		protected String location;
+		protected String location; // TODO final
+		
+		// TODO private boolean dirty;
 
 		/**
 		 * Constructor that takes in a count, score, and location to be stored as part of a search result
@@ -48,16 +52,34 @@ public class InvertedIndex {
 		 * @param score
 		 * @param location
 		 */
-		public SearchResult(int count, double score, String location) {
+		public SearchResult(int count, double score, String location) { // TODO Only allow the location
 			this.count = count;
 			this.score = score;
 			this.location = location;
+			
+			// TODO dirty = true;
 		}
+		
+		/* TODO 
+		public double getScore() {
+			if (dirty) {
+				this.score = this.count / wordStems.get(location);
+				dirty = false;
+			}
+			
+			return score;
+		}
+		
+		private void addCount(int count) {
+			this.count += count;
+			dirty = true;
+		}
+		*/
 
 		/**
 		 * Default constructor that sets all fields to {@code 0}
 		 */
-		public SearchResult() {
+		public SearchResult() { // TODO Remove
 			this(0, 0, "");
 		}
 
@@ -87,6 +109,16 @@ public class InvertedIndex {
 		HashMap<String, SearchResult> lookup = new HashMap<>();
 
 		for (String queryStem : queryStems) {
+				/* TODO 
+			var locations = invertedIndex.get(queryStem);
+			
+			if (locations != null) {
+				for (var entry : locations.entrySet()) {
+					
+				}
+			}
+			*/
+			
 			if (containsWord(queryStem)) {
 				for (String location : getLocations(queryStem)) {
 					int matches = numPositions(queryStem, location);
@@ -112,6 +144,7 @@ public class InvertedIndex {
 	 */
 	public List<SearchResult> partialSearch(Set<String> queryStems) {
 		// Stores a location and a search result for that location
+		// TODO List<SearchResult> searchResults = new ArrayList<>();
 		HashMap<String, SearchResult> lookup = new HashMap<>();
 
 		for (String queryStem : queryStems) {
@@ -124,6 +157,7 @@ public class InvertedIndex {
 						if (existingResult == null) {
 							existingResult = new SearchResult(0, 0, location);
 							lookup.put(location, existingResult);
+							// TODO searchResults.add(existingResult);
 						}
 
 						existingResult.count += matches;
@@ -140,7 +174,7 @@ public class InvertedIndex {
 	 * @param lookup - The lookup {@code Map} that stores a location and a {@code SearchResult} object for that location
 	 * @return The sorted {@code List} of {@code SearchResult} objects to be written as pretty JSON objects
 	 */
-	private List<SearchResult> storeSearchResults(Map<String, SearchResult> lookup) {
+	private List<SearchResult> storeSearchResults(Map<String, SearchResult> lookup) { // TODO This ends up getting removed...
 		for (SearchResult result : lookup.values()) {
 			int numStems = numStems(result.location);
 			result.score = calculateScore(result.count, numStems);

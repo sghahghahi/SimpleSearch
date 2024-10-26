@@ -25,15 +25,20 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 public class QueryParser {
 	/** {@code TreeMap} that maps each query string to a {@code Map} of locations and its {@code SearchResult} objects */
 	private final TreeMap<String, List<InvertedIndex.SearchResult>> searchResults;
+	
+	/*
+	 * TODO Create 2 maps, one for exact, one for partial
+	 */
 
 	/** Initialized and populated inverted index object to reference */
 	private final InvertedIndex invertedIndex;
 
 	/** Flag to specify whether an exact search or partial search should be executed. Defaults to exact search */
-	private boolean exactSearch;
+	private boolean exactSearch; // TODO Could just make this a parameter to queryLocation and queryJson
+	// TODO OR make this Function<...> searchFunction 
 
 	/** Stemmer to use file-wide */
-	private final SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
+	private final SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH); // TODO Either make static or init in the constructor
 
 	/**
 	 * Constructor that initializes our search result metadata data structure to an empty {@code TreeMap}
@@ -51,15 +56,17 @@ public class QueryParser {
 	 * @param queryLocation - Where to find the query words
 	 * @throws IOException If an IO error occurs
 	 */
-	public void queryLocation(Path queryLocation) throws IOException {
+	public void queryLocation(Path queryLocation) throws IOException { // TODO parseLocation
 		TreeSet<String> queryStems;
 
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
+				// TODO Move this logic into a parseLine(String line)
 				queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
 
 				List<InvertedIndex.SearchResult> searchResults;
+				// TODO searchFunction.apply
 				if (this.exactSearch) {
 					searchResults = this.invertedIndex.exactSearch(queryStems);
 				} else {
@@ -79,7 +86,7 @@ public class QueryParser {
 	 * @param queryStems - The query stems to Stringify
 	 * @return The space-separated query {@code String}
 	 */
-	private String extractQueryString(Set<String> queryStems) {
+	private String extractQueryString(Set<String> queryStems) { // TODO Could be static
 		return String.join(" ", queryStems);
 	}
 
@@ -89,6 +96,7 @@ public class QueryParser {
 	 */
 	public void setSearchType(boolean exactSearch) {
 		this.exactSearch = exactSearch;
+		// TODO this changes these searchFunction... if(exact) searchFunction = invertedIndex::exactSearch
 	}
 
 	/**
@@ -96,7 +104,7 @@ public class QueryParser {
 	 * @param location - Where to write the results to
 	 * @throws IOException If an IO error occurs
 	 */
-	public void queryJson(Path location) throws IOException {
+	public void queryJson(Path location) throws IOException { // TODO Need to know whether to output exact or partial results
 		SearchResultWriter.writeSearchResults(this.searchResults, location);
 	}
 }
