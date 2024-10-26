@@ -3,6 +3,27 @@ package edu.usfca.cs272;
 import java.io.IOException;
 import java.nio.file.Path;
 
+/*
+ * TODO
+ * Description	Resource	Path	Location	Type
+Javadoc: Description expected after this reference	InvertedIndex.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 47	Java Problem
+Javadoc: Description expected after this reference	InvertedIndex.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 48	Java Problem
+Javadoc: Description expected after this reference	InvertedIndex.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 49	Java Problem
+Javadoc: Missing comment for protected declaration	InvertedIndex.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 41	Java Problem
+Javadoc: Missing comment for protected declaration	InvertedIndex.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 42	Java Problem
+Javadoc: Missing comment for protected declaration	InvertedIndex.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 43	Java Problem
+Javadoc: Missing tag for parameter indent	JsonWriter.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 90	Java Problem
+Javadoc: Missing tag for parameter indent	JsonWriter.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 102	Java Problem
+Javadoc: Missing tag for parameter writer	JsonWriter.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 90	Java Problem
+Javadoc: Missing tag for parameter writer	JsonWriter.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 102	Java Problem
+Javadoc: Parameter invertedIndex is not declared	TextFileIndexer.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 68	Java Problem
+Javadoc: Parameter invertedIndex is not declared	TextFileIndexer.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 102	Java Problem
+Javadoc: StandardCharsets cannot be resolved to a type	JsonWriter.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 147	Java Problem
+Javadoc: StandardCharsets cannot be resolved to a type	JsonWriter.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 246	Java Problem
+Javadoc: StandardCharsets cannot be resolved to a type	JsonWriter.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 320	Java Problem
+Javadoc: StandardCharsets cannot be resolved to a type	JsonWriter.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 395	Java Problem
+ */
+
 /**
  * Class responsible for running this project based on the provided command-line
  * arguments. See the README for details.
