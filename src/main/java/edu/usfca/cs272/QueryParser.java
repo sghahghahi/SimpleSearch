@@ -49,9 +49,9 @@ public class QueryParser {
 	public QueryParser(InvertedIndex invertedIndex) {
 		this.invertedIndex = invertedIndex;
 		this.snowballStemmer = new SnowballStemmer(ENGLISH);
-		setSearchMode(true); // Default to exact search
 		this.exactSearchResults = new TreeMap<>();
 		this.partialSearchResults = new TreeMap<>();
+		setSearchMode(true); // Default to exact search
 	}
 
 	/**
