@@ -8,10 +8,9 @@ import java.nio.file.Path;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.Set;
-import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.function.Function;
 
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
@@ -34,12 +33,11 @@ public class QueryParser {
 	/** Initialized and populated inverted index object to reference */
 	private final InvertedIndex invertedIndex;
 
-	/** Flag to specify whether an exact search or partial search should be executed. Defaults to exact search */
-	private boolean exactSearch; // TODO Could just make this a parameter to queryLocation and queryJson
-	// TODO OR make this Function<...> searchFunction
-
 	/** Stemmer to use file-wide */
 	private final SnowballStemmer snowballStemmer;
+
+	/** TODO */
+	private Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction;
 
 	/**
 	 * Constructor that initializes our search result metadata data structure to an empty {@code TreeMap}
@@ -49,8 +47,20 @@ public class QueryParser {
 	public QueryParser(InvertedIndex invertedIndex) {
 		this.searchResults= new TreeMap<>();
 		this.invertedIndex = invertedIndex;
-		this.exactSearch = true;
 		this.snowballStemmer = new SnowballStemmer(ENGLISH);
+		setSearchMode(true); // Default to exact search
+	}
+
+	/**
+	 * Sets the search mode to either exact or partial
+	 * @param isExactSearch - The search type. {@code true} represents an exact search, {@code false} represents a partial search
+	 */
+	public void setSearchMode(boolean isExactSearch) {
+		if (isExactSearch) {
+			this.searchFunction = this.invertedIndex::exactSearch;
+		} else {
+			this.searchFunction = this.invertedIndex::partialSearch;
+		}
 	}
 
 	/**
@@ -59,27 +69,25 @@ public class QueryParser {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void queryLocation(Path queryLocation) throws IOException { // TODO parseLocation
-		TreeSet<String> queryStems;
-
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-				// TODO Move this logic into a parseLine(String line)
-				queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
-
-				List<InvertedIndex.SearchResult> searchResults;
-				// TODO searchFunction.apply
-				if (this.exactSearch) {
-					searchResults = this.invertedIndex.exactSearch(queryStems);
-				} else {
-					searchResults = this.invertedIndex.partialSearch(queryStems);
-				}
-
-				String queryString = extractQueryString(queryStems);
-				if (!queryString.isBlank()) {
-					this.searchResults.put(queryString, searchResults);
-				}
+				parseLine(line);
 			}
+		}
+	}
+
+	/**
+	 * TODO
+	 * @param line
+	 */
+	private void parseLine(String line) {
+		Set<String> queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
+		List<InvertedIndex.SearchResult> searchResults = this.searchFunction.apply(queryStems);
+
+		String queryString = extractQueryString(queryStems);
+		if (!queryString.isBlank()) {
+			this.searchResults.put(queryString, searchResults);
 		}
 	}
 
@@ -90,15 +98,6 @@ public class QueryParser {
 	 */
 	private String extractQueryString(Set<String> queryStems) { // TODO Could be static
 		return String.join(" ", queryStems);
-	}
-
-	/**
-	 * Sets the search type to either exact or partial
-	 * @param exactSearch - The search type. {@code true} represents an exact search, {@code false} represents a partial search
-	 */
-	public void setSearchType(boolean exactSearch) {
-		this.exactSearch = exactSearch;
-		// TODO this changes these searchFunction... if(exact) searchFunction = invertedIndex::exactSearch
 	}
 
 	/**
