@@ -55,8 +55,8 @@ public class InvertedIndex {
 		}
 
 		/**
-		 * TODO
-		 * @return
+		 * Returns the number of times the stems of the query string were found in the inverted index
+		 * @return The number of times the stems of the query string were found in the inverted index
 		 */
 		public int getCount() {
 			if (this.dirty) {
@@ -67,8 +67,8 @@ public class InvertedIndex {
 		}
 
 		/**
-		 * TODO
-		 * @return
+		 * Calculates and returns the score for this search result
+		 * @return The calculated score
 		 */
 		public double getScore() {
 			if (this.dirty) {
@@ -80,8 +80,8 @@ public class InvertedIndex {
 		}
 
 		/**
-		 * TODO
-		 * @return
+		 * Returns the location of this search result
+		 * @return The location of this search result
 		 */
 		public String getLocation() {
 			if (this.dirty) {
@@ -92,8 +92,8 @@ public class InvertedIndex {
 		}
 
 		/**
-		 * TODO
-		 * @param count
+		 * Adds {@code count} to the existing count for this search result
+		 * @param count The count to add to this search result
 		 */
 		private void addCount(int count) {
 			this.count += count;
@@ -101,8 +101,8 @@ public class InvertedIndex {
 		}
 
 		/**
-		 * TODO
-		 * @param score
+		 * Adds {@code score} to this search result. {@code score} is assumed to be calculated
+		 * @param score The score to add to this search result
 		 */
 		private void addScore(double score) {
 			this.score = score;
@@ -192,8 +192,8 @@ public class InvertedIndex {
 	}
 
 	/**
-	 * TODO
-	 * @param searchResults
+	 * Adds scores to each {@code SearchResult} in {@code searchResults}
+	 * @param searchResults The {@code List} of search results
 	 */
 	private void addScores(List<SearchResult> searchResults) {
 		for (SearchResult result : searchResults) {
