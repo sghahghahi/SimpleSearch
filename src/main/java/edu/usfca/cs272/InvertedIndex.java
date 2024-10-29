@@ -38,6 +38,8 @@ public class InvertedIndex {
 
 	/** Class that represents a search result */
 	public class SearchResult implements Comparable<SearchResult> {
+		// TODO Javadoc the members here too!
+		
 		private int count;
 		private double score;
 		private final String location;
@@ -59,7 +61,7 @@ public class InvertedIndex {
 		 * @return The number of times the stems of the query string were found in the inverted index
 		 */
 		public int getCount() {
-			if (this.dirty) {
+			if (this.dirty) { // TODO Remove this if statement and the setting of the bit
 				this.dirty = false;
 			}
 
@@ -104,13 +106,14 @@ public class InvertedIndex {
 		 * Adds {@code score} to this search result. {@code score} is assumed to be calculated
 		 * @param score The score to add to this search result
 		 */
-		private void addScore(double score) {
+		private void addScore(double score) { // TODO Remove
 			this.score = score;
 			this.dirty = true;
 		}
 
 		@Override
 		public int compareTo(SearchResult o) {
+			// TODO Use getScore not direct access
 			int result = Double.compare(o.score, this.score);
 			if (result != 0) {
 				return result;
@@ -138,7 +141,7 @@ public class InvertedIndex {
 		for (String queryStem : queryStems) {
 			var locations = this.invertedIndex.get(queryStem);
 			if (locations != null) {
-				for (var entry : locations.entrySet()) {
+				for (var entry : locations.entrySet()) { // TODO This loop will be the same in both places, now time to pull out into a private helper method
 					String location = entry.getKey();
 					int matches = entry.getValue().size();
 
@@ -154,7 +157,7 @@ public class InvertedIndex {
 			}
 		}
 
-		addScores(searchResults);
+		addScores(searchResults); // TODO Collections.sort(searchResults);
 		return searchResults;
 	}
 
@@ -169,7 +172,8 @@ public class InvertedIndex {
 		HashMap<String, SearchResult> lookup = new HashMap<>();
 
 		for (String queryStem : queryStems) {
-			for (String word : getWords()) {
+			// TODO https://github.com/usf-cs272n-fall2024/cs272n-lectures/blob/1fbcd86dec1520aaa3e1f7de6350fac190be4281/src/main/java/edu/usfca/cs272/lectures/basics/data/FindDemo.java#L143-L159
+			for (String word : getWords()) { // TODO Need direct access
 				if (word.startsWith(queryStem)) {
 					for (String location : getLocations(word)) {
 						int matches = numPositions(word, location);
@@ -195,7 +199,7 @@ public class InvertedIndex {
 	 * Adds scores to each {@code SearchResult} in {@code searchResults}
 	 * @param searchResults The {@code List} of search results
 	 */
-	private void addScores(List<SearchResult> searchResults) {
+	private void addScores(List<SearchResult> searchResults) { // TODO Remove
 		for (SearchResult result : searchResults) {
 			result.addScore(result.getScore());
 		}
@@ -210,7 +214,7 @@ public class InvertedIndex {
 	 * @param count - The number of stems
 	 * @return {@code true} if the add was successful
 	 */
-	public boolean addCount(String location, int count) {
+	public boolean addCount(String location, int count) { // TODO Remove or make private
 		if (count == 0) {
 			return false;
 		}
@@ -260,6 +264,16 @@ public class InvertedIndex {
 		}
 
 		return positions.add(wordPosition);
+		
+		/*
+		 * TODO Update the count here
+		 * 
+		 * Choose 1:
+		 * 
+		 * 1) increment every time something new is added
+		 * 
+		 * 2) keep the max position seen
+		 */
 	}
 
 	/**
