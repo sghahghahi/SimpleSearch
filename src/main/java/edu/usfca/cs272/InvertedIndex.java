@@ -38,49 +38,75 @@ public class InvertedIndex {
 
 	/** Class that represents a search result */
 	public class SearchResult implements Comparable<SearchResult> {
-		// TODO private, create some get methods 
-		
-		protected int count;
-		protected double score;
-		protected String location; // TODO final
-		
-		// TODO private boolean dirty;
+		private int count;
+		private double score;
+		private final String location;
+		private boolean dirty;
 
 		/**
 		 * Constructor that takes in a count, score, and location to be stored as part of a search result
-		 * @param count
-		 * @param score
-		 * @param location
+		 * @param location Where stems of the query string were found
 		 */
-		public SearchResult(int count, double score, String location) { // TODO Only allow the location
-			this.count = count;
-			this.score = score;
+		public SearchResult(String location) {
+			this.count = 0;
+			this.score = 0;
 			this.location = location;
-			
-			// TODO dirty = true;
+			this.dirty = true;
 		}
-		
-		/* TODO 
-		public double getScore() {
-			if (dirty) {
-				this.score = this.count / wordStems.get(location);
-				dirty = false;
-			}
-			
-			return score;
-		}
-		
-		private void addCount(int count) {
-			this.count += count;
-			dirty = true;
-		}
-		*/
 
 		/**
-		 * Default constructor that sets all fields to {@code 0}
+		 * TODO
+		 * @return
 		 */
-		public SearchResult() { // TODO Remove
-			this(0, 0, "");
+		public int getCount() {
+			if (this.dirty) {
+				this.dirty = false;
+			}
+
+			return this.count;
+		}
+
+		/**
+		 * TODO
+		 * @return
+		 */
+		public double getScore() {
+			if (this.dirty) {
+				this.score = (double) this.count / wordStems.getOrDefault(this.location, 0);
+				this.dirty = false;
+			}
+
+			return this.score;
+		}
+
+		/**
+		 * TODO
+		 * @return
+		 */
+		public String getLocation() {
+			if (this.dirty) {
+				this.dirty = false;
+			}
+
+			return this.location;
+		}
+
+		/**
+		 * TODO
+		 * @param count
+		 */
+		private void addCount(int count) {
+			this.count += count;
+			this.dirty = true;
+		}
+
+		/**
+		 * TODO
+		 * @param score
+		 */
+		private void addScore(double score) {
+			this.score = score;
+			this.dirty = true;
 		}
 
 		@Override
@@ -107,34 +133,29 @@ public class InvertedIndex {
 	public List<SearchResult> exactSearch(Set<String> queryStems) {
 		// Stores a location and a search result for that location
 		HashMap<String, SearchResult> lookup = new HashMap<>();
+		List<SearchResult> searchResults = new ArrayList<>();
 
 		for (String queryStem : queryStems) {
-				/* TODO 
-			var locations = invertedIndex.get(queryStem);
-			
+			var locations = this.invertedIndex.get(queryStem);
 			if (locations != null) {
 				for (var entry : locations.entrySet()) {
-					
-				}
-			}
-			*/
-			
-			if (containsWord(queryStem)) {
-				for (String location : getLocations(queryStem)) {
-					int matches = numPositions(queryStem, location);
+					String location = entry.getKey();
+					int matches = entry.getValue().size();
 
-					SearchResult existingResult = lookup.get(location);
+					SearchResult existingResult = lookup.get(entry.getKey());
 					if (existingResult == null) {
-						existingResult = new SearchResult(0, 0, location);
+						existingResult = new SearchResult(location);
 						lookup.put(location, existingResult);
+						searchResults.add(existingResult);
 					}
 
-					existingResult.count += matches;
+					existingResult.addCount(matches);
 				}
 			}
 		}
 
-		return storeSearchResults(lookup);
+		addScores(searchResults);
+		return searchResults;
 	}
 
 	/**
@@ -144,7 +165,7 @@ public class InvertedIndex {
 	 */
 	public List<SearchResult> partialSearch(Set<String> queryStems) {
 		// Stores a location and a search result for that location
-		// TODO List<SearchResult> searchResults = new ArrayList<>();
+		List<SearchResult> searchResults = new ArrayList<>();
 		HashMap<String, SearchResult> lookup = new HashMap<>();
 
 		for (String queryStem : queryStems) {
@@ -155,9 +176,9 @@ public class InvertedIndex {
 
 						SearchResult existingResult = lookup.get(location);
 						if (existingResult == null) {
-							existingResult = new SearchResult(0, 0, location);
+							existingResult = new SearchResult(location);
 							lookup.put(location, existingResult);
-							// TODO searchResults.add(existingResult);
+							searchResults.add(existingResult);
 						}
 
 						existingResult.count += matches;
@@ -166,36 +187,21 @@ public class InvertedIndex {
 			}
 		}
 
-		return storeSearchResults(lookup);
-	}
-
-	/**
-	 * Stores {@code SearchResult} objects into a {@code List} to be sorted
-	 * @param lookup - The lookup {@code Map} that stores a location and a {@code SearchResult} object for that location
-	 * @return The sorted {@code List} of {@code SearchResult} objects to be written as pretty JSON objects
-	 */
-	private List<SearchResult> storeSearchResults(Map<String, SearchResult> lookup) { // TODO This ends up getting removed...
-		for (SearchResult result : lookup.values()) {
-			int numStems = numStems(result.location);
-			result.score = calculateScore(result.count, numStems);
-		}
-
-		List<SearchResult> searchResults = new ArrayList<>(lookup.values());
-		Collections.sort(searchResults);
-
+		addScores(searchResults);
 		return searchResults;
 	}
 
 	/**
-	 * Calculates the score for a search result
-	 * @param matches - Number of matches for the current result
-	 * @param wordCount - Number of stems
-	 * @return The score of the search result based on this calculation: {@code matches / wordCount}
+	 * TODO
+	 * @param searchResults
 	 */
-	private double calculateScore(int matches, int wordCount) {
-		return (double) matches / wordCount;
-	}
+	private void addScores(List<SearchResult> searchResults) {
+		for (SearchResult result : searchResults) {
+			result.addScore(result.getScore());
+		}
 
+		Collections.sort(searchResults);
+	}
 
 	/**
 	 * Adds the {@code location} and number of stems found in it to
