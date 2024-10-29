@@ -9,6 +9,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.Set;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Function;
 
@@ -24,11 +25,14 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
  */
 public class QueryParser {
 	/** {@code TreeMap} that maps each query string to a {@code Map} of locations and its {@code SearchResult} objects */
-	private final TreeMap<String, List<InvertedIndex.SearchResult>> searchResults;
+	// private final TreeMap<String, List<InvertedIndex.SearchResult>> searchResults;
+	// private final TreeMap<Boolean, Map<String, List<InvertedIndex.SearchResult>>> searchResults;
 
-	/*
-	 * TODO Create 2 maps, one for exact, one for partial
-	 */
+	/** TODO */
+	private final TreeMap<String, List<InvertedIndex.SearchResult>> exactSearchResults;
+
+	/** TODO */
+	private final TreeMap<String, List<InvertedIndex.SearchResult>> partialSearchResults;
 
 	/** Initialized and populated inverted index object to reference */
 	private final InvertedIndex invertedIndex;
@@ -36,8 +40,11 @@ public class QueryParser {
 	/** Stemmer to use file-wide */
 	private final SnowballStemmer snowballStemmer;
 
-	/** TODO */
+	/** Search {@code Function} that will be dynamically assigned */
 	private Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction;
+
+	/** TODO */
+	private boolean isExactSearch;
 
 	/**
 	 * Constructor that initializes our search result metadata data structure to an empty {@code TreeMap}
@@ -45,10 +52,11 @@ public class QueryParser {
 	 * This inverted index is passed from the caller and is assumed to be properly initialized and populated
 	 */
 	public QueryParser(InvertedIndex invertedIndex) {
-		this.searchResults= new TreeMap<>();
 		this.invertedIndex = invertedIndex;
 		this.snowballStemmer = new SnowballStemmer(ENGLISH);
 		setSearchMode(true); // Default to exact search
+		this.exactSearchResults = new TreeMap<>();
+		this.partialSearchResults = new TreeMap<>();
 	}
 
 	/**
@@ -56,6 +64,7 @@ public class QueryParser {
 	 * @param isExactSearch - The search type. {@code true} represents an exact search, {@code false} represents a partial search
 	 */
 	public void setSearchMode(boolean isExactSearch) {
+		this.isExactSearch = isExactSearch;
 		if (isExactSearch) {
 			this.searchFunction = this.invertedIndex::exactSearch;
 		} else {
@@ -78,8 +87,8 @@ public class QueryParser {
 	}
 
 	/**
-	 * TODO
-	 * @param line
+	 * Parses a line and performs a search on the inverted index
+	 * @param line The line to parse
 	 */
 	private void parseLine(String line) {
 		Set<String> queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
@@ -87,7 +96,11 @@ public class QueryParser {
 
 		String queryString = extractQueryString(queryStems);
 		if (!queryString.isBlank()) {
-			this.searchResults.put(queryString, searchResults);
+			if (isExactSearch) {
+				this.exactSearchResults.put(queryString, searchResults);
+			} else {
+				this.partialSearchResults.put(queryString, searchResults);
+			}
 		}
 	}
 
@@ -105,7 +118,11 @@ public class QueryParser {
 	 * @param location - Where to write the results to
 	 * @throws IOException If an IO error occurs
 	 */
-	public void queryJson(Path location) throws IOException { // TODO Need to know whether to output exact or partial results
-		SearchResultWriter.writeSearchResults(this.searchResults, location);
+	public void queryJson(Path location) throws IOException {
+		if (this.isExactSearch) {
+			SearchResultWriter.writeSearchResults(this.exactSearchResults, location);
+		} else {
+			SearchResultWriter.writeSearchResults(this.partialSearchResults, location);
+		}
 	}
 }
