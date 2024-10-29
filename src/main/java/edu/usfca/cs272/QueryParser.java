@@ -38,6 +38,8 @@ public class QueryParser {
 	/** Search {@code Function} that will be dynamically assigned */
 	private Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction;
 
+	// TODO private TreeMap<String, List<InvertedIndex.SearchResult>> resultMap;
+	
 	/** Flag to keep track of current search mode */
 	private boolean isExactSearch;
 
@@ -62,6 +64,7 @@ public class QueryParser {
 		this.isExactSearch = isExactSearch;
 		if (isExactSearch) {
 			this.searchFunction = this.invertedIndex::exactSearch;
+			// TODO this.searchMap = exactSearchResults etc.
 		} else {
 			this.searchFunction = this.invertedIndex::partialSearch;
 		}
@@ -91,7 +94,7 @@ public class QueryParser {
 
 		String queryString = extractQueryString(queryStems);
 		if (!queryString.isBlank()) {
-			if (isExactSearch) {
+			if (isExactSearch) { // TODO searchMap.put(
 				this.exactSearchResults.put(queryString, searchResults);
 			} else {
 				this.partialSearchResults.put(queryString, searchResults);
@@ -104,7 +107,7 @@ public class QueryParser {
 	 * @param queryStems - The query stems to Stringify
 	 * @return The space-separated query {@code String}
 	 */
-	private String extractQueryString(Set<String> queryStems) {
+	private String extractQueryString(Set<String> queryStems) { // TODO public static
 		return String.join(" ", queryStems);
 	}
 
@@ -120,4 +123,6 @@ public class QueryParser {
 			SearchResultWriter.writeSearchResults(this.partialSearchResults, location);
 		}
 	}
+	
+	// TODO Create some get/view methods for the maps
 }

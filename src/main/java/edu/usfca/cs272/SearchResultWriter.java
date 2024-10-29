@@ -102,7 +102,7 @@ public class SearchResultWriter {
 			writeIndent("\n", writer, 0);
 			writeSearchResult(iterator.next(), writer, indent + 1);
 
-			if (iterator.hasNext()) {
+			if (iterator.hasNext()) { // TODO Fix this one
 				writeIndent(",", writer, 0);
 			}
 		}
