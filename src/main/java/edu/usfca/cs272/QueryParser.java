@@ -58,7 +58,7 @@ public class QueryParser {
 	 * Sets the search mode to either exact or partial
 	 * @param isExactSearch - The search type. {@code true} represents an exact search, {@code false} represents a partial search
 	 */
-	public void setSearchMode(boolean isExactSearch) {
+	public final void setSearchMode(boolean isExactSearch) {
 		this.isExactSearch = isExactSearch;
 		if (isExactSearch) {
 			this.searchFunction = this.invertedIndex::exactSearch;
