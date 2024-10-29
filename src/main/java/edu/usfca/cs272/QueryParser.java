@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.Set;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -25,7 +26,7 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 public class QueryParser {
 	/** {@code TreeMap} that maps each query string to a {@code Map} of locations and its {@code SearchResult} objects */
 	private final TreeMap<String, List<InvertedIndex.SearchResult>> searchResults;
-	
+
 	/*
 	 * TODO Create 2 maps, one for exact, one for partial
 	 */
@@ -35,10 +36,10 @@ public class QueryParser {
 
 	/** Flag to specify whether an exact search or partial search should be executed. Defaults to exact search */
 	private boolean exactSearch; // TODO Could just make this a parameter to queryLocation and queryJson
-	// TODO OR make this Function<...> searchFunction 
+	// TODO OR make this Function<...> searchFunction
 
 	/** Stemmer to use file-wide */
-	private final SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH); // TODO Either make static or init in the constructor
+	private final SnowballStemmer snowballStemmer;
 
 	/**
 	 * Constructor that initializes our search result metadata data structure to an empty {@code TreeMap}
@@ -49,6 +50,7 @@ public class QueryParser {
 		this.searchResults= new TreeMap<>();
 		this.invertedIndex = invertedIndex;
 		this.exactSearch = true;
+		this.snowballStemmer = new SnowballStemmer(ENGLISH);
 	}
 
 	/**
