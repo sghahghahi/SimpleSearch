@@ -120,9 +120,9 @@ public class SearchResultWriter {
 	 */
 	private static void writeSearchResult(SearchResult result, Writer writer, int indent) throws IOException {
 		TreeMap<String, String> map = new TreeMap<>();
-		map.put("count", Integer.toString(result.count));
-		map.put("score", FORMATTER.format(result.score));
-		map.put("where", "\"" + result.location + "\"");
+		map.put("count", Integer.toString(result.getCount()));
+		map.put("score", FORMATTER.format(result.getScore()));
+		map.put("where", "\"" + result.getLocation()+ "\"");
 		writeStringObject(map, writer, indent);
 	}
 
