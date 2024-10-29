@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -85,6 +86,8 @@ public class JsonWriter {
 	 * Writes the {@code key} and {@code value} as a key/value pair separated by a {@code :}
 	 * @param key - The key to write
 	 * @param value - The {@code Collection} to write
+	 * @param writer - The writer to use
+	 * @param indent - The indentation level
 	 * @throws IOException If an IO error occurs
 	 */
 	public static void writeObejctArrayEntry(String key, Collection<? extends Number> value, Writer writer, int indent) throws IOException {
@@ -97,6 +100,8 @@ public class JsonWriter {
 	 * Writes the {@code key} and {@code value} as a key/value pair separated by a {@code :}
 	 * @param key - The key to write
 	 * @param value - The {@code Collection} to write
+	 * @param writer - The writer to use
+	 * @param indent - The indentation level
 	 * @throws IOException If an IO error occurs
 	 */
 	public static void writeObjectObjectEntry(String key, Map<String, ? extends Collection<? extends Number>> value, Writer writer, int indent) throws IOException {
@@ -428,7 +433,7 @@ public class JsonWriter {
 	 * Writes the elements as a pretty JSON array with nested Maps to file.
 	 * @param elements The elements to write
 	 * @param writer The writer to use
-	 * @param indent the initial indent level; the first bracket is not indented,
+	 * @param indent The initial indent level; the first bracket is not indented,
 	 * inner elements are indented by one, and the last bracket is indented at
 	 * the initial indentation level
 	 * @throws IOException if an IO error occurs

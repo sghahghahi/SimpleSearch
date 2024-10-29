@@ -65,7 +65,6 @@ public class TextFileIndexer {
 	 * Recursively reads all files and subdirectories from {@code dirLocation}.
 	 * Only reads files if they end in {@code .txt} or {@code .text} (case-insensitive).
 	 * @param dirLocation location of directory to traverse
-	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
 	public void indexDirectory(Path dirLocation) throws IOException {
@@ -99,7 +98,6 @@ public class TextFileIndexer {
 	 * Reads {@code path}.
 	 * Sends the directory or file at {@code location} to its appropriate method.
 	 * @param location The location of either a directory or file
-	 * @param invertedIndex The {@code InvertedIndex} object that requires I/O operations
 	 * @throws IOException If an IO error occurs
 	 */
 	public void indexLocation(Path location) throws IOException {
