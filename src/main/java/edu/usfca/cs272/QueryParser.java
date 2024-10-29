@@ -9,7 +9,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.Set;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Function;
 
@@ -24,14 +23,10 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
  * @version Fall 2024
  */
 public class QueryParser {
-	/** {@code TreeMap} that maps each query string to a {@code Map} of locations and its {@code SearchResult} objects */
-	// private final TreeMap<String, List<InvertedIndex.SearchResult>> searchResults;
-	// private final TreeMap<Boolean, Map<String, List<InvertedIndex.SearchResult>>> searchResults;
-
-	/** TODO */
+	/** Maps each query string to a {@code List} of search results */
 	private final TreeMap<String, List<InvertedIndex.SearchResult>> exactSearchResults;
 
-	/** TODO */
+	/** Maps each query string to a {@code List} of search results */
 	private final TreeMap<String, List<InvertedIndex.SearchResult>> partialSearchResults;
 
 	/** Initialized and populated inverted index object to reference */
@@ -43,7 +38,7 @@ public class QueryParser {
 	/** Search {@code Function} that will be dynamically assigned */
 	private Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction;
 
-	/** TODO */
+	/** Flag to keep track of current search mode */
 	private boolean isExactSearch;
 
 	/**
@@ -77,7 +72,7 @@ public class QueryParser {
 	 * @param queryLocation - Where to find the query words
 	 * @throws IOException If an IO error occurs
 	 */
-	public void queryLocation(Path queryLocation) throws IOException { // TODO parseLocation
+	public void parseLocation(Path queryLocation) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
@@ -109,7 +104,7 @@ public class QueryParser {
 	 * @param queryStems - The query stems to Stringify
 	 * @return The space-separated query {@code String}
 	 */
-	private String extractQueryString(Set<String> queryStems) { // TODO Could be static
+	private String extractQueryString(Set<String> queryStems) {
 		return String.join(" ", queryStems);
 	}
 
