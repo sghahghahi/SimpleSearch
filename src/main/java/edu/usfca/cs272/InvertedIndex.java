@@ -148,7 +148,7 @@ public class InvertedIndex {
 			}
 		}
 
-		addScores(searchResults); // TODO Collections.sort(searchResults);
+		Collections.sort(searchResults);
 		return searchResults;
 	}
 
@@ -185,21 +185,8 @@ public class InvertedIndex {
 			}
 		}
 
-		addScores(searchResults);
-		return searchResults;
-	}
-
-	/**
-	 * Adds scores to each {@code SearchResult} in {@code searchResults}
-	 * @param searchResults The {@code List} of search results
-	 */
-	private void addScores(List<SearchResult> searchResults) { // TODO Remove
-		for (SearchResult result : searchResults) {
-			// result.addScore(result.getScore());
-			result.score = result.getScore();
-		}
-
 		Collections.sort(searchResults);
+		return searchResults;
 	}
 
 	/**
