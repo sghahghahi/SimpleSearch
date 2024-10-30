@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -132,19 +133,7 @@ public class InvertedIndex {
 		for (String queryStem : queryStems) {
 			var locations = this.invertedIndex.get(queryStem);
 			if (locations != null) {
-				for (var entry : locations.entrySet()) { // TODO This loop will be the same in both places, now time to pull out into a private helper method
-					String location = entry.getKey();
-					int matches = entry.getValue().size();
-
-					SearchResult existingResult = lookup.get(entry.getKey());
-					if (existingResult == null) {
-						existingResult = new SearchResult(location);
-						lookup.put(location, existingResult);
-						searchResults.add(existingResult);
-					}
-
-					existingResult.addCount(matches);
-				}
+				generateSearchResult(locations, lookup, searchResults);
 			}
 		}
 
@@ -168,26 +157,37 @@ public class InvertedIndex {
 					break;
 				}
 
-				var locations = this.invertedIndex.get(word).keySet();
+				var locations = this.invertedIndex.get(word);
 				if (locations != null) {
-					for (String location : locations) {
-						int matches = numPositions(word, location);
-
-						SearchResult existingResult = lookup.get(location);
-						if (existingResult == null) {
-							existingResult = new SearchResult(location);
-							lookup.put(location, existingResult);
-							searchResults.add(existingResult);
-						}
-
-						existingResult.count += matches;
-					}
+					generateSearchResult(locations, lookup, searchResults);
 				}
 			}
 		}
 
 		Collections.sort(searchResults);
 		return searchResults;
+	}
+
+	/**
+	 * Generates an {@code SearchResult} object with a location and count, then adds it to {@code searchResults}
+	 * @param locations A {@code Map} of locations and word positions in the inverted index
+	 * @param lookup A lookup {@code Map} that stores a location and a {@code SearchResult} object at that location
+	 * @param searchResults A {@code List} of {@code SearchResult} objects
+	 */
+	private void generateSearchResult(Map<String, ? extends Set<Integer>> locations, Map<String, SearchResult> lookup, List<SearchResult> searchResults) {
+		for (var entry : locations.entrySet()) {
+			String location = entry.getKey();
+			int matches = entry.getValue().size();
+
+			SearchResult existingResult = lookup.get(location);
+			if (existingResult == null) {
+				existingResult = new SearchResult(location);
+				lookup.put(location, existingResult);
+				searchResults.add(existingResult);
+			}
+
+			existingResult.addCount(matches);
+		}
 	}
 
 	/**
