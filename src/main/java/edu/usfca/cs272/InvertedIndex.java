@@ -163,23 +163,24 @@ public class InvertedIndex {
 		HashMap<String, SearchResult> lookup = new HashMap<>();
 
 		for (String queryStem : queryStems) {
-			// TODO https://github.com/usf-cs272n-fall2024/cs272n-lectures/blob/1fbcd86dec1520aaa3e1f7de6350fac190be4281/src/main/java/edu/usfca/cs272/lectures/basics/data/FindDemo.java#L143-L159
-			for (String word : this.invertedIndex.keySet()) {
-				if (word.startsWith(queryStem)) {
-					var locations = this.invertedIndex.get(word).keySet();
-					if (locations != null) {
-						for (String location : locations) {
-							int matches = numPositions(word, location);
+			for (String word : this.invertedIndex.tailMap(queryStem).keySet()) {
+				if (!word.startsWith(queryStem)) {
+					break;
+				}
 
-							SearchResult existingResult = lookup.get(location);
-							if (existingResult == null) {
-								existingResult = new SearchResult(location);
-								lookup.put(location, existingResult);
-								searchResults.add(existingResult);
-							}
+				var locations = this.invertedIndex.get(word).keySet();
+				if (locations != null) {
+					for (String location : locations) {
+						int matches = numPositions(word, location);
 
-							existingResult.count += matches;
+						SearchResult existingResult = lookup.get(location);
+						if (existingResult == null) {
+							existingResult = new SearchResult(location);
+							lookup.put(location, existingResult);
+							searchResults.add(existingResult);
 						}
+
+						existingResult.count += matches;
 					}
 				}
 			}
