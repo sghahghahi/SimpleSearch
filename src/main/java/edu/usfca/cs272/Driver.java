@@ -90,11 +90,8 @@ public class Driver {
 		if (argParser.hasFlag(QUERY)) {
 			location = argParser.getPath(QUERY);
 			try {
-				Path textLocation = argParser.getPath(TEXT); // TODO Remove this check
-				if (textLocation != null) {
-					queryParser.setSearchMode(!argParser.hasFlag(PARTIAL));
-					queryParser.parseLocation(location);
-				}
+				queryParser.setSearchMode(!argParser.hasFlag(PARTIAL));
+				queryParser.parseLocation(location);
 			} catch (IOException e) {
 				System.err.println("Unable to read search queries from location: " + location);
 			} catch (NullPointerException e) {
