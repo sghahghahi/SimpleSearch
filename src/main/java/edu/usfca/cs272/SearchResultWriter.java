@@ -98,13 +98,14 @@ public class SearchResultWriter {
 	 */
 	private static void writeList(Collection<SearchResult> results, Writer writer, int indent) throws IOException {
 		var iterator = results.iterator();
-		while (iterator.hasNext()) {
+		if (iterator.hasNext()) {
 			writeIndent("\n", writer, 0);
 			writeSearchResult(iterator.next(), writer, indent + 1);
-
-			if (iterator.hasNext()) { // TODO Fix this one
-				writeIndent(",", writer, 0);
-			}
+		}
+		
+		while (iterator.hasNext()) {
+			writeIndent(",\n", writer, 0);
+			writeSearchResult(iterator.next(), writer, indent + 1);
 		}
 
 		writeIndent("\n", writer, 0);
