@@ -66,10 +66,6 @@ public class InvertedIndex {
 		 * @return The number of times the stems of the query string were found in the inverted index
 		 */
 		public int getCount() {
-			if (this.dirty) { // TODO Remove this if statement and the setting of the bit
-				this.dirty = false;
-			}
-
 			return this.count;
 		}
 
@@ -107,29 +103,19 @@ public class InvertedIndex {
 			this.dirty = true;
 		}
 
-		/**
-		 * Adds {@code score} to this search result. {@code score} is assumed to be calculated
-		 * @param score The score to add to this search result
-		 */
-		private void addScore(double score) { // TODO Remove
-			this.score = score;
-			this.dirty = true;
-		}
-
 		@Override
 		public int compareTo(SearchResult o) {
-			// TODO Use getScore not direct access
-			int result = Double.compare(o.score, this.score);
+			int result = Double.compare(o.getScore(), this.getScore());
 			if (result != 0) {
 				return result;
 			}
 
-			result = Integer.compare(o.count, this.count);
+			result = Integer.compare(o.getCount(), this.getCount());
 			if (result != 0) {
 				return result;
 			}
 
-			return this.location.compareTo(o.location);
+			return this.getLocation().compareTo(o.getLocation());
 		}
 	}
 
@@ -178,19 +164,22 @@ public class InvertedIndex {
 
 		for (String queryStem : queryStems) {
 			// TODO https://github.com/usf-cs272n-fall2024/cs272n-lectures/blob/1fbcd86dec1520aaa3e1f7de6350fac190be4281/src/main/java/edu/usfca/cs272/lectures/basics/data/FindDemo.java#L143-L159
-			for (String word : getWords()) { // TODO Need direct access
+			for (String word : this.invertedIndex.keySet()) {
 				if (word.startsWith(queryStem)) {
-					for (String location : getLocations(word)) {
-						int matches = numPositions(word, location);
+					var locations = this.invertedIndex.get(word).keySet();
+					if (locations != null) {
+						for (String location : locations) {
+							int matches = numPositions(word, location);
 
-						SearchResult existingResult = lookup.get(location);
-						if (existingResult == null) {
-							existingResult = new SearchResult(location);
-							lookup.put(location, existingResult);
-							searchResults.add(existingResult);
+							SearchResult existingResult = lookup.get(location);
+							if (existingResult == null) {
+								existingResult = new SearchResult(location);
+								lookup.put(location, existingResult);
+								searchResults.add(existingResult);
+							}
+
+							existingResult.count += matches;
 						}
-
-						existingResult.count += matches;
 					}
 				}
 			}
@@ -206,7 +195,8 @@ public class InvertedIndex {
 	 */
 	private void addScores(List<SearchResult> searchResults) { // TODO Remove
 		for (SearchResult result : searchResults) {
-			result.addScore(result.getScore());
+			// result.addScore(result.getScore());
+			result.score = result.getScore();
 		}
 
 		Collections.sort(searchResults);
