@@ -36,10 +36,12 @@ public class QueryParser {
 	private final SnowballStemmer snowballStemmer;
 
 	/** Search {@code Function} that will be dynamically assigned */
+	// TODO rename
 	private Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction;
 
-	// TODO private TreeMap<String, List<InvertedIndex.SearchResult>> resultMap;
-	
+	/** TODO */
+	private TreeMap<String, List<InvertedIndex.SearchResult>> resultMap;
+
 	/** Flag to keep track of current search mode */
 	private boolean isExactSearch;
 
@@ -63,10 +65,13 @@ public class QueryParser {
 	public final void setSearchMode(boolean isExactSearch) {
 		this.isExactSearch = isExactSearch;
 		if (isExactSearch) {
+			// TODO rename searchFunction
 			this.searchFunction = this.invertedIndex::exactSearch;
-			// TODO this.searchMap = exactSearchResults etc.
+			this.resultMap = this.exactSearchResults;
 		} else {
+			// TODO rename searchFunction
 			this.searchFunction = this.invertedIndex::partialSearch;
+			this.resultMap = this.partialSearchResults;
 		}
 	}
 
@@ -94,11 +99,7 @@ public class QueryParser {
 
 		String queryString = extractQueryString(queryStems);
 		if (!queryString.isBlank()) {
-			if (isExactSearch) { // TODO searchMap.put(
-				this.exactSearchResults.put(queryString, searchResults);
-			} else {
-				this.partialSearchResults.put(queryString, searchResults);
-			}
+			this.resultMap.put(queryString, searchResults);
 		}
 	}
 
@@ -123,6 +124,6 @@ public class QueryParser {
 			SearchResultWriter.writeSearchResults(this.partialSearchResults, location);
 		}
 	}
-	
+
 	// TODO Create some get/view methods for the maps
 }
