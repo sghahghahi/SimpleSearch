@@ -38,11 +38,16 @@ public class InvertedIndex {
 
 	/** Class that represents a search result */
 	public class SearchResult implements Comparable<SearchResult> {
-		// TODO Javadoc the members here too!
-		
+		/** The number of matches of the stems of the query string in the inverted index */
 		private int count;
+
+		/** The calculated score of the search result */
 		private double score;
+
+		/** Where the search result was conducted */
 		private final String location;
+
+		/** Dirty bit to keep track of changes in search result metrics */
 		private boolean dirty;
 
 		/**
@@ -264,14 +269,14 @@ public class InvertedIndex {
 		}
 
 		return positions.add(wordPosition);
-		
+
 		/*
 		 * TODO Update the count here
-		 * 
+		 *
 		 * Choose 1:
-		 * 
+		 *
 		 * 1) increment every time something new is added
-		 * 
+		 *
 		 * 2) keep the max position seen
 		 */
 	}
