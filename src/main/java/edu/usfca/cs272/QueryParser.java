@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
 
+import java.util.Collections;
+
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
@@ -122,5 +124,52 @@ public class QueryParser {
 		}
 	}
 
-	// TODO Create some get/view methods for the maps
+	/**
+	 * Returns a {@code Set} of the query strings in the result map
+	 * @return A {@code Set} of the query strings in the reuslt map
+	 */
+	public Set<String> getQueryStrings() {
+		return Collections.unmodifiableSet(this.resultMap.keySet());
+	}
+
+	/**
+	 * Checks if {@code queryString} is a key in the results map
+	 * @param queryString The query string to check
+	 * @return {@code true} if {@code queryString} is a key in the result map
+	 */
+	public boolean containsQueryString(String queryString) {
+		return this.resultMap.containsKey(queryString);
+	}
+
+	/**
+	 * Checks if {@code searchResult} is in the {@code List} of search result objects
+	 * @param queryString The query string to look up in the result map
+	 * @param searchResult The search result to look up in the {@code List} of search results
+	 * @return {@code true} if {@code searchResult} is in the {@code List} of search results
+	 */
+	public boolean containsSearchResult(String queryString, InvertedIndex.SearchResult searchResult) {
+		List<InvertedIndex.SearchResult> searchResults = this.resultMap.get(queryString);
+		if (searchResults == null) {
+			return false;
+		}
+
+		return searchResults.contains(searchResult);
+	}
+
+	/**
+	 * Returns the number of query strings in the reuslt map
+	 * @return The number of query strings in the result map
+	 */
+	public int numQueryStrings() {
+		return this.resultMap.size();
+	}
+
+	/**
+	 * Returns the number of search results for a specific query string
+	 * @param queryString The query string to look up in the result map
+	 * @return The number of search results for {@code queryString}
+	 */
+	public int numSearchResults(String queryString) {
+		return this.resultMap.getOrDefault(queryString, Collections.emptyList()).size();
+	}
 }
