@@ -36,10 +36,9 @@ public class QueryParser {
 	private final SnowballStemmer snowballStemmer;
 
 	/** Search {@code Function} that will be dynamically assigned */
-	// TODO rename
-	private Function<Set<String>, List<InvertedIndex.SearchResult>> searchFunction;
+	private Function<Set<String>, List<InvertedIndex.SearchResult>> searchMode;
 
-	/** TODO */
+	/** {@code Map} to store either partial or exact search results */
 	private TreeMap<String, List<InvertedIndex.SearchResult>> resultMap;
 
 	/** Flag to keep track of current search mode */
@@ -65,12 +64,10 @@ public class QueryParser {
 	public final void setSearchMode(boolean isExactSearch) {
 		this.isExactSearch = isExactSearch;
 		if (isExactSearch) {
-			// TODO rename searchFunction
-			this.searchFunction = this.invertedIndex::exactSearch;
+			this.searchMode = this.invertedIndex::exactSearch;
 			this.resultMap = this.exactSearchResults;
 		} else {
-			// TODO rename searchFunction
-			this.searchFunction = this.invertedIndex::partialSearch;
+			this.searchMode = this.invertedIndex::partialSearch;
 			this.resultMap = this.partialSearchResults;
 		}
 	}
@@ -95,7 +92,7 @@ public class QueryParser {
 	 */
 	private void parseLine(String line) {
 		Set<String> queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
-		List<InvertedIndex.SearchResult> searchResults = this.searchFunction.apply(queryStems);
+		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
 
 		String queryString = extractQueryString(queryStems);
 		if (!queryString.isBlank()) {
@@ -108,7 +105,7 @@ public class QueryParser {
 	 * @param queryStems - The query stems to Stringify
 	 * @return The space-separated query {@code String}
 	 */
-	private String extractQueryString(Set<String> queryStems) { // TODO public static
+	public static String extractQueryString(Set<String> queryStems) {
 		return String.join(" ", queryStems);
 	}
 
