@@ -56,8 +56,6 @@ public class TextFileIndexer {
 					);
 				}
 			}
-
-			this.invertedIndex.addCount(location, wordPosition - 1); // TODO Remove
 		}
 	}
 

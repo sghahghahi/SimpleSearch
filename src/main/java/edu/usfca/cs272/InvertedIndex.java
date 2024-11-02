@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -197,7 +196,7 @@ public class InvertedIndex {
 	 * @param count - The number of stems
 	 * @return {@code true} if the add was successful
 	 */
-	public boolean addCount(String location, int count) { // TODO Remove or make private
+	private boolean addCount(String location, int count) {
 		if (count == 0) {
 			return false;
 		}
@@ -246,7 +245,12 @@ public class InvertedIndex {
 			locations.put(location, positions);
 		}
 
-		return positions.add(wordPosition);
+		boolean added = positions.add(wordPosition);
+		if (added) {
+			addCount(location, 1);
+		}
+
+		return added;
 
 		/*
 		 * TODO Update the count here
