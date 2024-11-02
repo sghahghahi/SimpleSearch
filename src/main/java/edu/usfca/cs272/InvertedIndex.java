@@ -251,16 +251,6 @@ public class InvertedIndex {
 		}
 
 		return added;
-
-		/*
-		 * TODO Update the count here
-		 *
-		 * Choose 1:
-		 *
-		 * 1) increment every time something new is added
-		 *
-		 * 2) keep the max position seen
-		 */
 	}
 
 	/**
