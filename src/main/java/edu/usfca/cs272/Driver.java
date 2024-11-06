@@ -40,8 +40,14 @@ public class Driver {
 	/** File name to write search results to if no file path included after {@code -results} flag. Will write this file in the current working directory. */
 	public static final String RESULTS_BACKUP = "results.json";
 
-	/** {@code -partial} flag passed as an argument to this program. Will trigger a partial search for each of the multi-line queries in the query file */
+	/** {@code -partial} flag passed as an argument to this program. Will trigger a partial search for each of the multi-line queries in the query file. */
 	public static final String PARTIAL = "-partial";
+
+	/** {@code -thread} flag passed as an argument to this program. Will trigger a build of a thread-safe inverted index. */
+	public static final String THREAD = "-threads";
+
+	/** If the user doesn't specify how many threads to use to build a thread-safe inverted index, this default value will be used. */
+	public static final int NUM_THREADS = 5;
 
 	/**
 	 * Initializes the classes necessary based on the provided command-line
@@ -90,8 +96,15 @@ public class Driver {
 		if (argParser.hasFlag(QUERY)) {
 			location = argParser.getPath(QUERY);
 			try {
-				queryParser.setSearchMode(!argParser.hasFlag(PARTIAL));
-				queryParser.parseLocation(location);
+				if (argParser.hasFlag(THREAD)) {
+					ThreadSafeInvertedIndex threadSafeInvertedIndex = new ThreadSafeInvertedIndex();
+					ThreadSafeQueryParser threadSafeQueryParser = new ThreadSafeQueryParser(threadSafeInvertedIndex, argParser.getInteger(THREAD, NUM_THREADS));
+					threadSafeQueryParser.setSearchMode(!argParser.hasFlag(PARTIAL));
+					threadSafeQueryParser.parseLocation(location);
+				} else {
+					queryParser.setSearchMode(!argParser.hasFlag(PARTIAL));
+					queryParser.parseLocation(location);
+				}
 			} catch (IOException e) {
 				System.err.println("Unable to read search queries from location: " + location);
 			} catch (NullPointerException e) {
