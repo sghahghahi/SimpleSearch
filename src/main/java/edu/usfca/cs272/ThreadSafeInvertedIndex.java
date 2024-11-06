@@ -28,32 +28,76 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		this.writeLock = this.lock.writeLock();
 	}
 
-	/*
-	 * Things to override:
-	 * Anything related to search
-	 * exactSearch()
-	 * partialSearch()
-	 * Set search mode
-	 * Any read/write methods that any of the bove 3 methods call
-	 */
+	/** TODO */
+	public class SearchResult extends InvertedIndex.SearchResult {
+		/** TODO */
+		private final MultiReaderLock lock;
 
-	@Override
-	public List<SearchResult> exactSearch(Set<String> queryStems) {
-		readLock.lock();
-		try {
-			return super.exactSearch(queryStems);
-		} finally {
-			readLock.unlock();
+		/** TODO */
+		private final SimpleLock readLock;
+
+		/** TODO */
+		private final SimpleLock writeLock;
+
+		/** TODO */
+		public SearchResult(String location) {
+			super(location);
+			this.lock = new MultiReaderLock();
+			this.readLock = this.lock.readLock();
+			this.writeLock = this.lock.writeLock();
+		}
+
+		/** TODO */
+		@Override
+		public int getCount() {
+			this.readLock.lock();
+			try {
+				return super.getCount();
+			} finally {
+				this.readLock.unlock();
+			}
+		}
+
+		/** TODO */
+		@Override
+		public double getScore() {
+			this.writeLock.lock();
+			try {
+				return super.getScore();
+			} finally {
+				this.writeLock.unlock();
+			}
+		}
+
+		/** TODO */
+		@Override
+		public String getLocation() {
+			this.writeLock.lock();
+			try {
+				return super.getLocation();
+			} finally {
+				this.writeLock.unlock();
+			}
 		}
 	}
 
 	@Override
-	public List<SearchResult> partialSearch(Set<String> queryStems) {
-		readLock.lock();
+	public List<InvertedIndex.SearchResult> exactSearch(Set<String> queryStems) {
+		this.readLock.lock();
+		try {
+			return super.exactSearch(queryStems);
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
+	public List<InvertedIndex.SearchResult> partialSearch(Set<String> queryStems) {
+		this.readLock.lock();
 		try {
 			return super.partialSearch(queryStems);
 		} finally {
-			readLock.unlock();
+			this.readLock.unlock();
 		}
 	}
 }
