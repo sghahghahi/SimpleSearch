@@ -43,9 +43,6 @@ public class QueryParser {
 	/** {@code Map} to store either partial or exact search results */
 	private TreeMap<String, List<InvertedIndex.SearchResult>> resultMap;
 
-	/** Flag to keep track of current search mode */
-	private boolean isExactSearch;
-
 	/**
 	 * Constructor that initializes our search result metadata data structure to an empty {@code TreeMap}
 	 * @param invertedIndex - The inverted index object to reference. We are not constructing a new inverted index in this class.
@@ -64,7 +61,6 @@ public class QueryParser {
 	 * @param isExactSearch - The search type. {@code true} represents an exact search, {@code false} represents a partial search
 	 */
 	public final void setSearchMode(boolean isExactSearch) {
-		this.isExactSearch = isExactSearch;
 		if (isExactSearch) {
 			this.searchMode = this.invertedIndex::exactSearch;
 			this.resultMap = this.exactSearchResults;
@@ -117,11 +113,7 @@ public class QueryParser {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void queryJson(Path location) throws IOException {
-		if (this.isExactSearch) {
-			SearchResultWriter.writeSearchResults(this.exactSearchResults, location);
-		} else {
-			SearchResultWriter.writeSearchResults(this.partialSearchResults, location);
-		}
+		SearchResultWriter.writeSearchResults(this.resultMap, location);
 	}
 
 	/**
