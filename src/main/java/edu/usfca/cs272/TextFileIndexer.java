@@ -24,12 +24,16 @@ public class TextFileIndexer {
 	/** {@code InvertedIndex} object to reference class-wide */
 	private final InvertedIndex invertedIndex;
 
+	/** Stemmer to use class-wide */
+	private final SnowballStemmer snowballStemmer;
+
 	/**
 	 * Instantiates this class with an {@code InvertedIndex} object to reference
 	 * @param invertedIndex - The {@code InvertedIndex} object to reference
 	 */
 	public TextFileIndexer(InvertedIndex invertedIndex) {
 		this.invertedIndex = invertedIndex;
+		this.snowballStemmer = new SnowballStemmer(ENGLISH);
 	}
 
 	/**
@@ -39,8 +43,6 @@ public class TextFileIndexer {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void indexFile(Path path) throws IOException {
-		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
-
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
 			int wordPosition = 1;
 			String line = null;
@@ -51,7 +53,7 @@ public class TextFileIndexer {
 
 				for (String cleanWord : cleanedWords) {
 					this.invertedIndex.addWordPosition(
-						snowballStemmer.stem(cleanWord).toString(),
+						this.snowballStemmer.stem(cleanWord).toString(),
 						location, wordPosition++
 					);
 				}
