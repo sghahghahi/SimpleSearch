@@ -62,6 +62,23 @@ public class WorkQueue {
 	}
 
 	/**
+	 * TODO
+	 */
+	private synchronized void incrementPending() {
+		this.pending++;
+	}
+
+	/**
+	 * TODO
+	 */
+	private synchronized void decrementPending() {
+		this.pending--;
+		if (this.pending == 0) {
+			this.notifyAll();
+		}
+	}
+
+	/**
 	 * Adds a work (or task) request to the queue. A worker thread will process this
 	 * request when available.
 	 *
@@ -74,13 +91,11 @@ public class WorkQueue {
 			throw new IllegalStateException("Work queue is shutdown.");
 		}
 
+		incrementPending();
+
 		synchronized (tasks) {
 			tasks.addLast(task);
 			tasks.notifyAll();
-		}
-
-		synchronized (this) {
-			this.pending++;
 		}
 	}
 
@@ -196,12 +211,7 @@ public class WorkQueue {
 						log.catching(Level.ERROR, e);
 					}
 					finally {
-						synchronized (WorkQueue.this) {
-							pending--;
-							if (pending == 0) {
-								WorkQueue.this.notifyAll();
-							}
-						}
+						decrementPending();
 					}
 				}
 			}
