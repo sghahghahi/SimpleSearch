@@ -177,13 +177,13 @@ public class MultiReaderLock {
 		@Override
 		public void unlock() throws IllegalStateException {
 			synchronized (lock) {
-				if (readers == 0) {
+				if (readers > 0) {
+					readers--;
+					if (readers <= 0) {
+						lock.notifyAll();
+					}
+				} else {
 					throw new IllegalStateException("No readers to unlock.");
-				}
-
-				readers--;
-				if (readers == 0) {
-					lock.notifyAll();
 				}
 			}
 		}
