@@ -40,10 +40,6 @@ public class ThreadSafeQueryParser {
 	private TreeMap<String, List<InvertedIndex.SearchResult>> resultMap;
 
 	/** TODO */
-	// Volatile?
-	private boolean isExactSearch;
-
-	/** TODO */
 	private final MultiReaderLock lock;
 
 	/** TODO */
@@ -53,7 +49,6 @@ public class ThreadSafeQueryParser {
 	private final SimpleLock writeLock;
 
 	/** TODO */
-	// Does this need to be class-level?
 	private final WorkQueue queue;
 
 	/**
@@ -100,12 +95,11 @@ public class ThreadSafeQueryParser {
 	 * TODO
 	 * @param exactSearch
 	 */
-	public void setSearchMode(boolean exactSearch) {
+	public void setSearchMode(boolean isExactSearch) {
 		this.writeLock.lock();
 		try {
-			this.isExactSearch = exactSearch;
-			this.searchMode = this.isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
-			this.resultMap = this.isExactSearch ? this.exactSearchResults : this.partialSearchResults;
+			this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
+			this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
 		} finally {
 			this.writeLock.unlock();
 		}
@@ -137,7 +131,7 @@ public class ThreadSafeQueryParser {
 	 * @param line
 	 */
 	private void parseLine(String line) {
-		this.readLock.lock();
+		this.writeLock.lock();
 		try {
 			Set<String> queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
 			List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
@@ -147,7 +141,7 @@ public class ThreadSafeQueryParser {
 				this.resultMap.put(queryString, searchResults);
 			}
 		} finally {
-			this.readLock.unlock();
+			this.writeLock.unlock();
 		}
 	}
 
@@ -161,7 +155,21 @@ public class ThreadSafeQueryParser {
 		try {
 			return String.join(" ", queryStems);
 		} finally {
-			this.readLock.lock();
+			this.readLock.unlock();
+		}
+	}
+
+	/**
+	 * TODO
+	 * @param location
+	 * @throws IOException
+	 */
+	public void queryJson(Path location) throws IOException {
+		this.readLock.lock();
+		try {
+			SearchResultWriter.writeSearchResults(this.resultMap, location);
+		} finally {
+			this.readLock.unlock();
 		}
 	}
 }
