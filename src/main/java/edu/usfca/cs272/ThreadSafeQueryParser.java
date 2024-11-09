@@ -87,9 +87,14 @@ public class ThreadSafeQueryParser {
 	 * TODO
 	 * @param exactSearch
 	 */
-	public synchronized void setSearchMode(boolean isExactSearch) {
-		this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
-		this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
+	public void setSearchMode(boolean isExactSearch) {
+		this.writeLock.lock();
+		try {
+			this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
+			this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
+		} finally {
+			this.writeLock.unlock();
+		}
 	}
 
 	/**
