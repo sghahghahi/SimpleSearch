@@ -43,7 +43,7 @@ public class Driver {
 	/** {@code -partial} flag passed as an argument to this program. Will trigger a partial search for each of the multi-line queries in the query file. */
 	public static final String PARTIAL = "-partial";
 
-	/** {@code -thread} flag passed as an argument to this program. Will trigger a build of a thread-safe inverted index. */
+	/** {@code -threads} flag passed as an argument to this program. Will trigger a build of a thread-safe inverted index. */
 	public static final String THREAD = "-threads";
 
 	/** If the user doesn't specify how many threads to use to build a thread-safe inverted index, this default value will be used. */
@@ -58,9 +58,17 @@ public class Driver {
 	 */
 	public static void main(String[] args) {
 		ArgumentParser argParser = new ArgumentParser(args);
-		InvertedIndex invertedIndex = new InvertedIndex();
+		InvertedIndex invertedIndex = argParser.hasFlag(THREAD) ? new ThreadSafeInvertedIndex() : new InvertedIndex();
 		TextFileIndexer textFileIndexer = new TextFileIndexer(invertedIndex);
-		QueryParser queryParser = new QueryParser(invertedIndex);
+		ThreadSafeQueryParser threadSafeQueryParser = null;
+		QueryParser queryParser = null;
+		if (argParser.hasFlag(THREAD)) {
+			int numThreads = argParser.getInteger(THREAD);
+			int numThreadsToSend = numThreads < 1 ? NUM_THREADS : numThreads;
+			threadSafeQueryParser = new ThreadSafeQueryParser(invertedIndex, numThreadsToSend);
+		} else {
+			queryParser = new QueryParser(invertedIndex);
+		}
 
 		Path location;
 
@@ -97,8 +105,6 @@ public class Driver {
 			location = argParser.getPath(QUERY);
 			try {
 				if (argParser.hasFlag(THREAD)) {
-					ThreadSafeInvertedIndex threadSafeInvertedIndex = new ThreadSafeInvertedIndex();
-					ThreadSafeQueryParser threadSafeQueryParser = new ThreadSafeQueryParser(threadSafeInvertedIndex, argParser.getInteger(THREAD, NUM_THREADS));
 					threadSafeQueryParser.setSearchMode(!argParser.hasFlag(PARTIAL));
 					threadSafeQueryParser.parseLocation(location);
 				} else {
@@ -115,7 +121,11 @@ public class Driver {
 		if (argParser.hasFlag(RESULTS)) {
 			location = argParser.getPath(RESULTS, Path.of(CURR_DIR, RESULTS_BACKUP));
 			try {
-				queryParser.queryJson(location);
+				if (argParser.hasFlag(THREAD)) {
+					threadSafeQueryParser.queryJson(location);
+				} else {
+					queryParser.queryJson(location);
+				}
 			} catch (IOException e) {
 				System.err.println("Unable to write search results to location: " + location);
 			}
