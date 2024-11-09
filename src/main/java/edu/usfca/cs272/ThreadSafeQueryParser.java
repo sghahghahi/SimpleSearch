@@ -31,9 +31,6 @@ public class ThreadSafeQueryParser {
 	private final InvertedIndex invertedIndex;
 
 	/** TODO */
-	private final SnowballStemmer snowballStemmer;
-
-	/** TODO */
 	private Function<Set<String>, List<InvertedIndex.SearchResult>> searchMode;
 
 	/** TODO */
@@ -41,9 +38,6 @@ public class ThreadSafeQueryParser {
 
 	/** TODO */
 	private final MultiReaderLock lock;
-
-	/** TODO */
-	private final SimpleLock readLock;
 
 	/** TODO */
 	private final SimpleLock writeLock;
@@ -57,11 +51,9 @@ public class ThreadSafeQueryParser {
 	 */
 	public ThreadSafeQueryParser(InvertedIndex invertedIndex, int numThreads) {
 		this.invertedIndex = invertedIndex;
-		this.snowballStemmer = new SnowballStemmer(ENGLISH);
 		this.exactSearchResults = new TreeMap<>();
 		this.partialSearchResults = new TreeMap<>();
 		this.lock = new MultiReaderLock();
-		this.readLock = this.lock.readLock();
 		this.writeLock = this.lock.writeLock();
 		this.queue = new WorkQueue(numThreads);
 		setSearchMode(true);
@@ -95,14 +87,9 @@ public class ThreadSafeQueryParser {
 	 * TODO
 	 * @param exactSearch
 	 */
-	public void setSearchMode(boolean isExactSearch) {
-		this.writeLock.lock();
-		try {
-			this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
-			this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
-		} finally {
-			this.writeLock.unlock();
-		}
+	public synchronized void setSearchMode(boolean isExactSearch) {
+		this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
+		this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
 	}
 
 	/**
@@ -111,7 +98,6 @@ public class ThreadSafeQueryParser {
 	 * @throws IOException
 	 */
 	public void parseLocation(Path queryLocation) throws IOException {
-		this.readLock.lock();
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
@@ -119,8 +105,6 @@ public class ThreadSafeQueryParser {
 				this.queue.execute(work);
 			}
 
-		} finally {
-			this.readLock.unlock();
 		}
 
 		this.queue.join();
@@ -131,17 +115,18 @@ public class ThreadSafeQueryParser {
 	 * @param line
 	 */
 	private void parseLine(String line) {
-		this.writeLock.lock();
-		try {
-			Set<String> queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
-			List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
+		SnowballStemmer stemmer = new SnowballStemmer(ENGLISH);
+		Set<String> queryStems = FileStemmer.uniqueStems(line, stemmer);
+		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
 
-			String queryString = extractQueryString(queryStems);
-			if (!queryString.isBlank()) {
+		String queryString = extractQueryString(queryStems);
+		if (!queryString.isBlank()) {
+			this.writeLock.lock();
+			try {
 				this.resultMap.put(queryString, searchResults);
+			} finally {
+				this.writeLock.unlock();
 			}
-		} finally {
-			this.writeLock.unlock();
 		}
 	}
 
@@ -150,13 +135,8 @@ public class ThreadSafeQueryParser {
 	 * @param queryStems
 	 * @return
 	 */
-	public String extractQueryString(Set<String> queryStems) {
-		this.readLock.lock();
-		try {
-			return String.join(" ", queryStems);
-		} finally {
-			this.readLock.unlock();
-		}
+	private static String extractQueryString(Set<String> queryStems) {
+		return String.join(" ", queryStems);
 	}
 
 	/**
@@ -164,12 +144,7 @@ public class ThreadSafeQueryParser {
 	 * @param location
 	 * @throws IOException
 	 */
-	public void queryJson(Path location) throws IOException {
-		this.readLock.lock();
-		try {
-			SearchResultWriter.writeSearchResults(this.resultMap, location);
-		} finally {
-			this.readLock.unlock();
-		}
+	public synchronized void queryJson(Path location) throws IOException {
+		SearchResultWriter.writeSearchResults(this.resultMap, location);
 	}
 }
