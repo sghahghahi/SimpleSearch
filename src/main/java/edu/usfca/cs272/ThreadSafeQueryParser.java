@@ -31,6 +31,9 @@ public class ThreadSafeQueryParser {
 	private final InvertedIndex invertedIndex;
 
 	/** TODO */
+	private final SnowballStemmer snowballStemmer;
+
+	/** TODO */
 	private Function<Set<String>, List<InvertedIndex.SearchResult>> searchMode;
 
 	/** TODO */
@@ -49,13 +52,14 @@ public class ThreadSafeQueryParser {
 	 * TODO
 	 * @param invertedIndex
 	 */
-	public ThreadSafeQueryParser(InvertedIndex invertedIndex, int numThreads) {
-		this.invertedIndex = invertedIndex;
+	public ThreadSafeQueryParser(InvertedIndex invertedIndex, WorkQueue queue) {
 		this.exactSearchResults = new TreeMap<>();
 		this.partialSearchResults = new TreeMap<>();
+		this.invertedIndex = invertedIndex;
+		this.snowballStemmer = new SnowballStemmer(ENGLISH);
 		this.lock = new MultiReaderLock();
 		this.writeLock = this.lock.writeLock();
-		this.queue = new WorkQueue(numThreads);
+		this.queue = queue;
 		setSearchMode(true);
 	}
 
@@ -109,10 +113,7 @@ public class ThreadSafeQueryParser {
 				Work work = new Work(line, this);
 				this.queue.execute(work);
 			}
-
 		}
-
-		this.queue.join();
 	}
 
 	/**
@@ -120,17 +121,17 @@ public class ThreadSafeQueryParser {
 	 * @param line
 	 */
 	private void parseLine(String line) {
-		SnowballStemmer stemmer = new SnowballStemmer(ENGLISH);
-		Set<String> queryStems = FileStemmer.uniqueStems(line, stemmer);
+		Set<String> queryStems;
+		synchronized (this.snowballStemmer) {
+			queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
+		}
+
 		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
 
 		String queryString = extractQueryString(queryStems);
 		if (!queryString.isBlank()) {
-			this.writeLock.lock();
-			try {
+			synchronized (this.resultMap) {
 				this.resultMap.put(queryString, searchResults);
-			} finally {
-				this.writeLock.unlock();
 			}
 		}
 	}
@@ -149,7 +150,7 @@ public class ThreadSafeQueryParser {
 	 * @param location
 	 * @throws IOException
 	 */
-	public synchronized void queryJson(Path location) throws IOException {
+	public void queryJson(Path location) throws IOException {
 		SearchResultWriter.writeSearchResults(this.resultMap, location);
 	}
 }
