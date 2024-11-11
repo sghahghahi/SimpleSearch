@@ -1,5 +1,7 @@
 package edu.usfca.cs272;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,59 +29,6 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		this.lock = new MultiReaderLock();
 		this.readLock = this.lock.readLock();
 		this.writeLock = this.lock.writeLock();
-	}
-
-	/** TODO */
-	public class SearchResult extends InvertedIndex.SearchResult {
-		/** TODO */
-		private final MultiReaderLock lock;
-
-		/** TODO */
-		private final SimpleLock readLock;
-
-		/** TODO */
-		private final SimpleLock writeLock;
-
-		/** TODO */
-		public SearchResult(String location) {
-			super(location);
-			this.lock = new MultiReaderLock();
-			this.readLock = this.lock.readLock();
-			this.writeLock = this.lock.writeLock();
-		}
-
-		/** TODO */
-		@Override
-		public int getCount() {
-			this.readLock.lock();
-			try {
-				return super.getCount();
-			} finally {
-				this.readLock.unlock();
-			}
-		}
-
-		/** TODO */
-		@Override
-		public double getScore() {
-			this.writeLock.lock();
-			try {
-				return super.getScore();
-			} finally {
-				this.writeLock.unlock();
-			}
-		}
-
-		/** TODO */
-		@Override
-		public String getLocation() {
-			this.writeLock.lock();
-			try {
-				return super.getLocation();
-			} finally {
-				this.writeLock.unlock();
-			}
-		}
 	}
 
 	/** TODO */
@@ -118,12 +67,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	/** TODO */
 	@Override
 	public boolean addWordPosition(String word, String location, int wordPosition) {
-		this.writeLock.lock();
-		try {
-			return super.addWordPosition(word, location, wordPosition);
-		} finally {
-			this.writeLock.unlock();
-		}
+		return super.addWordPosition(word, location, wordPosition);
 	}
 
 	/** TODO */
@@ -154,6 +98,17 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		this.readLock.lock();
 		try {
 			return super.numCounts();
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	/** TODO */
+	@Override
+	public void indexJson(Path location) throws IOException {
+		this.readLock.lock();
+		try {
+			super.indexJson(location);
 		} finally {
 			this.readLock.unlock();
 		}
