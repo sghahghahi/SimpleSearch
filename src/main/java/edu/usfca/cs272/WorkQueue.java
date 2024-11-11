@@ -32,6 +32,9 @@ public class WorkQueue {
 	/** Tracks unfinished work */
 	private int pending;
 
+	/** TODO */
+	private final static int DEFAULT_NUM_THREADS = 5;
+
 	/**
 	 * Starts a work queue with the default number of threads.
 	 *
@@ -48,6 +51,7 @@ public class WorkQueue {
 	 */
 	public WorkQueue(int threads) {
 		this.tasks = new LinkedList<Runnable>();
+		threads = threads < 1 ? DEFAULT_NUM_THREADS : threads;
 		this.workers = new Worker[threads];
 		this.shutdown = false;
 		this.pending = 0;
