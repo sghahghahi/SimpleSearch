@@ -38,7 +38,7 @@ public class TextFileIndexer {
 	 * @param path File path to read from
 	 * @throws IOException If an IO error occurs
 	 */
-	public void indexFile(Path path) throws IOException {
+	public void indexFile(Path path) throws IOException { // TODO Make this a static method that takes in an inverted index parameter
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
@@ -58,6 +58,12 @@ public class TextFileIndexer {
 			}
 		}
 	}
+	
+	/* TODO 
+	public void indexFile(Path path) throws IOException {
+		indexFile(path, this.invertedIndex);
+	}
+	*/
 
 	/**
 	 * Recursively reads all files and subdirectories from {@code dirLocation}.
