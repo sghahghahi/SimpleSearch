@@ -134,6 +134,8 @@ public class Driver {
 			}
 		}
 
+		queue.finish();
+
 		if (argParser.hasFlag(COUNTS)) {
 			location = argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP));
 			try {
@@ -163,6 +165,8 @@ public class Driver {
 				System.err.println("No input file was provided after '-query' flag.");
 			}
 		}
+
+		queue.finish();
 
 		if (argParser.hasFlag(RESULTS)) {
 			location = argParser.getPath(RESULTS, Path.of(CURR_DIR, RESULTS_BACKUP));
