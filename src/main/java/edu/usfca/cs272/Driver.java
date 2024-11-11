@@ -50,25 +50,13 @@ public class Driver {
 	public static final int NUM_THREADS = 5;
 
 	/**
-	 * Initializes the classes necessary based on the provided command-line
-	 * arguments. This includes (but is not limited to) how to build or search an
-	 * inverted index.
-	 *
-	 * @param args flag/value pairs used to start this program
+	 * TODO
+	 * @param argParser
 	 */
-	public static void main(String[] args) {
-		ArgumentParser argParser = new ArgumentParser(args);
-		InvertedIndex invertedIndex = argParser.hasFlag(THREAD) ? new ThreadSafeInvertedIndex() : new InvertedIndex();
+	private static void singleThread(ArgumentParser argParser) {
+		InvertedIndex invertedIndex = new InvertedIndex();
 		TextFileIndexer textFileIndexer = new TextFileIndexer(invertedIndex);
-		ThreadSafeQueryParser threadSafeQueryParser = null;
-		QueryParser queryParser = null;
-		if (argParser.hasFlag(THREAD)) {
-			int numThreads = argParser.getInteger(THREAD);
-			int numThreadsToSend = numThreads < 1 ? NUM_THREADS : numThreads;
-			threadSafeQueryParser = new ThreadSafeQueryParser(invertedIndex, numThreadsToSend);
-		} else {
-			queryParser = new QueryParser(invertedIndex);
-		}
+		QueryParser queryParser = new QueryParser(invertedIndex);
 
 		Path location;
 
@@ -77,9 +65,9 @@ public class Driver {
 			try {
 				textFileIndexer.indexLocation(location);
 			} catch (IOException e) {
-				System.err.println("Unable to index the files from location: " + location);
+				System.err.printf("Unable to index the files from location: %s\n", location);
 			} catch (NullPointerException e) {
-				System.err.println("No input file was provided after '-text' flag.");
+				System.err.println("No input file was provided after the '-text' flag.");
 			}
 		}
 
@@ -88,7 +76,7 @@ public class Driver {
 			try {
 				invertedIndex.indexCounts(location);
 			} catch (IOException e) {
-				System.err.println("Unable to write word counts to location: " + location);
+				System.err.printf("Unable to write word counts to location: %s\n", location);
 			}
 		}
 
@@ -97,22 +85,17 @@ public class Driver {
 			try {
 				invertedIndex.indexJson(location);
 			} catch (IOException e) {
-				System.err.println("Unable to write inverted index to location: " + location);
+				System.err.printf("Unable to write inverted index to location: %s\n", location);
 			}
 		}
 
 		if (argParser.hasFlag(QUERY)) {
 			location = argParser.getPath(QUERY);
 			try {
-				if (argParser.hasFlag(THREAD)) {
-					threadSafeQueryParser.setSearchMode(!argParser.hasFlag(PARTIAL));
-					threadSafeQueryParser.parseLocation(location);
-				} else {
-					queryParser.setSearchMode(!argParser.hasFlag(PARTIAL));
-					queryParser.parseLocation(location);
-				}
+				queryParser.setSearchMode(!argParser.hasFlag(PARTIAL));
+				queryParser.parseLocation(location);
 			} catch (IOException e) {
-				System.err.println("Unable to read search queries from location: " + location);
+				System.err.printf("Unable to read search queries from location: %s\n", location);
 			} catch (NullPointerException e) {
 				System.err.println("No input file was provided after '-query' flag.");
 			}
@@ -121,14 +104,91 @@ public class Driver {
 		if (argParser.hasFlag(RESULTS)) {
 			location = argParser.getPath(RESULTS, Path.of(CURR_DIR, RESULTS_BACKUP));
 			try {
-				if (argParser.hasFlag(THREAD)) {
-					threadSafeQueryParser.queryJson(location);
-				} else {
-					queryParser.queryJson(location);
-				}
+				queryParser.queryJson(location);
 			} catch (IOException e) {
-				System.err.println("Unable to write search results to location: " + location);
+				System.err.printf("Unable to write search results to location: %s\n", location);
 			}
+		}
+	}
+
+	/**
+	 * TODO
+	 * @param argParser
+	 */
+	private static void multiThread(ArgumentParser argParser) {
+		InvertedIndex invertedIndex = new ThreadSafeInvertedIndex();
+		WorkQueue queue = new WorkQueue(argParser.getInteger(THREAD, NUM_THREADS));
+		ThreadSafeTextFileIndexer textFileIndexer = new ThreadSafeTextFileIndexer(invertedIndex, queue);
+		ThreadSafeQueryParser queryParser = new ThreadSafeQueryParser(invertedIndex, queue);
+
+		Path location;
+
+		if (argParser.hasFlag(TEXT)) {
+			location = argParser.getPath(TEXT);
+			try {
+				textFileIndexer.indexLocation(location);
+			} catch (IOException e) {
+				System.err.printf("Unable to index the files from location: %s\n", location);
+			} catch (NullPointerException e) {
+				System.err.println("No input file was provided after the '-text' flag.");
+			}
+		}
+
+		if (argParser.hasFlag(COUNTS)) {
+			location = argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP));
+			try {
+				invertedIndex.indexCounts(location);
+			} catch (IOException e) {
+				System.err.printf("Unable to write word counts to location: %s\n", location);
+			}
+		}
+
+		if (argParser.hasFlag(INDEX)) {
+			location = argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP));
+			try {
+				invertedIndex.indexJson(location);
+			} catch (IOException e) {
+				System.err.printf("Unable to write inverted index to location: %s\n", location);
+			}
+		}
+
+		if (argParser.hasFlag(QUERY)) {
+			location = argParser.getPath(QUERY);
+			try {
+				queryParser.setSearchMode(!argParser.hasFlag(PARTIAL));
+				queryParser.parseLocation(location);
+			} catch (IOException e) {
+				System.err.printf("Unable to read search queries from location: %s\n", location);
+			} catch (NullPointerException e) {
+				System.err.println("No input file was provided after '-query' flag.");
+			}
+		}
+
+		if (argParser.hasFlag(RESULTS)) {
+			location = argParser.getPath(RESULTS, Path.of(CURR_DIR, RESULTS_BACKUP));
+			try {
+				queryParser.queryJson(location);
+			} catch (IOException e) {
+				System.err.printf("Unable to write search results to location: %s\n", location);
+			}
+		}
+
+		queue.join();
+	}
+
+	/**
+	 * Initializes the classes necessary based on the provided command-line
+	 * arguments. This includes (but is not limited to) how to build or search an
+	 * inverted index.
+	 *
+	 * @param args flag/value pairs used to start this program
+	 */
+	public static void main(String[] args) {
+		ArgumentParser argParser = new ArgumentParser(args);
+		if (argParser.hasFlag(THREAD)) {
+			multiThread(argParser);
+		} else {
+			singleThread(argParser);
 		}
 	}
 }
