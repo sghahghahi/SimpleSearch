@@ -8,6 +8,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import java.util.ArrayList;
+
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
@@ -75,15 +77,13 @@ public class ThreadSafeTextFileIndexer {
 			String location = path.toString();
 
 			while ((line = reader.readLine()) != null) {
-				String[] cleanedWords = FileStemmer.parse(line);
-
+				ArrayList<String> cleanedWords;
+				synchronized (this.snowballStemmer) {
+					cleanedWords = FileStemmer.listStems(line, this.snowballStemmer);
+				}
 				for (String cleanWord : cleanedWords) {
-					String stemmedWord;
-					synchronized (this.snowballStemmer) {
-						stemmedWord = this.snowballStemmer.stem(cleanWord).toString();
-					}
 					synchronized (this.invertedIndex) {
-						this.invertedIndex.addWordPosition(stemmedWord, location, wordPosition++);
+						this.invertedIndex.addWordPosition(cleanWord, location, wordPosition++);
 					}
 				}
 			}
