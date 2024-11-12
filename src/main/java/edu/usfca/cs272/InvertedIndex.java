@@ -87,10 +87,6 @@ public class InvertedIndex {
 		 * @return The location of this search result
 		 */
 		public String getLocation() {
-			if (this.dirty) { // TODO Remove
-				this.dirty = false;
-			}
-
 			return this.location;
 		}
 
