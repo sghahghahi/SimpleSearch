@@ -2,17 +2,19 @@ package edu.usfca.cs272;
 
 import edu.usfca.cs272.MultiReaderLock.SimpleLock;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import java.util.Set;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
 
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 /**
@@ -101,10 +103,12 @@ public class ThreadSafeQueryParser {
 	 * @throws IOException
 	 */
 	public void parseLocation(Path queryLocation) throws IOException {
-		ArrayList<String> lines = FileStemmer.listStems(queryLocation);
-		for (String line : lines) {
-			Work work = new Work(line, this);
-			this.queue.execute(work);
+		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				Work work = new Work(line, this);
+				this.queue.execute(work);
+			}
 		}
 	}
 
