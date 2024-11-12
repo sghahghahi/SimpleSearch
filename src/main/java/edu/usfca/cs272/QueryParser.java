@@ -133,7 +133,15 @@ public class QueryParser {
 	public Set<String> getQueryStrings() {
 		return Collections.unmodifiableSet(this.resultMap.keySet());
 	}
-	
+
+	/**
+	 * Returns the search type. {@code true} for exact, or {@code false} for partial.
+	 * @return the search type. {@code true} for exact, or {@code false} for partial.
+	 */
+	public boolean getSearchType() {
+		return this.isExactSearch;
+	}
+
 	// TODO Missing a get method that can get the results for a queryString
 	// TODO BEFORE any get... need to re-stem and join before accessing the result map
 
@@ -178,6 +186,6 @@ public class QueryParser {
 	public int numSearchResults(String queryString) { // TODO Reuse get here too
 		return this.resultMap.getOrDefault(queryString, Collections.emptyList()).size();
 	}
-	
+
 	// TODO toString
 }
