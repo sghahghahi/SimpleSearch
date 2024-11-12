@@ -75,7 +75,7 @@ public class SearchResultWriter {
 	 * @param indent - The indentation level
 	 * @throws IOException If an IO error occurs
 	 */
-	private static void writeEntry(String key, Collection<SearchResult> results, Writer writer, int indent) throws IOException {
+	public static void writeEntry(String key, Collection<SearchResult> results, Writer writer, int indent) throws IOException {
 		writeIndent("\n", writer, 0);
 		writeQuote(key, writer, indent + 1);
 		writeIndent(": ", writer, 0);
@@ -96,13 +96,13 @@ public class SearchResultWriter {
 	 * @param indent - The indentation level
 	 * @throws IOException If an IO error occurs
 	 */
-	private static void writeList(Collection<SearchResult> results, Writer writer, int indent) throws IOException { // TODO public (for most of these)
+	public  static void writeList(Collection<SearchResult> results, Writer writer, int indent) throws IOException {
 		var iterator = results.iterator();
 		if (iterator.hasNext()) {
 			writeIndent("\n", writer, 0);
 			writeSearchResult(iterator.next(), writer, indent + 1);
 		}
-		
+
 		while (iterator.hasNext()) {
 			writeIndent(",\n", writer, 0);
 			writeSearchResult(iterator.next(), writer, indent + 1);
@@ -119,7 +119,7 @@ public class SearchResultWriter {
 	 * @param indent - The indentation level
 	 * @throws IOException If an IO error occurs
 	 */
-	private static void writeSearchResult(SearchResult result, Writer writer, int indent) throws IOException { // TODO public
+	public  static void writeSearchResult(SearchResult result, Writer writer, int indent) throws IOException {
 		TreeMap<String, String> map = new TreeMap<>();
 		map.put("count", Integer.toString(result.getCount()));
 		map.put("score", FORMATTER.format(result.getScore()));
