@@ -192,7 +192,7 @@ public class InvertedIndex {
 	 * @return {@code true} if the add was successful
 	 */
 	private boolean addCount(String location, int count) {
-		if (count == 0) { // TODO <=
+		if (count <= 0) {
 			return false;
 		}
 
