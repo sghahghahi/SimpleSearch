@@ -1,25 +1,17 @@
 package edu.usfca.cs272;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import java.util.ArrayList;
 
-import opennlp.tools.stemmer.snowball.SnowballStemmer;
-import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
-
 /** TODO */
 public class ThreadSafeTextFileIndexer {
 	/** TODO */
 	private final InvertedIndex invertedIndex;
-
-	/** TODO */
-	private final SnowballStemmer snowballStemmer;
 
 	/** TODO */
 	private final WorkQueue queue;
@@ -31,7 +23,6 @@ public class ThreadSafeTextFileIndexer {
 	 */
 	public ThreadSafeTextFileIndexer(InvertedIndex invertedIndex, WorkQueue queue) {
 		this.invertedIndex = invertedIndex;
-		this.snowballStemmer = new SnowballStemmer(ENGLISH);
 		this.queue = queue;
 	}
 
@@ -71,21 +62,13 @@ public class ThreadSafeTextFileIndexer {
 	 * @throws IOException
 	 */
 	public void indexFile(Path path) throws IOException {
-		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
-			int wordPosition = 1;
-			String line = null;
-			String location = path.toString();
+		String location = path.toString();
+		int wordPosition = 1;
 
-			while ((line = reader.readLine()) != null) {
-				ArrayList<String> cleanedWords;
-				synchronized (this.snowballStemmer) {
-					cleanedWords = FileStemmer.listStems(line, this.snowballStemmer);
-				}
-				for (String cleanWord : cleanedWords) {
-					synchronized (this.invertedIndex) {
-						this.invertedIndex.addWordPosition(cleanWord, location, wordPosition++);
-					}
-				}
+		ArrayList<String> words = FileStemmer.listStems(path);
+		for (String word : words) {
+			synchronized (this.invertedIndex) {
+				this.invertedIndex.addWordPosition(word, location, wordPosition++);
 			}
 		}
 	}
