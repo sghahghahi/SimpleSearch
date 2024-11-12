@@ -2,14 +2,12 @@ package edu.usfca.cs272;
 
 import edu.usfca.cs272.MultiReaderLock.SimpleLock;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.Set;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -29,9 +27,6 @@ public class ThreadSafeQueryParser {
 
 	/** TODO */
 	private final InvertedIndex invertedIndex;
-
-	/** TODO */
-	private final SnowballStemmer snowballStemmer;
 
 	/** TODO */
 	private Function<Set<String>, List<InvertedIndex.SearchResult>> searchMode;
@@ -56,7 +51,6 @@ public class ThreadSafeQueryParser {
 		this.exactSearchResults = new TreeMap<>();
 		this.partialSearchResults = new TreeMap<>();
 		this.invertedIndex = invertedIndex;
-		this.snowballStemmer = new SnowballStemmer(ENGLISH);
 		this.lock = new MultiReaderLock();
 		this.writeLock = this.lock.writeLock();
 		this.queue = queue;
@@ -107,12 +101,10 @@ public class ThreadSafeQueryParser {
 	 * @throws IOException
 	 */
 	public void parseLocation(Path queryLocation) throws IOException {
-		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				Work work = new Work(line, this);
-				this.queue.execute(work);
-			}
+		ArrayList<String> lines = FileStemmer.listStems(queryLocation);
+		for (String line : lines) {
+			Work work = new Work(line, this);
+			this.queue.execute(work);
 		}
 	}
 
@@ -121,10 +113,8 @@ public class ThreadSafeQueryParser {
 	 * @param line
 	 */
 	private void parseLine(String line) {
-		Set<String> queryStems;
-		synchronized (this.snowballStemmer) {
-			queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
-		}
+		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
+		Set<String> queryStems = FileStemmer.uniqueStems(line, snowballStemmer); // Give stemmer to each thread to reduce synchronized blocks
 
 		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
 
