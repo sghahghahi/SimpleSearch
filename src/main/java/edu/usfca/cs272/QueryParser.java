@@ -88,12 +88,12 @@ public class QueryParser {
 	 * Parses a line and performs a search on the inverted index
 	 * @param line The line to parse
 	 */
-	private void parseLine(String line) {
+	public void parseLine(String line) {
 		Set<String> queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
-		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
 
 		String queryString = extractQueryString(queryStems);
-		if (!queryString.isBlank()) {
+		if (!queryString.isBlank() && !this.resultMap.containsKey(queryString)) {
+			List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
 			this.resultMap.put(queryString, searchResults);
 		}
 	}
@@ -125,27 +125,38 @@ public class QueryParser {
 	}
 
 	/**
+	 * Returns the search type. {@code true} for exact, or {@code false} for partial.
+	 * @return the search type. {@code true} for exact, or {@code false} for partial.
+	 */
+	public boolean getSearchType() {
+		return this.isExactSearch;
+	}
+
+	/**
+	 * Returns a {@code List} of {@see InvertedIndex.SearchResult} objects for a particular {@code queryString}
+	 * @param queryString The query string to look up in the {@code List} of search results
+	 * @return A {@code List} of {@see InvertedIndex.SearchResult} objects for a particular {@code queryString} or an empty list
+	 * if the {@code queryString} is not in the {@code Map} of search results
+	 */
+	public List<InvertedIndex.SearchResult> getSearchResults(String queryString) {
+		Set<String> queryStems = FileStemmer.uniqueStems(queryString, this.snowballStemmer);
+		String joinedQueryString = extractQueryString(queryStems);
+
+		List<InvertedIndex.SearchResult> searchResults = this.resultMap.get(joinedQueryString);
+
+		return searchResults == null ? Collections.emptyList() : Collections.unmodifiableList(searchResults);
+	}
+
+	/**
 	 * Checks if {@code queryString} is a key in the results map
+	 *
+	 * @see #getSearchResults(String)
+	 *
 	 * @param queryString The query string to check
 	 * @return {@code true} if {@code queryString} is a key in the result map
 	 */
 	public boolean containsQueryString(String queryString) {
-		return this.resultMap.containsKey(queryString);
-	}
-
-	/**
-	 * Checks if {@code searchResult} is in the {@code List} of search result objects
-	 * @param queryString The query string to look up in the result map
-	 * @param searchResult The search result to look up in the {@code List} of search results
-	 * @return {@code true} if {@code searchResult} is in the {@code List} of search results
-	 */
-	public boolean containsSearchResult(String queryString, InvertedIndex.SearchResult searchResult) {
-		List<InvertedIndex.SearchResult> searchResults = this.resultMap.get(queryString);
-		if (searchResults == null) {
-			return false;
-		}
-
-		return searchResults.contains(searchResult);
+		return getSearchResults(queryString).size() > 0;
 	}
 
 	/**
@@ -162,6 +173,16 @@ public class QueryParser {
 	 * @return The number of search results for {@code queryString}
 	 */
 	public int numSearchResults(String queryString) {
-		return this.resultMap.getOrDefault(queryString, Collections.emptyList()).size();
+		return getSearchResults(queryString).size();
+	}
+
+	@Override
+	public String toString() {
+		return String.format(
+			"Query parser currently has %d %s search %s stored.",
+			this.resultMap.size(),
+			this.isExactSearch ? "exact" : "partial",
+			this.resultMap.size() == 1 ? "result" : "results"
+		);
 	}
 }

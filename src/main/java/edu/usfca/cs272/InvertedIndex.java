@@ -87,10 +87,6 @@ public class InvertedIndex {
 		 * @return The location of this search result
 		 */
 		public String getLocation() {
-			if (this.dirty) {
-				this.dirty = false;
-			}
-
 			return this.location;
 		}
 
@@ -151,15 +147,14 @@ public class InvertedIndex {
 		HashMap<String, SearchResult> lookup = new HashMap<>();
 
 		for (String queryStem : queryStems) {
-			for (String word : this.invertedIndex.tailMap(queryStem).keySet()) {
+			for (var entry : this.invertedIndex.tailMap(queryStem).entrySet()) {
+				String word = entry.getKey();
 				if (!word.startsWith(queryStem)) {
 					break;
 				}
 
-				var locations = this.invertedIndex.get(word);
-				if (locations != null) {
-					generateSearchResult(locations, lookup, searchResults);
-				}
+				var locations = entry.getValue();
+				generateSearchResult(locations, lookup, searchResults);
 			}
 		}
 
@@ -197,7 +192,7 @@ public class InvertedIndex {
 	 * @return {@code true} if the add was successful
 	 */
 	private boolean addCount(String location, int count) {
-		if (count == 0) {
+		if (count <= 0) {
 			return false;
 		}
 
