@@ -24,12 +24,16 @@ public class TextFileIndexer {
 	/** {@code InvertedIndex} object to reference class-wide */
 	private final InvertedIndex invertedIndex;
 
+	/** Stemmer to use class-wide */
+	private final SnowballStemmer snowballStemmer;
+
 	/**
 	 * Instantiates this class with an {@code InvertedIndex} object to reference
 	 * @param invertedIndex - The {@code InvertedIndex} object to reference
 	 */
 	public TextFileIndexer(InvertedIndex invertedIndex) {
 		this.invertedIndex = invertedIndex;
+		this.snowballStemmer = new SnowballStemmer(ENGLISH);
 	}
 
 	/**
