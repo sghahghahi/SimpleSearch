@@ -147,16 +147,14 @@ public class InvertedIndex {
 		HashMap<String, SearchResult> lookup = new HashMap<>();
 
 		for (String queryStem : queryStems) {
-			// TODO entrySet
-			for (String word : this.invertedIndex.tailMap(queryStem).keySet()) {
-				if (!word.startsWith(queryStem)) { // TODO entry.getKey
+			for (var entry : this.invertedIndex.tailMap(queryStem).entrySet()) {
+				String word = entry.getKey();
+				if (!word.startsWith(queryStem)) {
 					break;
 				}
 
-				var locations = this.invertedIndex.get(word); // TODO entry.getValue()
-				if (locations != null) { // TODO Remove?
-					generateSearchResult(locations, lookup, searchResults);
-				}
+				var locations = entry.getValue();
+				generateSearchResult(locations, lookup, searchResults);
 			}
 		}
 
