@@ -117,12 +117,7 @@ public class QueryParser {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void queryJson(Path location) throws IOException {
-		// TODO Use resultMap
-		if (this.isExactSearch) {
-			SearchResultWriter.writeSearchResults(this.exactSearchResults, location);
-		} else {
-			SearchResultWriter.writeSearchResults(this.partialSearchResults, location);
-		}
+		SearchResultWriter.writeSearchResults(this.resultMap, location);
 	}
 
 	/**
