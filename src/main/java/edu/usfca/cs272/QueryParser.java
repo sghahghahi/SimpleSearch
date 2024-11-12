@@ -44,7 +44,7 @@ public class QueryParser {
 	private TreeMap<String, List<InvertedIndex.SearchResult>> resultMap;
 
 	/** Flag to keep track of current search mode */
-	private boolean isExactSearch;
+	private boolean isExactSearch; // TODO Nice to have a get method for this
 
 	/**
 	 * Constructor that initializes our search result metadata data structure to an empty {@code TreeMap}
@@ -92,12 +92,13 @@ public class QueryParser {
 	 * Parses a line and performs a search on the inverted index
 	 * @param line The line to parse
 	 */
-	private void parseLine(String line) {
+	private void parseLine(String line) { // TODO public
 		Set<String> queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
 		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
 
 		String queryString = extractQueryString(queryStems);
-		if (!queryString.isBlank()) {
+		if (!queryString.isBlank()) { // TODO Check if you already have results for this queryString
+			// TODO List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
 			this.resultMap.put(queryString, searchResults);
 		}
 	}
@@ -117,6 +118,7 @@ public class QueryParser {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void queryJson(Path location) throws IOException {
+		// TODO Use resultMap
 		if (this.isExactSearch) {
 			SearchResultWriter.writeSearchResults(this.exactSearchResults, location);
 		} else {
@@ -131,6 +133,9 @@ public class QueryParser {
 	public Set<String> getQueryStrings() {
 		return Collections.unmodifiableSet(this.resultMap.keySet());
 	}
+	
+	// TODO Missing a get method that can get the results for a queryString
+	// TODO BEFORE any get... need to re-stem and join before accessing the result map
 
 	/**
 	 * Checks if {@code queryString} is a key in the results map
@@ -138,6 +143,7 @@ public class QueryParser {
 	 * @return {@code true} if {@code queryString} is a key in the result map
 	 */
 	public boolean containsQueryString(String queryString) {
+		// TODO return getResults(queryString) != null or something
 		return this.resultMap.containsKey(queryString);
 	}
 
@@ -147,7 +153,7 @@ public class QueryParser {
 	 * @param searchResult The search result to look up in the {@code List} of search results
 	 * @return {@code true} if {@code searchResult} is in the {@code List} of search results
 	 */
-	public boolean containsSearchResult(String queryString, InvertedIndex.SearchResult searchResult) {
+	public boolean containsSearchResult(String queryString, InvertedIndex.SearchResult searchResult) { // TODO Remove
 		List<InvertedIndex.SearchResult> searchResults = this.resultMap.get(queryString);
 		if (searchResults == null) {
 			return false;
@@ -169,7 +175,9 @@ public class QueryParser {
 	 * @param queryString The query string to look up in the result map
 	 * @return The number of search results for {@code queryString}
 	 */
-	public int numSearchResults(String queryString) {
+	public int numSearchResults(String queryString) { // TODO Reuse get here too
 		return this.resultMap.getOrDefault(queryString, Collections.emptyList()).size();
 	}
+	
+	// TODO toString
 }
