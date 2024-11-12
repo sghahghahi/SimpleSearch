@@ -92,7 +92,7 @@ public class ThreadSafeQueryParser {
 	 * Sets the search mode to either exact or partial
 	 * @param exactSearch The search type. {@code true} represents an exact search, {@code false} represents a partial search
 	 */
-	public void setSearchMode(boolean isExactSearch) {
+	public final void setSearchMode(boolean isExactSearch) {
 		this.writeLock.lock();
 		try {
 			this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
