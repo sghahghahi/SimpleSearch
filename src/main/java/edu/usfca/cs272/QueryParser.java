@@ -92,13 +92,12 @@ public class QueryParser {
 	 * Parses a line and performs a search on the inverted index
 	 * @param line The line to parse
 	 */
-	private void parseLine(String line) { // TODO public
+	public void parseLine(String line) {
 		Set<String> queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
-		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems); // Move this line to the TODO line below (only after checking if I already have a result for the query string)
 
 		String queryString = extractQueryString(queryStems);
-		if (!queryString.isBlank()) { // TODO Check if you already have results for this queryString
-			// TODO List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
+		if (!queryString.isBlank() && !this.resultMap.containsKey(queryString)) {
+			List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
 			this.resultMap.put(queryString, searchResults);
 		}
 	}
