@@ -176,8 +176,8 @@ public class QueryParser {
 	 * @param queryString The query string to look up in the result map
 	 * @return The number of search results for {@code queryString}
 	 */
-	public int numSearchResults(String queryString) { // TODO Reuse get here too
-		return this.resultMap.getOrDefault(queryString, Collections.emptyList()).size();
+	public int numSearchResults(String queryString) {
+		return getSearchResults(queryString).size();
 	}
 
 	// TODO toString
