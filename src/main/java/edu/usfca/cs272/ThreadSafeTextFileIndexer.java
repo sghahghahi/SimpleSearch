@@ -8,42 +8,42 @@ import java.nio.file.Path;
 
 import java.util.ArrayList;
 
-/** TODO */
+/** Thread-safe version of {@link TextFileIndexer} */
 public class ThreadSafeTextFileIndexer {
-	/** TODO */
+	/** {@link InvertedIndex} object to reference class-wide */
 	private final InvertedIndex invertedIndex;
 
-	/** TODO */
+	/** The work queue to assign tasks to */
 	private final WorkQueue queue;
 
 	/**
-	 * TODO
-	 * @param invertedIndex
-	 * @param numThreads
+	 * Instantiates this class with an {@link InvertedIndex} object to reference
+	 * @param invertedIndex The {@link InvertedIndex} object to reference
+	 * @param queue The work queue to assign tasks to
 	 */
 	public ThreadSafeTextFileIndexer(InvertedIndex invertedIndex, WorkQueue queue) {
 		this.invertedIndex = invertedIndex;
 		this.queue = queue;
 	}
 
+	/** Nested class that represents a task for a thread to do */
 	private static class Work implements Runnable {
-		/** TODO */
+		/** The file location to index */
 		Path location;
 
-		/** TODO */
+		/** The indexer to use */
 		ThreadSafeTextFileIndexer indexer;
 
 		/**
-		 * TODO
-		 * @param location
-		 * @param threadSafeTextFileIndexer
+		 * Constructs a new task
+		 * @param location The file location to index
+		 * @param threadSafeTextFileIndexer The indexer to use
 		 */
 		public Work(Path location, ThreadSafeTextFileIndexer indexer) {
 			this.location = location;
 			this.indexer = indexer;
 		}
 
-		/** TODO */
 		@Override
 		public void run() {
 			try {
@@ -57,9 +57,9 @@ public class ThreadSafeTextFileIndexer {
 	}
 
 	/**
-	 * TODO
-	 * @param path
-	 * @throws IOException
+	 * Reads file from {@code path}.
+	 * @param path File path to read from
+	 * @throws IOException If an IO error occurs
 	 */
 	public void indexFile(Path path) throws IOException {
 		String location = path.toString();
@@ -74,9 +74,10 @@ public class ThreadSafeTextFileIndexer {
 	}
 
 	/**
-	 * TODO
-	 * @param dirLocation
-	 * @throws IOException
+	 * Recursively reads all files and subdirectories from {@code dirLocation}.
+	 * Only reads files if they end in {@code .txt} or {@code .text} (case-insensitive).
+	 * @param dirLocation Location of directory to traverse
+	 * @throws IOException If an IO error occurs
 	 */
 	public void indexDirectory(Path dirLocation) throws IOException {
 		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirLocation)) {
@@ -92,9 +93,9 @@ public class ThreadSafeTextFileIndexer {
 	}
 
 	/**
-	 * TODO
-	 * @param location
-	 * @return
+	 * Checks if the file at {@code location} ends in either {@code .txt} or {@code .text} (case-insensitive)
+	 * @param location The file location to check
+	 * @return {@code true} if the file at {@code location} ends with {@code .txt} or {@code .text} (case-insensitive).
 	 */
 	public static boolean isTextFile(Path location) {
 		String lowerCaseLocation = location.toString().toLowerCase();
@@ -106,9 +107,10 @@ public class ThreadSafeTextFileIndexer {
 	}
 
 	/**
-	 * TODO
-	 * @param location
-	 * @throws IOException
+	 * Reads {@code path}.
+	 * Sends the directory or file at {@code location} to its appropriate method.
+	 * @param location The location of either a directory of file
+	 * @throws IOException If an IO error occurs
 	 */
 	public void indexLocation(Path location) throws IOException {
 		if (Files.isDirectory(location)) {

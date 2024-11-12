@@ -50,8 +50,8 @@ public class Driver {
 	public static final int NUM_THREADS = 5;
 
 	/**
-	 * TODO
-	 * @param argParser
+	 * Initializes objects for a single-threaded approach to building, searching, and writing an inverted index
+	 * @param argParser The {@code ArgumentParser} obejct to reference
 	 */
 	private static void singleThread(ArgumentParser argParser) {
 		InvertedIndex invertedIndex = new InvertedIndex();
@@ -112,8 +112,8 @@ public class Driver {
 	}
 
 	/**
-	 * TODO
-	 * @param argParser
+	 * Initializes objects for a multithreaded approach to building, searching, and writing an inverted index
+	 * @param argParser The {@code ArgumentParser} object to reference
 	 */
 	private static void multiThread(ArgumentParser argParser) {
 		InvertedIndex invertedIndex = new ThreadSafeInvertedIndex();

@@ -32,7 +32,7 @@ public class WorkQueue {
 	/** Tracks unfinished work */
 	private int pending;
 
-	/** TODO */
+	/** The default number of threads to use if the input number is invalid */
 	private final static int DEFAULT_NUM_THREADS = 5;
 
 	/**
@@ -66,14 +66,14 @@ public class WorkQueue {
 	}
 
 	/**
-	 * TODO
+	 * Increments the pending number of tasks to be completed
 	 */
 	private synchronized void incrementPending() {
 		this.pending++;
 	}
 
 	/**
-	 * TODO
+	 * Decrements the pending number of tasks to be completed and wakes up all waiting threads
 	 */
 	private synchronized void decrementPending() {
 		this.pending--;

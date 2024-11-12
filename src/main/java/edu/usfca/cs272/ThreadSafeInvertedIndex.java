@@ -9,20 +9,20 @@ import java.util.Set;
 import edu.usfca.cs272.MultiReaderLock.SimpleLock;
 
 /**
- * TODO
+ * Thread-safe version of {@link InvertedIndex}
  */
 public class ThreadSafeInvertedIndex extends InvertedIndex {
-	/** TODO */
+	/** The lock used to protect concurrent access to the underlying instance members */
 	private final MultiReaderLock lock;
 
-	/** TODO */
+	/** The conditional lock used for reading */
 	private final SimpleLock readLock;
 
-	/** TODO */
+	/** The conditional lock used for writing */
 	private final SimpleLock writeLock;
 
 	/**
-	 * TODO
+	 * Initializes a new read lock and write lock
 	 */
 	public ThreadSafeInvertedIndex() {
 		super();
@@ -31,7 +31,6 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		this.writeLock = this.lock.writeLock();
 	}
 
-	/** TODO */
 	@Override
 	public List<InvertedIndex.SearchResult> exactSearch(Set<String> queryStems) {
 		this.readLock.lock();
@@ -42,7 +41,6 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		}
 	}
 
-	/** TODO */
 	@Override
 	public List<InvertedIndex.SearchResult> partialSearch(Set<String> queryStems) {
 		this.readLock.lock();
@@ -53,7 +51,6 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		}
 	}
 
-	/** TODO */
 	@Override
 	public int addWords(List<String> stemmedWords, String location, int wordPosition) {
 		this.writeLock.lock();
@@ -64,13 +61,11 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		}
 	}
 
-	/** TODO */
 	@Override
 	public boolean addWordPosition(String word, String location, int wordPosition) {
 		return super.addWordPosition(word, location, wordPosition);
 	}
 
-	/** TODO */
 	@Override
 	public Map<String, Integer> getCounts() {
 		this.readLock.lock();
@@ -81,7 +76,6 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		}
 	}
 
-	/** TODO */
 	@Override
 	public Set<String> getStemLocations() {
 		this.readLock.lock();
@@ -92,7 +86,6 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		}
 	}
 
-	/** TODO */
 	@Override
 	public int numCounts() {
 		this.readLock.lock();
@@ -103,7 +96,6 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		}
 	}
 
-	/** TODO */
 	@Override
 	public void indexJson(Path location) throws IOException {
 		this.readLock.lock();

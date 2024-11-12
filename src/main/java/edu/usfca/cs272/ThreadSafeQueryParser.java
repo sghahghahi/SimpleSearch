@@ -18,36 +18,41 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 /**
- * TODO
+ * Thread-safe version of {@link QueryParser}.
+ * Uses a work queue to allow a multithreaded parsing process.
+ *
+ * @author Shyon Ghahghahi
+ * @version Fall 2024
  */
 public class ThreadSafeQueryParser {
-	/** TODO */
+	/** Maps each query string to a {@code List} of search results */
 	private final TreeMap<String, List<InvertedIndex.SearchResult>> exactSearchResults;
 
-	/** TODO */
+	/** Maps each query string to a {@code List} of search results */
 	private final TreeMap<String, List<InvertedIndex.SearchResult>> partialSearchResults;
 
-	/** TODO */
+	/** Initialized and populated thread-safe inverted index to reference */
 	private final InvertedIndex invertedIndex;
 
-	/** TODO */
+	/** Search {@code Function} that will be dynamically assigned */
 	private Function<Set<String>, List<InvertedIndex.SearchResult>> searchMode;
 
-	/** TODO */
+	/** {@code Map} to store either partial or exact search results */
 	private TreeMap<String, List<InvertedIndex.SearchResult>> resultMap;
 
-	/** TODO */
+	/** The lock used to protect concurrent access to the underlying instance members */
 	private final MultiReaderLock lock;
 
-	/** TODO */
+	/** The conditional lock used for writing */
 	private final SimpleLock writeLock;
 
-	/** TODO */
+	/** The work queue to assign tasks to */
 	private final WorkQueue queue;
 
 	/**
-	 * TODO
-	 * @param invertedIndex
+	 * Constructor that initializes our search result metadata data tructure to an empty {@code TreeMap}
+	 * @param invertedIndex The populated inverted index object to reference
+	 * @param queue The work queue to assign tasks to
 	 */
 	public ThreadSafeQueryParser(InvertedIndex invertedIndex, WorkQueue queue) {
 		this.exactSearchResults = new TreeMap<>();
@@ -60,17 +65,17 @@ public class ThreadSafeQueryParser {
 	}
 
 	/** Nested class that represents a task for a thread to do */
-	/** TODO */
 	private static class Work implements Runnable {
-		/** TODO */
+		/** The line to parse */
 		private final String line;
 
-		/** TODO */
+		/** The parser to use to parse the line */
 		private final ThreadSafeQueryParser parser;
 
 		/**
 		 * Constructs a new task
-		 * TODO - params
+		 * @param line The line to parse
+		 * @param parsre The parser to use to parse the line
 		 */
 		public Work(String line, ThreadSafeQueryParser parser) {
 			this.line = line;
@@ -84,8 +89,8 @@ public class ThreadSafeQueryParser {
 	}
 
 	/**
-	 * TODO
-	 * @param exactSearch
+	 * Sets the search mode to either exact or partial
+	 * @param exactSearch The search type. {@code true} represents an exact search, {@code false} represents a partial search
 	 */
 	public void setSearchMode(boolean isExactSearch) {
 		this.writeLock.lock();
@@ -98,9 +103,9 @@ public class ThreadSafeQueryParser {
 	}
 
 	/**
-	 * TODO
-	 * @param queryLocation
-	 * @throws IOException
+	 * Gets the search query from the passed file. Performs a search of the query words on the inverted index
+	 * @param queryLocation Where to find the query words
+	 * @throws IOException If an IO error occurs
 	 */
 	public void parseLocation(Path queryLocation) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
@@ -113,12 +118,12 @@ public class ThreadSafeQueryParser {
 	}
 
 	/**
-	 * TODO
-	 * @param line
+	 * Parses a line and performs a search on the inverted index
+	 * @param line The line to parse
 	 */
 	private void parseLine(String line) {
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
-		Set<String> queryStems = FileStemmer.uniqueStems(line, snowballStemmer); // Give stemmer to each thread to reduce synchronized blocks
+		Set<String> queryStems = FileStemmer.uniqueStems(line, snowballStemmer);
 
 		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
 
@@ -131,18 +136,18 @@ public class ThreadSafeQueryParser {
 	}
 
 	/**
-	 * TODO
-	 * @param queryStems
-	 * @return
+	 * Returns a space-separated {@code String} of the query stems
+	 * @param queryStems The query stems to Stringify
+	 * @return The space-separated query {@code String}
 	 */
 	private static String extractQueryString(Set<String> queryStems) {
 		return String.join(" ", queryStems);
 	}
 
 	/**
-	 * TODO
-	 * @param location
-	 * @throws IOException
+	 * Writes the search results as pretty JSON objects
+	 * @param location Where to write the results to
+	 * @throws IOException If an IO error occurs
 	 */
 	public void queryJson(Path location) throws IOException {
 		SearchResultWriter.writeSearchResults(this.resultMap, location);
