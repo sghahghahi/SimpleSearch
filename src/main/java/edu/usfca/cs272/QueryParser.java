@@ -164,21 +164,6 @@ public class QueryParser {
 	}
 
 	/**
-	 * Checks if {@code searchResult} is in the {@code List} of search result objects
-	 * @param queryString The query string to look up in the result map
-	 * @param searchResult The search result to look up in the {@code List} of search results
-	 * @return {@code true} if {@code searchResult} is in the {@code List} of search results
-	 */
-	public boolean containsSearchResult(String queryString, InvertedIndex.SearchResult searchResult) { // TODO Remove
-		List<InvertedIndex.SearchResult> searchResults = this.resultMap.get(queryString);
-		if (searchResults == null) {
-			return false;
-		}
-
-		return searchResults.contains(searchResult);
-	}
-
-	/**
 	 * Returns the number of query strings in the reuslt map
 	 * @return The number of query strings in the result map
 	 */
