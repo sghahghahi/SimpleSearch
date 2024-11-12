@@ -180,5 +180,13 @@ public class QueryParser {
 		return getSearchResults(queryString).size();
 	}
 
-	// TODO toString
+	@Override
+	public String toString() {
+		return String.format(
+			"Query parser currently has %d %s search %s stored.",
+			this.resultMap.size(),
+			this.isExactSearch ? "exact" : "partial",
+			this.resultMap.size() == 1 ? "result" : "results"
+		);
+	}
 }
