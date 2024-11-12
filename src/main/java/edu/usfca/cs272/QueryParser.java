@@ -44,7 +44,7 @@ public class QueryParser {
 	private TreeMap<String, List<InvertedIndex.SearchResult>> resultMap;
 
 	/** Flag to keep track of current search mode */
-	private boolean isExactSearch; // TODO Nice to have a get method for this
+	private boolean isExactSearch;
 
 	/**
 	 * Constructor that initializes our search result metadata data structure to an empty {@code TreeMap}
@@ -94,7 +94,7 @@ public class QueryParser {
 	 */
 	private void parseLine(String line) { // TODO public
 		Set<String> queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
-		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
+		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems); // Move this line to the TODO line below (only after checking if I already have a result for the query string)
 
 		String queryString = extractQueryString(queryStems);
 		if (!queryString.isBlank()) { // TODO Check if you already have results for this queryString
@@ -142,17 +142,31 @@ public class QueryParser {
 		return this.isExactSearch;
 	}
 
-	// TODO Missing a get method that can get the results for a queryString
-	// TODO BEFORE any get... need to re-stem and join before accessing the result map
+	/**
+	 * Returns a {@code List} of {@see InvertedIndex.SearchResult} objects for a particular {@code queryString}
+	 * @param queryString The query string to look up in the {@code List} of search results
+	 * @return A {@code List} of {@see InvertedIndex.SearchResult} objects for a particular {@code queryString} or an empty list
+	 * if the {@code queryString} is not in the {@code Map} of search results
+	 */
+	public List<InvertedIndex.SearchResult> getSearchResults(String queryString) {
+		Set<String> queryStems = FileStemmer.uniqueStems(queryString, this.snowballStemmer);
+		String joinedQueryString = extractQueryString(queryStems);
+
+		List<InvertedIndex.SearchResult> searchResults = this.resultMap.get(joinedQueryString);
+
+		return searchResults == null ? Collections.emptyList() : Collections.unmodifiableList(searchResults);
+	}
 
 	/**
 	 * Checks if {@code queryString} is a key in the results map
+	 *
+	 * @see #getSearchResults(String)
+	 *
 	 * @param queryString The query string to check
 	 * @return {@code true} if {@code queryString} is a key in the result map
 	 */
 	public boolean containsQueryString(String queryString) {
-		// TODO return getResults(queryString) != null or something
-		return this.resultMap.containsKey(queryString);
+		return getSearchResults(queryString).size() > 0;
 	}
 
 	/**
