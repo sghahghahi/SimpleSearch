@@ -36,9 +36,10 @@ public class TextFileIndexer {
 	 * Reads file from {@code path}.
 	 * Adds {@code path} and word counts to {@code this.wordStems} to be written to a file later.
 	 * @param path File path to read from
+	 * @param invertedIndex The {@link InvertedIndex} object where we can access the word stems data structure from
 	 * @throws IOException If an IO error occurs
 	 */
-	public void indexFile(Path path) throws IOException { // TODO Make this a static method that takes in an inverted index parameter
+	public static void indexFile(Path path, InvertedIndex invertedIndex) throws IOException {
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 
 		try (BufferedReader reader = Files.newBufferedReader(path, UTF_8)) {
@@ -50,7 +51,7 @@ public class TextFileIndexer {
 				String[] cleanedWords = FileStemmer.parse(line);
 
 				for (String cleanWord : cleanedWords) {
-					this.invertedIndex.addWordPosition(
+					invertedIndex.addWordPosition(
 						snowballStemmer.stem(cleanWord).toString(),
 						location, wordPosition++
 					);
@@ -58,12 +59,19 @@ public class TextFileIndexer {
 			}
 		}
 	}
-	
-	/* TODO 
+
+	/**
+	 * Reads file from {@code path}.
+	 * Adds {@code path} and word counts to {@code this.wordStems} to be written to a file later.
+	 *
+	 * @see #indexFile(Path, InvertedIndex)
+	 *
+	 * @param path File path to read from
+	 * @throws IOException If an IO error occurs
+	 */
 	public void indexFile(Path path) throws IOException {
 		indexFile(path, this.invertedIndex);
 	}
-	*/
 
 	/**
 	 * Recursively reads all files and subdirectories from {@code dirLocation}.
