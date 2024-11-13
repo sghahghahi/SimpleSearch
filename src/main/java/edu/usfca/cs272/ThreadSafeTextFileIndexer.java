@@ -87,26 +87,12 @@ public class ThreadSafeTextFileIndexer {
 			for (Path location : dirStream) {
 				if (Files.isDirectory(location)) {
 					indexDirectory(location);
-				} else if (isTextFile(location)) {
+				} else if (TextFileIndexer.isTextFile(location)) {
 					Work work = new Work(location);
 					this.queue.execute(work);
 				}
 			}
 		}
-	}
-
-	/**
-	 * Checks if the file at {@code location} ends in either {@code .txt} or {@code .text} (case-insensitive)
-	 * @param location The file location to check
-	 * @return {@code true} if the file at {@code location} ends with {@code .txt} or {@code .text} (case-insensitive).
-	 */
-	public static boolean isTextFile(Path location) { // TODO Remove
-		String lowerCaseLocation = location.toString().toLowerCase();
-
-		return (
-			lowerCaseLocation.endsWith(".txt") ||
-			lowerCaseLocation.endsWith(".text")
-		);
 	}
 
 	/**
