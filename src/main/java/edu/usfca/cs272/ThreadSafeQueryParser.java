@@ -163,7 +163,7 @@ public class ThreadSafeQueryParser {
 	 * @param location Where to write the results to
 	 * @throws IOException If an IO error occurs
 	 */
-	public void queryJson(Path location) throws IOException {
-		SearchResultWriter.writeSearchResults(this.resultMap, location); // TODO Also sync this too
+	public synchronized void queryJson(Path location) throws IOException {
+		SearchResultWriter.writeSearchResults(this.resultMap, location);
 	}
 }
