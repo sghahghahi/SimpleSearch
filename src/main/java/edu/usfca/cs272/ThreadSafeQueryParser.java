@@ -65,26 +65,22 @@ public class ThreadSafeQueryParser {
 	}
 
 	/** Nested class that represents a task for a thread to do */
-	private static class Work implements Runnable { // TODO non-static
+	private class Work implements Runnable {
 		/** The line to parse */
 		private final String line;
-
-		/** The parser to use to parse the line */
-		private final ThreadSafeQueryParser parser;
 
 		/**
 		 * Constructs a new task
 		 * @param line The line to parse
 		 * @param parsre The parser to use to parse the line
 		 */
-		public Work(String line, ThreadSafeQueryParser parser) {
+		public Work(String line) {
 			this.line = line;
-			this.parser = parser;
 		}
 
 		@Override
 		public void run() {
-			this.parser.parseLine(line);
+			parseLine(line);
 		}
 	}
 
@@ -111,7 +107,7 @@ public class ThreadSafeQueryParser {
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-				Work work = new Work(line, this);
+				Work work = new Work(line);
 				this.queue.execute(work);
 			}
 		} finally {

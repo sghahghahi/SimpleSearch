@@ -27,27 +27,23 @@ public class ThreadSafeTextFileIndexer {
 	}
 
 	/** Nested class that represents a task for a thread to do */
-	private static class Work implements Runnable { // TODO non-static
+	private class Work implements Runnable {
 		/** The file location to index */
 		Path location;
-
-		/** The indexer to use */
-		ThreadSafeTextFileIndexer indexer;
 
 		/**
 		 * Constructs a new task
 		 * @param location The file location to index
 		 * @param threadSafeTextFileIndexer The indexer to use
 		 */
-		public Work(Path location, ThreadSafeTextFileIndexer indexer) {
+		public Work(Path location) {
 			this.location = location;
-			this.indexer = indexer;
 		}
 
 		@Override
 		public void run() {
 			try {
-				this.indexer.indexFile(location);
+				indexFile(this.location);
 			} catch (IOException e) {
 				System.err.println("IOException occured during run() method.");
 				Thread.currentThread().interrupt();
@@ -64,7 +60,7 @@ public class ThreadSafeTextFileIndexer {
 	public void indexFile(Path path) throws IOException {
 		String location = path.toString();
 		int wordPosition = 1;
-		
+
 		/* TODO Start simple with addAll so we have a comparison point
 		InvertedIndex localIndex = new InvertedIndex();
 		TextFileIndexer.indexFile(path, localIndex);
@@ -92,7 +88,7 @@ public class ThreadSafeTextFileIndexer {
 				if (Files.isDirectory(location)) {
 					indexDirectory(location);
 				} else if (isTextFile(location)) {
-					Work work = new Work(location, this);
+					Work work = new Work(location);
 					this.queue.execute(work);
 				}
 			}
@@ -124,7 +120,7 @@ public class ThreadSafeTextFileIndexer {
 			if (Files.isDirectory(location)) {
 				indexDirectory(location);
 			} else {
-				Work work = new Work(location, this);
+				Work work = new Work(location);
 				this.queue.execute(work);
 			}
 		} finally {
