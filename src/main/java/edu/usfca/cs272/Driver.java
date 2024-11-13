@@ -116,7 +116,7 @@ public class Driver {
 	 * @param argParser The {@code ArgumentParser} object to reference
 	 */
 	private static void multiThread(ArgumentParser argParser) {
-		InvertedIndex invertedIndex = new ThreadSafeInvertedIndex();
+		ThreadSafeInvertedIndex invertedIndex = new ThreadSafeInvertedIndex();
 		WorkQueue queue = new WorkQueue(argParser.getInteger(THREAD, NUM_THREADS));
 		ThreadSafeTextFileIndexer textFileIndexer = new ThreadSafeTextFileIndexer(invertedIndex, queue);
 		ThreadSafeQueryParser queryParser = new ThreadSafeQueryParser(invertedIndex, queue);

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /** Thread-safe version of {@link TextFileIndexer} */
 public class ThreadSafeTextFileIndexer {
 	/** {@link InvertedIndex} object to reference class-wide */
-	private final InvertedIndex invertedIndex; // TODO thread-safe
+	private final ThreadSafeInvertedIndex invertedIndex;
 
 	/** The work queue to assign tasks to */
 	private final WorkQueue queue;
@@ -21,7 +21,7 @@ public class ThreadSafeTextFileIndexer {
 	 * @param invertedIndex The {@link InvertedIndex} object to reference
 	 * @param queue The work queue to assign tasks to
 	 */
-	public ThreadSafeTextFileIndexer(InvertedIndex invertedIndex, WorkQueue queue) {
+	public ThreadSafeTextFileIndexer(ThreadSafeInvertedIndex invertedIndex, WorkQueue queue) {
 		this.invertedIndex = invertedIndex;
 		this.queue = queue;
 	}

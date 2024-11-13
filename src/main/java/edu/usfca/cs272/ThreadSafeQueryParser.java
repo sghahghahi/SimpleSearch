@@ -32,7 +32,7 @@ public class ThreadSafeQueryParser {
 	private final TreeMap<String, List<InvertedIndex.SearchResult>> partialSearchResults;
 
 	/** Initialized and populated thread-safe inverted index to reference */
-	private final InvertedIndex invertedIndex; // TODO thread safe
+	private final ThreadSafeInvertedIndex invertedIndex;
 
 	/** Search {@code Function} that will be dynamically assigned */
 	private Function<Set<String>, List<InvertedIndex.SearchResult>> searchMode;
@@ -54,7 +54,7 @@ public class ThreadSafeQueryParser {
 	 * @param invertedIndex The populated inverted index object to reference
 	 * @param queue The work queue to assign tasks to
 	 */
-	public ThreadSafeQueryParser(InvertedIndex invertedIndex, WorkQueue queue) {
+	public ThreadSafeQueryParser(ThreadSafeInvertedIndex invertedIndex, WorkQueue queue) {
 		this.exactSearchResults = new TreeMap<>();
 		this.partialSearchResults = new TreeMap<>();
 		this.invertedIndex = invertedIndex;
