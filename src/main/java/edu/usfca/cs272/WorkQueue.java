@@ -107,17 +107,15 @@ public class WorkQueue {
 	 * Waits for all pending work (or tasks) to be finished. Does not terminate the
 	 * worker threads so that the work queue can continue to be used.
 	 */
-	public void finish() { // TODO Make the method synchronized
-		synchronized (this) {
-			try {
-				while (this.pending > 0) {
-					this.wait();
-				}
-			} catch (InterruptedException e) {
-				System.err.println("Error waiting for pending work to finish" + e);
-				log.error("Error waiting for pending work to finish");
-				Thread.currentThread().interrupt();
+	public synchronized void finish() {
+		try {
+			while (this.pending > 0) {
+				this.wait();
 			}
+		} catch (InterruptedException e) {
+			System.err.println("Error waiting for pending work to finish" + e);
+			log.error("Error waiting for pending work to finish");
+			Thread.currentThread().interrupt();
 		}
 	}
 
