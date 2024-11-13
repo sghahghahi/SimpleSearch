@@ -32,7 +32,7 @@ public class ThreadSafeQueryParser {
 	private final TreeMap<String, List<InvertedIndex.SearchResult>> partialSearchResults;
 
 	/** Initialized and populated thread-safe inverted index to reference */
-	private final InvertedIndex invertedIndex;
+	private final InvertedIndex invertedIndex; // TODO thread safe
 
 	/** Search {@code Function} that will be dynamically assigned */
 	private Function<Set<String>, List<InvertedIndex.SearchResult>> searchMode;
@@ -41,7 +41,7 @@ public class ThreadSafeQueryParser {
 	private TreeMap<String, List<InvertedIndex.SearchResult>> resultMap;
 
 	/** The lock used to protect concurrent access to the underlying instance members */
-	private final MultiReaderLock lock;
+	private final MultiReaderLock lock; // TODO Don't get a lot of benefit for our tests
 
 	/** The conditional lock used for writing */
 	private final SimpleLock writeLock;
@@ -65,7 +65,7 @@ public class ThreadSafeQueryParser {
 	}
 
 	/** Nested class that represents a task for a thread to do */
-	private static class Work implements Runnable {
+	private static class Work implements Runnable { // TODO non-static
 		/** The line to parse */
 		private final String line;
 
@@ -121,18 +121,33 @@ public class ThreadSafeQueryParser {
 	 * Parses a line and performs a search on the inverted index
 	 * @param line The line to parse
 	 */
-	private void parseLine(String line) {
+	private void parseLine(String line) { // TODO Still needs to be public
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 		Set<String> queryStems = FileStemmer.uniqueStems(line, snowballStemmer);
 
 		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
 
 		String queryString = extractQueryString(queryStems);
-		if (!queryString.isBlank()) {
-			synchronized (this.resultMap) {
+		if (!queryString.isBlank()) { // TODO No longer checking containsKey
+			synchronized (this.resultMap) { // TODO Choose a single means of synchronization
 				this.resultMap.put(queryString, searchResults);
 			}
 		}
+		
+		/* TODO 
+		synchronized (this.resultMap) {
+			if (queryString.isBlank() || this.resultMap.containsKey(queryString)) {
+				return;
+			}
+		}
+
+		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
+
+		synchronized (this.resultMap) {
+			this.resultMap.put(queryString, searchResults);
+		}
+		*/
+		
 	}
 
 	/**
@@ -150,6 +165,6 @@ public class ThreadSafeQueryParser {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void queryJson(Path location) throws IOException {
-		SearchResultWriter.writeSearchResults(this.resultMap, location);
+		SearchResultWriter.writeSearchResults(this.resultMap, location); // TODO Also sync this too
 	}
 }
