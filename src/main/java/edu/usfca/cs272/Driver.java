@@ -134,8 +134,6 @@ public class Driver {
 			}
 		}
 
-		queue.finish();
-
 		if (argParser.hasFlag(QUERY)) {
 			location = argParser.getPath(QUERY);
 			try {
@@ -147,10 +145,6 @@ public class Driver {
 				System.err.println("No input file was provided after '-query' flag.");
 			}
 		}
-		
-		queue.finish(); // TODO Move finish into the methods that create the multiple tasks
-		
-		// TODO queue.shutdown();
 
 		if (argParser.hasFlag(COUNTS)) {
 			location = argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP));
@@ -199,7 +193,7 @@ public class Driver {
 	}
 }
 
-/* TODO 
+/* TODO
 Description	Resource	Path	Location	Type
 Javadoc: Lock cannot be resolved to a type	MultiReaderLock.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 125	Java Problem
 Javadoc: Missing tag for parameter indexer	ThreadSafeTextFileIndexer.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 42	Java Problem

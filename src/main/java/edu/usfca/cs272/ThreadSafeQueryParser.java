@@ -114,6 +114,9 @@ public class ThreadSafeQueryParser {
 				Work work = new Work(line, this);
 				this.queue.execute(work);
 			}
+		} finally {
+			this.queue.finish();
+			this.queue.shutdown();
 		}
 	}
 
@@ -133,8 +136,8 @@ public class ThreadSafeQueryParser {
 				this.resultMap.put(queryString, searchResults);
 			}
 		}
-		
-		/* TODO 
+
+		/* TODO
 		synchronized (this.resultMap) {
 			if (queryString.isBlank() || this.resultMap.containsKey(queryString)) {
 				return;
@@ -147,7 +150,7 @@ public class ThreadSafeQueryParser {
 			this.resultMap.put(queryString, searchResults);
 		}
 		*/
-		
+
 	}
 
 	/**

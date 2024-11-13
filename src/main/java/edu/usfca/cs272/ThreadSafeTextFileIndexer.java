@@ -120,11 +120,15 @@ public class ThreadSafeTextFileIndexer {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void indexLocation(Path location) throws IOException {
-		if (Files.isDirectory(location)) {
-			indexDirectory(location);
-		} else {
-			Work work = new Work(location, this);
-			this.queue.execute(work);
+		try {
+			if (Files.isDirectory(location)) {
+				indexDirectory(location);
+			} else {
+				Work work = new Work(location, this);
+				this.queue.execute(work);
+			}
+		} finally {
+			this.queue.finish();
 		}
 	}
 }
