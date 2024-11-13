@@ -63,6 +63,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 
 	@Override
 	public boolean addWordPosition(String word, String location, int wordPosition) {
+		// TODO Does need to be locked
 		return super.addWordPosition(word, location, wordPosition);
 	}
 
@@ -105,4 +106,6 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 			this.readLock.unlock();
 		}
 	}
+	
+	// TODO Missing some methods
 }

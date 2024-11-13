@@ -148,7 +148,9 @@ public class Driver {
 			}
 		}
 		
-		queue.finish();
+		queue.finish(); // TODO Move finish into the methods that create the multiple tasks
+		
+		// TODO queue.shutdown();
 
 		if (argParser.hasFlag(COUNTS)) {
 			location = argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP));
@@ -196,3 +198,16 @@ public class Driver {
 		}
 	}
 }
+
+/* TODO 
+Description	Resource	Path	Location	Type
+Javadoc: Lock cannot be resolved to a type	MultiReaderLock.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 125	Java Problem
+Javadoc: Missing tag for parameter indexer	ThreadSafeTextFileIndexer.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 42	Java Problem
+Javadoc: Missing tag for parameter isExactSearch	ThreadSafeQueryParser.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 95	Java Problem
+Javadoc: Missing tag for parameter parser	ThreadSafeQueryParser.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 80	Java Problem
+Javadoc: Parameter exactSearch is not declared	ThreadSafeQueryParser.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 93	Java Problem
+Javadoc: Parameter parsre is not declared	ThreadSafeQueryParser.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 78	Java Problem
+Javadoc: Parameter threadSafeTextFileIndexer is not declared	ThreadSafeTextFileIndexer.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 40	Java Problem
+Javadoc: Unexpected tag	QueryParser.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 140	Java Problem
+Javadoc: Unexpected tag	QueryParser.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 142	Java Problem
+*/

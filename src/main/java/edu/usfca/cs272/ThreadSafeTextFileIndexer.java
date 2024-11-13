@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /** Thread-safe version of {@link TextFileIndexer} */
 public class ThreadSafeTextFileIndexer {
 	/** {@link InvertedIndex} object to reference class-wide */
-	private final InvertedIndex invertedIndex;
+	private final InvertedIndex invertedIndex; // TODO thread-safe
 
 	/** The work queue to assign tasks to */
 	private final WorkQueue queue;
@@ -27,7 +27,7 @@ public class ThreadSafeTextFileIndexer {
 	}
 
 	/** Nested class that represents a task for a thread to do */
-	private static class Work implements Runnable {
+	private static class Work implements Runnable { // TODO non-static
 		/** The file location to index */
 		Path location;
 
@@ -64,8 +64,15 @@ public class ThreadSafeTextFileIndexer {
 	public void indexFile(Path path) throws IOException {
 		String location = path.toString();
 		int wordPosition = 1;
+		
+		/* TODO Start simple with addAll so we have a comparison point
+		InvertedIndex localIndex = new InvertedIndex();
+		TextFileIndexer.indexFile(path, localIndex);
+		this.invertedIndex.addAll(localIndex);
+		*/
 
 		ArrayList<String> words = FileStemmer.listStems(path);
+		// TODO this.invertedIndex.addWords(words, location, 1);
 		for (String word : words) {
 			synchronized (this.invertedIndex) {
 				this.invertedIndex.addWordPosition(word, location, wordPosition++);
@@ -97,7 +104,7 @@ public class ThreadSafeTextFileIndexer {
 	 * @param location The file location to check
 	 * @return {@code true} if the file at {@code location} ends with {@code .txt} or {@code .text} (case-insensitive).
 	 */
-	public static boolean isTextFile(Path location) {
+	public static boolean isTextFile(Path location) { // TODO Remove
 		String lowerCaseLocation = location.toString().toLowerCase();
 
 		return (
