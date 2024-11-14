@@ -34,7 +34,6 @@ public class ThreadSafeTextFileIndexer {
 		/**
 		 * Constructs a new task
 		 * @param location The file location to index
-		 * @param threadSafeTextFileIndexer The indexer to use
 		 */
 		public Work(Path location) {
 			this.location = location;

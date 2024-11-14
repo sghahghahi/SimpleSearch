@@ -137,9 +137,9 @@ public class QueryParser {
 	}
 
 	/**
-	 * Returns a {@code List} of {@see InvertedIndex.SearchResult} objects for a particular {@code queryString}
+	 * Returns a {@code List} of {@link InvertedIndex.SearchResult} objects for a particular {@code queryString}
 	 * @param queryString The query string to look up in the {@code List} of search results
-	 * @return A {@code List} of {@see InvertedIndex.SearchResult} objects for a particular {@code queryString} or an empty list
+	 * @return A {@code List} of {@link InvertedIndex.SearchResult} objects for a particular {@code queryString} or an empty list
 	 * if the {@code queryString} is not in the {@code Map} of search results
 	 */
 	public List<InvertedIndex.SearchResult> getSearchResults(String queryString) {

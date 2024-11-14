@@ -72,7 +72,6 @@ public class ThreadSafeQueryParser {
 		/**
 		 * Constructs a new task
 		 * @param line The line to parse
-		 * @param parsre The parser to use to parse the line
 		 */
 		public Work(String line) {
 			this.line = line;
@@ -86,7 +85,7 @@ public class ThreadSafeQueryParser {
 
 	/**
 	 * Sets the search mode to either exact or partial
-	 * @param exactSearch The search type. {@code true} represents an exact search, {@code false} represents a partial search
+	 * @param isExactSearch The search type. {@code true} represents an exact search, {@code false} represents a partial search
 	 */
 	public final void setSearchMode(boolean isExactSearch) {
 		this.writeLock.lock();
