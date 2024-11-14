@@ -1,7 +1,5 @@
 package edu.usfca.cs272;
 
-import edu.usfca.cs272.MultiReaderLock.SimpleLock;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,12 +38,6 @@ public class ThreadSafeQueryParser {
 	/** {@code Map} to store either partial or exact search results */
 	private TreeMap<String, List<InvertedIndex.SearchResult>> resultMap;
 
-	/** The lock used to protect concurrent access to the underlying instance members */
-	private final MultiReaderLock lock; // TODO Don't get a lot of benefit for our tests
-
-	/** The conditional lock used for writing */
-	private final SimpleLock writeLock;
-
 	/** The work queue to assign tasks to */
 	private final WorkQueue queue;
 
@@ -58,8 +50,6 @@ public class ThreadSafeQueryParser {
 		this.exactSearchResults = new TreeMap<>();
 		this.partialSearchResults = new TreeMap<>();
 		this.invertedIndex = invertedIndex;
-		this.lock = new MultiReaderLock();
-		this.writeLock = this.lock.writeLock();
 		this.queue = queue;
 		setSearchMode(true);
 	}
@@ -87,14 +77,9 @@ public class ThreadSafeQueryParser {
 	 * Sets the search mode to either exact or partial
 	 * @param isExactSearch The search type. {@code true} represents an exact search, {@code false} represents a partial search
 	 */
-	public final void setSearchMode(boolean isExactSearch) {
-		this.writeLock.lock();
-		try {
-			this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
-			this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
-		} finally {
-			this.writeLock.unlock();
-		}
+	public synchronized final void setSearchMode(boolean isExactSearch) {
+		this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
+		this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
 	}
 
 	/**
