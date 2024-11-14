@@ -58,7 +58,6 @@ public class ThreadSafeTextFileIndexer {
 	 */
 	public void indexFile(Path path) throws IOException {
 		String location = path.toString();
-		int wordPosition = 1;
 
 		/* TODO Start simple with addAll so we have a comparison point
 		InvertedIndex localIndex = new InvertedIndex();
@@ -67,12 +66,7 @@ public class ThreadSafeTextFileIndexer {
 		*/
 
 		ArrayList<String> words = FileStemmer.listStems(path);
-		// TODO this.invertedIndex.addWords(words, location, 1);
-		for (String word : words) {
-			synchronized (this.invertedIndex) {
-				this.invertedIndex.addWordPosition(word, location, wordPosition++);
-			}
-		}
+		this.invertedIndex.addWords(words, location, 1);
 	}
 
 	/**
