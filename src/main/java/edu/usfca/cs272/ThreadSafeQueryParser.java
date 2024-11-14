@@ -104,20 +104,11 @@ public class ThreadSafeQueryParser {
 	 * Parses a line and performs a search on the inverted index
 	 * @param line The line to parse
 	 */
-	private void parseLine(String line) { // TODO Still needs to be public
+	public void parseLine(String line) {
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 		Set<String> queryStems = FileStemmer.uniqueStems(line, snowballStemmer);
-
-		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
-
 		String queryString = extractQueryString(queryStems);
-		if (!queryString.isBlank()) { // TODO No longer checking containsKey
-			synchronized (this.resultMap) { // TODO Choose a single means of synchronization
-				this.resultMap.put(queryString, searchResults);
-			}
-		}
 
-		/* TODO
 		synchronized (this.resultMap) {
 			if (queryString.isBlank() || this.resultMap.containsKey(queryString)) {
 				return;
@@ -129,8 +120,6 @@ public class ThreadSafeQueryParser {
 		synchronized (this.resultMap) {
 			this.resultMap.put(queryString, searchResults);
 		}
-		*/
-
 	}
 
 	/**
