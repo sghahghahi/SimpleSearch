@@ -72,6 +72,16 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
+	public void addAll(InvertedIndex indexToAdd) {
+		this.writeLock.lock();
+		try {
+			super.addAll(indexToAdd);
+		} finally {
+			this.writeLock.unlock();
+		}
+	}
+
+	@Override
 	public Map<String, Integer> getCounts() {
 		this.readLock.lock();
 		try {
