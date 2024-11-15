@@ -6,8 +6,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import java.util.ArrayList;
-
 /** Thread-safe version of {@link TextFileIndexer} */
 public class ThreadSafeTextFileIndexer {
 	/** {@link InvertedIndex} object to reference class-wide */
@@ -57,16 +55,9 @@ public class ThreadSafeTextFileIndexer {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void indexFile(Path path) throws IOException {
-		String location = path.toString();
-
-		/* TODO Start simple with addAll so we have a comparison point
 		InvertedIndex localIndex = new InvertedIndex();
 		TextFileIndexer.indexFile(path, localIndex);
 		this.invertedIndex.addAll(localIndex);
-		*/
-
-		ArrayList<String> words = FileStemmer.listStems(path);
-		this.invertedIndex.addWords(words, location, 1);
 	}
 
 	/**
