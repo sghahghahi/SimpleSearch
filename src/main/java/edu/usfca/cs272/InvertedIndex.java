@@ -249,6 +249,21 @@ public class InvertedIndex {
 	}
 
 	/**
+	 * Merges two inverted indeces together
+	 * @param indexToAdd The inverted index to add to the current inverted index
+	 */
+	public void addAll(InvertedIndex indexToAdd) {
+		for (String word : indexToAdd.getWords()) {
+			for (String location : indexToAdd.getLocations(word)) {
+				Set<Integer> positions = indexToAdd.getPositions(word, location);
+				for (int position : positions) {
+					addWordPosition(word, location, position);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Returns a view of the location/word count key/value pair map
 	 * @return An unmodifiable view of the location/word count key/value pair map
 	 */
