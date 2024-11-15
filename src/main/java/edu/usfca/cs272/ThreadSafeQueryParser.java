@@ -91,8 +91,7 @@ public class ThreadSafeQueryParser {
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-				Work work = new Work(line);
-				this.queue.execute(work);
+				this.queue.execute(new Work(line));
 			}
 		} finally {
 			this.queue.finish();

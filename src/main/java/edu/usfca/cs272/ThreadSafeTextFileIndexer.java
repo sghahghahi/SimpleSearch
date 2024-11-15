@@ -72,8 +72,7 @@ public class ThreadSafeTextFileIndexer {
 				if (Files.isDirectory(location)) {
 					indexDirectory(location);
 				} else if (TextFileIndexer.isTextFile(location)) {
-					Work work = new Work(location);
-					this.queue.execute(work);
+					this.queue.execute(new Work(location));
 				}
 			}
 		}
