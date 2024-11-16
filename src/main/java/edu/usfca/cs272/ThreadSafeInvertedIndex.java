@@ -112,6 +112,36 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 	}
 
 	@Override
+	public boolean isEmpty() {
+		this.readLock.lock();
+		try {
+			return super.isEmpty();
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
+	public boolean containsLocation(String location) {
+		this.readLock.lock();
+		try {
+			return super.containsLocation(location);
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
+	public void indexCounts(Path location) throws IOException {
+		this.readLock.lock();
+		try {
+			super.indexCounts(location);
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
 	public void indexJson(Path location) throws IOException {
 		this.readLock.lock();
 		try {
@@ -121,5 +151,103 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		}
 	}
 
-	// TODO Missing some methods
+	@Override
+	public int numLocations(String word) {
+		this.readLock.lock();
+		try {
+			return super.numLocations(word);
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
+	public int numPositions(String word, String location) {
+		this.readLock.lock();
+		try {
+			return super.numPositions(word, location);
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
+	public int numWords() {
+		this.readLock.lock();
+		try {
+			return super.numWords();
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
+	public Set<String> getLocations(String word) {
+		this.readLock.lock();
+		try {
+			return super.getLocations(word);
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
+	public Set<Integer> getPositions(String word, String location) {
+		this.readLock.lock();
+		try {
+			return super.getPositions(word, location);
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
+	public Set<String> getWords() {
+		this.readLock.lock();
+		try {
+			return super.getWords();
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
+	public boolean containsWord(String word) {
+		this.readLock.lock();
+		try {
+			return super.containsWord(word);
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
+	public boolean containsLocation(String word, String location) {
+		this.readLock.lock();
+		try {
+			return super.containsLocation(word, location);
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
+	public boolean containsPosition(String word, String location, int position) {
+		this.readLock.lock();
+		try {
+			return super.containsPosition(word, location, position);
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
+	public String toString() {
+		this.readLock.lock();
+		try {
+			return super.toString();
+		} finally {
+			this.readLock.unlock();
+		}
+	}
 }
