@@ -83,6 +83,8 @@ public class ThreadSafeQueryParser {
 	 */
 	public synchronized final void setSearchMode(boolean isExactSearch) {
 		this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
+
+		// TODO synchronize on this.resultMap
 		this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
 	}
 
@@ -110,7 +112,7 @@ public class ThreadSafeQueryParser {
 	public void parseLine(String line) {
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 		Set<String> queryStems = FileStemmer.uniqueStems(line, snowballStemmer);
-		String queryString = extractQueryString(queryStems);
+		String queryString = QueryParser.extractQueryString(queryStems);
 
 		synchronized (this.resultMap) {
 			if (queryString.isBlank() || this.resultMap.containsKey(queryString)) {
@@ -126,15 +128,6 @@ public class ThreadSafeQueryParser {
 	}
 
 	/**
-	 * Returns a space-separated {@code String} of the query stems
-	 * @param queryStems The query stems to Stringify
-	 * @return The space-separated query {@code String}
-	 */
-	private static String extractQueryString(Set<String> queryStems) { // TODO Remove
-		return String.join(" ", queryStems);
-	}
-
-	/**
 	 * Writes the search results as pretty JSON objects
 	 * @param location Where to write the results to
 	 * @throws IOException If an IO error occurs
@@ -142,7 +135,7 @@ public class ThreadSafeQueryParser {
 	public synchronized void queryJson(Path location) throws IOException {
 		SearchResultWriter.writeSearchResults(this.resultMap, location);
 	}
-	
+
 	/*
 	 * TODO Make sure to consistently synchronize on the resultMap
 	 */
