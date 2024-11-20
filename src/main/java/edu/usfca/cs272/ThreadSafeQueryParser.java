@@ -15,6 +15,10 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
+/*
+ * TODO Try to create a common interface and move as much as possible in to the interface
+ */
+
 /**
  * Thread-safe version of {@link QueryParser}.
  * Uses a work queue to allow a multithreaded parsing process.
@@ -95,7 +99,7 @@ public class ThreadSafeQueryParser {
 			}
 		} finally {
 			this.queue.finish();
-			this.queue.shutdown();
+			this.queue.shutdown(); // TODO shutdown should happen in Driver
 		}
 	}
 
@@ -126,7 +130,7 @@ public class ThreadSafeQueryParser {
 	 * @param queryStems The query stems to Stringify
 	 * @return The space-separated query {@code String}
 	 */
-	private static String extractQueryString(Set<String> queryStems) {
+	private static String extractQueryString(Set<String> queryStems) { // TODO Remove
 		return String.join(" ", queryStems);
 	}
 
@@ -138,4 +142,8 @@ public class ThreadSafeQueryParser {
 	public synchronized void queryJson(Path location) throws IOException {
 		SearchResultWriter.writeSearchResults(this.resultMap, location);
 	}
+	
+	/*
+	 * TODO Make sure to consistently synchronize on the resultMap
+	 */
 }

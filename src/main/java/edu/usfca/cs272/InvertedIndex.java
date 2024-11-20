@@ -253,6 +253,22 @@ public class InvertedIndex {
 	 * @param indexToAdd The inverted index to add to the current inverted index
 	 */
 	public void addAll(InvertedIndex indexToAdd) {
+		/* TODO 
+		for (var otherEntry : indexToAdd.invertedIndex.entrySet()) {
+			String otherWord = otherEntry.getKey();
+			var thisEntry = this.invertedIndex.get(otherWord);
+			
+			if (thisEntry == null) {
+				this.invertedIndex.put(otherWord, otherEntry.getValue());
+			}
+			else {
+				... at some point need to combine treesets... use set.addAll
+			}
+		}
+		
+		add a separate loop through your wordStems data structure
+		*/
+			
 		for (String word : indexToAdd.getWords()) {
 			for (String location : indexToAdd.getLocations(word)) {
 				Set<Integer> positions = indexToAdd.getPositions(word, location);
