@@ -184,6 +184,35 @@ public class Driver {
 	 * @param args flag/value pairs used to start this program
 	 */
 	public static void main(String[] args) {
+		/* TODO 
+		ArgumentParser argParser = new ArgumentParser(args);
+		
+		InvertedIndex index;
+		TextFileIndexer indexer;
+		etc.
+		
+		if (argParser.hasFlag(THREAD)) {
+			index = new InvertedIndex();
+		} else {
+			ThreadSafeInvertedIndex safe = new ThreadSafeInvertedIndex();
+			index = safe;
+			
+			indexer = new ThreadSafeTextFileIndexer(safe, queue);
+		}
+		
+		
+		if (argParser.hasFlag(INDEX)) {
+			location = argParser.getPath(INDEX, Path.of(CURR_DIR, INDEX_BACKUP));
+			try {
+				invertedIndex.indexJson(location);
+			} catch (IOException e) {
+				System.err.printf("Unable to write inverted index to location: %s\n", location);
+			}
+		}
+		
+		if init a work queue, shutdown/join
+		*/
+		
 		ArgumentParser argParser = new ArgumentParser(args);
 		if (argParser.hasFlag(THREAD)) {
 			multiThread(argParser);

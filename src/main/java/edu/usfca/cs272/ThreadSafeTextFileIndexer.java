@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /** Thread-safe version of {@link TextFileIndexer} */
-public class ThreadSafeTextFileIndexer {
+public class ThreadSafeTextFileIndexer { // TODO extends TextFileIndexer
 	/** {@link InvertedIndex} object to reference class-wide */
 	private final ThreadSafeInvertedIndex invertedIndex;
 
@@ -20,6 +20,7 @@ public class ThreadSafeTextFileIndexer {
 	 * @param queue The work queue to assign tasks to
 	 */
 	public ThreadSafeTextFileIndexer(ThreadSafeInvertedIndex invertedIndex, WorkQueue queue) {
+		// TODO super(invertedIndex);
 		this.invertedIndex = invertedIndex;
 		this.queue = queue;
 	}
@@ -27,7 +28,7 @@ public class ThreadSafeTextFileIndexer {
 	/** Nested class that represents a task for a thread to do */
 	private class Work implements Runnable {
 		/** The file location to index */
-		Path location;
+		Path location; // TODO keywords
 
 		/**
 		 * Constructs a new task
@@ -40,6 +41,12 @@ public class ThreadSafeTextFileIndexer {
 		@Override
 		public void run() {
 			try {
+				/* TODO 
+				InvertedIndex localIndex = new InvertedIndex();
+				TextFileIndexer.indexFile(path, localIndex);
+				this.invertedIndex.addAll(localIndex);
+				*/
+				
 				indexFile(this.location);
 			} catch (IOException e) {
 				System.err.println("IOException occured during run() method.");
@@ -55,6 +62,7 @@ public class ThreadSafeTextFileIndexer {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void indexFile(Path path) throws IOException {
+		// TODO create a task and add to the queue here
 		InvertedIndex localIndex = new InvertedIndex();
 		TextFileIndexer.indexFile(path, localIndex);
 		this.invertedIndex.addAll(localIndex);
@@ -66,7 +74,7 @@ public class ThreadSafeTextFileIndexer {
 	 * @param dirLocation Location of directory to traverse
 	 * @throws IOException If an IO error occurs
 	 */
-	public void indexDirectory(Path dirLocation) throws IOException {
+	public void indexDirectory(Path dirLocation) throws IOException { // TODO Remove
 		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirLocation)) {
 			for (Path location : dirStream) {
 				if (Files.isDirectory(location)) {
@@ -86,6 +94,7 @@ public class ThreadSafeTextFileIndexer {
 	 */
 	public void indexLocation(Path location) throws IOException {
 		try {
+			// TODO super.indexLocation(location);
 			if (Files.isDirectory(location)) {
 				indexDirectory(location);
 			} else {
