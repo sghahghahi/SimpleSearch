@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
 
+import edu.usfca.cs272.InvertedIndex.SearchResult;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -20,13 +21,13 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
  */
 
 /**
- * Thread-safe version of {@link QueryParser}.
+ * Thread-safe version of {@link DefaultQueryParser}.
  * Uses a work queue to allow a multithreaded parsing process.
  *
  * @author Shyon Ghahghahi
  * @version Fall 2024
  */
-public class ThreadSafeQueryParser {
+public class ThreadSafeQueryParser implements QueryParser {
 	/** Maps each query string to a {@code List} of search results */
 	private final TreeMap<String, List<InvertedIndex.SearchResult>> exactSearchResults;
 
@@ -82,6 +83,7 @@ public class ThreadSafeQueryParser {
 	 * @param isExactSearch The search type. {@code true} represents an exact search, {@code false} represents a partial search
 	 */
 	public synchronized final void setSearchMode(boolean isExactSearch) {
+		// TODO synchronize on this.searchMode
 		this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
 
 		// TODO synchronize on this.resultMap
@@ -93,6 +95,7 @@ public class ThreadSafeQueryParser {
 	 * @param queryLocation Where to find the query words
 	 * @throws IOException If an IO error occurs
 	 */
+	@Override
 	public void parseLocation(Path queryLocation) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
 			String line = null;
@@ -112,7 +115,7 @@ public class ThreadSafeQueryParser {
 	public void parseLine(String line) {
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 		Set<String> queryStems = FileStemmer.uniqueStems(line, snowballStemmer);
-		String queryString = QueryParser.extractQueryString(queryStems);
+		String queryString = DefaultQueryParser.extractQueryString(queryStems);
 
 		synchronized (this.resultMap) {
 			if (queryString.isBlank() || this.resultMap.containsKey(queryString)) {
@@ -133,10 +136,51 @@ public class ThreadSafeQueryParser {
 	 * @throws IOException If an IO error occurs
 	 */
 	public synchronized void queryJson(Path location) throws IOException {
+		// TODO synchronize on this.resultMap
 		SearchResultWriter.writeSearchResults(this.resultMap, location);
 	}
 
+	@Override
+	public Set<String> getQueryStrings() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'getQueryStrings'");
+	}
+
+	@Override
+	public boolean getSearchType() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'getSearchType'");
+	}
+
+	@Override
+	public List<SearchResult> getSearchResults(String queryString) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'getSearchResults'");
+	}
+
+	@Override
+	public boolean containsQueryString(String queryString) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'containsQueryString'");
+	}
+
+	@Override
+	public int numQueryStrings() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'numQueryStrings'");
+	}
+
+	@Override
+	public int numSearchResults(String queryString) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'numSearchResults'");
+	}
+
+	@Override
+	public String toString() { /* TODO */ return ""; }
+
 	/*
 	 * TODO Make sure to consistently synchronize on the resultMap
+	 * TODO add get methods from QueryParser to interface, implement them here (or see if I can make them default in the interface)
 	 */
 }

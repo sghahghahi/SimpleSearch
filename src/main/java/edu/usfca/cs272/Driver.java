@@ -56,7 +56,7 @@ public class Driver {
 	private static void singleThread(ArgumentParser argParser) {
 		InvertedIndex invertedIndex = new InvertedIndex();
 		TextFileIndexer textFileIndexer = new TextFileIndexer(invertedIndex);
-		QueryParser queryParser = new QueryParser(invertedIndex);
+		DefaultQueryParser queryParser = new DefaultQueryParser(invertedIndex);
 
 		Path location;
 
