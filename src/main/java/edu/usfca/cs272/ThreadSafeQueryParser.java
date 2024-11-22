@@ -16,10 +16,6 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
-/*
- * TODO Try to create a common interface and move as much as possible in to the interface
- */
-
 /**
  * Thread-safe version of {@link DefaultQueryParser}.
  * Uses a work queue to allow a multithreaded parsing process.
@@ -82,12 +78,12 @@ public class ThreadSafeQueryParser implements QueryParser {
 	 * Sets the search mode to either exact or partial
 	 * @param isExactSearch The search type. {@code true} represents an exact search, {@code false} represents a partial search
 	 */
-	public synchronized final void setSearchMode(boolean isExactSearch) {
-		// TODO synchronize on this.searchMode
-		this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
-
-		// TODO synchronize on this.resultMap
-		this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
+	@Override
+	public final void setSearchMode(boolean isExactSearch) {
+		synchronized (this.resultMap) {
+			this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
+			this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
+		}
 	}
 
 	/**
@@ -112,10 +108,11 @@ public class ThreadSafeQueryParser implements QueryParser {
 	 * Parses a line and performs a search on the inverted index
 	 * @param line The line to parse
 	 */
+	@Override
 	public void parseLine(String line) {
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 		Set<String> queryStems = FileStemmer.uniqueStems(line, snowballStemmer);
-		String queryString = DefaultQueryParser.extractQueryString(queryStems);
+		String queryString = QueryParser.extractQueryString(queryStems);
 
 		synchronized (this.resultMap) {
 			if (queryString.isBlank() || this.resultMap.containsKey(queryString)) {
@@ -135,9 +132,11 @@ public class ThreadSafeQueryParser implements QueryParser {
 	 * @param location Where to write the results to
 	 * @throws IOException If an IO error occurs
 	 */
-	public synchronized void queryJson(Path location) throws IOException {
-		// TODO synchronize on this.resultMap
-		SearchResultWriter.writeSearchResults(this.resultMap, location);
+	@Override
+	public void queryJson(Path location) throws IOException {
+		synchronized (this.resultMap) {
+			SearchResultWriter.writeSearchResults(this.resultMap, location);
+		}
 	}
 
 	@Override
@@ -181,6 +180,5 @@ public class ThreadSafeQueryParser implements QueryParser {
 
 	/*
 	 * TODO Make sure to consistently synchronize on the resultMap
-	 * TODO add get methods from QueryParser to interface, implement them here (or see if I can make them default in the interface)
 	 */
 }
