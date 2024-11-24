@@ -63,15 +63,11 @@ public class DefaultQueryParser implements QueryParser {
 	 * Sets the search mode to either exact or partial
 	 * @param isExactSearch - The search type. {@code true} represents an exact search, {@code false} represents a partial search
 	 */
+	@Override
 	public final void setSearchMode(boolean isExactSearch) {
 		this.isExactSearch = isExactSearch;
-		if (isExactSearch) {
-			this.searchMode = this.invertedIndex::exactSearch;
-			this.resultMap = this.exactSearchResults;
-		} else {
-			this.searchMode = this.invertedIndex::partialSearch;
-			this.resultMap = this.partialSearchResults;
-		}
+		this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
+		this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
 	}
 
 	/**
@@ -79,6 +75,7 @@ public class DefaultQueryParser implements QueryParser {
 	 * @param queryLocation - Where to find the query words
 	 * @throws IOException If an IO error occurs
 	 */
+	@Override
 	public void parseLocation(Path queryLocation) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
 			String line = null;
@@ -92,9 +89,10 @@ public class DefaultQueryParser implements QueryParser {
 	 * Parses a line and performs a search on the inverted index
 	 * @param line The line to parse
 	 */
+	@Override
 	public void parseLine(String line) {
 		Set<String> queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
-		String queryString = extractQueryString(queryStems);
+		String queryString = QueryParser.extractQueryString(queryStems);
 
 		if (!queryString.isBlank() && !this.resultMap.containsKey(queryString)) {
 			List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
@@ -103,19 +101,11 @@ public class DefaultQueryParser implements QueryParser {
 	}
 
 	/**
-	 * Returns a space-separated {@code String} of the query stems
-	 * @param queryStems - The query stems to Stringify
-	 * @return The space-separated query {@code String}
-	 */
-	public static String extractQueryString(Set<String> queryStems) {
-		return String.join(" ", queryStems);
-	}
-
-	/**
 	 * Writes the search results as pretty JSON objects
 	 * @param location - Where to write the results to
 	 * @throws IOException If an IO error occurs
 	 */
+	@Override
 	public void queryJson(Path location) throws IOException {
 		SearchResultWriter.writeSearchResults(this.resultMap, location);
 	}
@@ -124,6 +114,7 @@ public class DefaultQueryParser implements QueryParser {
 	 * Returns a {@code Set} of the query strings in the result map
 	 * @return A {@code Set} of the query strings in the reuslt map
 	 */
+	@Override
 	public Set<String> getQueryStrings() {
 		return Collections.unmodifiableSet(this.resultMap.keySet());
 	}
@@ -132,6 +123,7 @@ public class DefaultQueryParser implements QueryParser {
 	 * Returns the search type. {@code true} for exact, or {@code false} for partial.
 	 * @return the search type. {@code true} for exact, or {@code false} for partial.
 	 */
+	@Override
 	public boolean getSearchType() {
 		return this.isExactSearch;
 	}
@@ -142,9 +134,10 @@ public class DefaultQueryParser implements QueryParser {
 	 * @return A {@code List} of {@link InvertedIndex.SearchResult} objects for a particular {@code queryString} or an empty list
 	 * if the {@code queryString} is not in the {@code Map} of search results
 	 */
+	@Override
 	public List<InvertedIndex.SearchResult> getSearchResults(String queryString) {
 		Set<String> queryStems = FileStemmer.uniqueStems(queryString, this.snowballStemmer);
-		String joinedQueryString = extractQueryString(queryStems);
+		String joinedQueryString = QueryParser.extractQueryString(queryStems);
 
 		List<InvertedIndex.SearchResult> searchResults = this.resultMap.get(joinedQueryString);
 
@@ -159,6 +152,7 @@ public class DefaultQueryParser implements QueryParser {
 	 * @param queryString The query string to check
 	 * @return {@code true} if {@code queryString} is a key in the result map
 	 */
+	@Override
 	public boolean containsQueryString(String queryString) {
 		return getSearchResults(queryString).size() > 0;
 	}
@@ -167,6 +161,7 @@ public class DefaultQueryParser implements QueryParser {
 	 * Returns the number of query strings in the reuslt map
 	 * @return The number of query strings in the result map
 	 */
+	@Override
 	public int numQueryStrings() {
 		return this.resultMap.size();
 	}
@@ -176,6 +171,7 @@ public class DefaultQueryParser implements QueryParser {
 	 * @param queryString The query string to look up in the result map
 	 * @return The number of search results for {@code queryString}
 	 */
+	@Override
 	public int numSearchResults(String queryString) {
 		return getSearchResults(queryString).size();
 	}
