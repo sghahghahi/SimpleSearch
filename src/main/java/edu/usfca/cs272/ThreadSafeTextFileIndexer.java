@@ -7,7 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /** Thread-safe version of {@link TextFileIndexer} */
-public class ThreadSafeTextFileIndexer { // TODO extends TextFileIndexer
+public class ThreadSafeTextFileIndexer extends TextFileIndexer {
 	/** {@link InvertedIndex} object to reference class-wide */
 	private final ThreadSafeInvertedIndex invertedIndex;
 
@@ -20,7 +20,7 @@ public class ThreadSafeTextFileIndexer { // TODO extends TextFileIndexer
 	 * @param queue The work queue to assign tasks to
 	 */
 	public ThreadSafeTextFileIndexer(ThreadSafeInvertedIndex invertedIndex, WorkQueue queue) {
-		// TODO super(invertedIndex);
+		super(invertedIndex);
 		this.invertedIndex = invertedIndex;
 		this.queue = queue;
 	}
@@ -46,7 +46,7 @@ public class ThreadSafeTextFileIndexer { // TODO extends TextFileIndexer
 				TextFileIndexer.indexFile(path, localIndex);
 				this.invertedIndex.addAll(localIndex);
 				*/
-				
+
 				indexFile(this.location);
 			} catch (IOException e) {
 				System.err.println("IOException occured during run() method.");
