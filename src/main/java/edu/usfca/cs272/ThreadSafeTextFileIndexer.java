@@ -1,9 +1,6 @@
 package edu.usfca.cs272;
 
 import java.io.IOException;
-
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /** Thread-safe version of {@link TextFileIndexer} */
@@ -28,7 +25,7 @@ public class ThreadSafeTextFileIndexer extends TextFileIndexer {
 	/** Nested class that represents a task for a thread to do */
 	private class Work implements Runnable {
 		/** The file location to index */
-		Path location; // TODO keywords
+		private final Path location;
 
 		/**
 		 * Constructs a new task
@@ -41,19 +38,14 @@ public class ThreadSafeTextFileIndexer extends TextFileIndexer {
 		@Override
 		public void run() {
 			try {
-				/* TODO 
 				InvertedIndex localIndex = new InvertedIndex();
-				TextFileIndexer.indexFile(path, localIndex);
-				this.invertedIndex.addAll(localIndex);
-				*/
-
-				indexFile(this.location);
+				TextFileIndexer.indexFile(this.location, localIndex);
+				invertedIndex.addAll(localIndex);
 			} catch (IOException e) {
 				System.err.println("IOException occured during run() method.");
 				Thread.currentThread().interrupt();
 			}
 		}
-
 	}
 
 	/**
@@ -62,28 +54,7 @@ public class ThreadSafeTextFileIndexer extends TextFileIndexer {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void indexFile(Path path) throws IOException {
-		// TODO create a task and add to the queue here
-		InvertedIndex localIndex = new InvertedIndex();
-		TextFileIndexer.indexFile(path, localIndex);
-		this.invertedIndex.addAll(localIndex);
-	}
-
-	/**
-	 * Recursively reads all files and subdirectories from {@code dirLocation}.
-	 * Only reads files if they end in {@code .txt} or {@code .text} (case-insensitive).
-	 * @param dirLocation Location of directory to traverse
-	 * @throws IOException If an IO error occurs
-	 */
-	public void indexDirectory(Path dirLocation) throws IOException { // TODO Remove
-		try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dirLocation)) {
-			for (Path location : dirStream) {
-				if (Files.isDirectory(location)) {
-					indexDirectory(location);
-				} else if (TextFileIndexer.isTextFile(location)) {
-					this.queue.execute(new Work(location));
-				}
-			}
-		}
+		this.queue.execute(new Work(path));;
 	}
 
 	/**
@@ -93,16 +64,7 @@ public class ThreadSafeTextFileIndexer extends TextFileIndexer {
 	 * @throws IOException If an IO error occurs
 	 */
 	public void indexLocation(Path location) throws IOException {
-		try {
-			// TODO super.indexLocation(location);
-			if (Files.isDirectory(location)) {
-				indexDirectory(location);
-			} else {
-				Work work = new Work(location);
-				this.queue.execute(work);
-			}
-		} finally {
-			this.queue.finish();
-		}
+		super.indexLocation(location);
+		this.queue.finish();
 	}
 }
