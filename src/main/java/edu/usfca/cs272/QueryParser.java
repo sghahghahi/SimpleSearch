@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 /** TODO */
+// TODO Javadoc goes here (in the interface)
 public interface QueryParser {
 	/**
 	 * TODO
@@ -62,11 +63,16 @@ public interface QueryParser {
 	List<InvertedIndex.SearchResult> getSearchResults(String queryString);
 
 	/**
-	 * TODO
-	 * @param queryString
-	 * @return
+	 * Checks if {@code queryString} is a key in the results map
+	 *
+	 * @see #getSearchResults(String)
+	 *
+	 * @param queryString The query string to check
+	 * @return {@code true} if {@code queryString} is a key in the result map
 	 */
-	boolean containsQueryString(String queryString);
+	default boolean containsQueryString(String queryString) {
+		return getSearchResults(queryString).size() > 0;
+	}
 
 	/**
 	 * TODO
@@ -75,9 +81,11 @@ public interface QueryParser {
 	int numQueryStrings();
 
 	/**
-	 * TODO
-	 * @param queryString
-	 * @return
+	 * Returns the number of search results for a specific query string
+	 * @param queryString The query string to look up in the result map
+	 * @return The number of search results for {@code queryString}
 	 */
-	int numSearchResults(String queryString);
+	default int numSearchResults(String queryString) {
+		return getSearchResults(queryString).size();
+	}
 }
