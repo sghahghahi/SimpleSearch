@@ -87,7 +87,7 @@ public class ThreadSafeQueryParser implements QueryParser {
 		// No need to synchronize because of volatile keyword
 		this.isExactSearch = isExactSearch;
 
-		synchronized (this.resultMap) {
+		synchronized (this) {
 			this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
 			this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
 		}
