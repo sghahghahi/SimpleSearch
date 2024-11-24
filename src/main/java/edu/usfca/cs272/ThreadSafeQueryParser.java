@@ -107,7 +107,6 @@ public class ThreadSafeQueryParser implements QueryParser {
 			}
 		} finally {
 			this.queue.finish();
-			this.queue.shutdown(); // TODO shutdown should happen in Driver
 		}
 	}
 
