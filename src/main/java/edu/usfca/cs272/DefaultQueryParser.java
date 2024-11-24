@@ -145,35 +145,12 @@ public class DefaultQueryParser implements QueryParser {
 	}
 
 	/**
-	 * Checks if {@code queryString} is a key in the results map
-	 *
-	 * @see #getSearchResults(String)
-	 *
-	 * @param queryString The query string to check
-	 * @return {@code true} if {@code queryString} is a key in the result map
-	 */
-	@Override
-	public boolean containsQueryString(String queryString) {
-		return getSearchResults(queryString).size() > 0;
-	}
-
-	/**
 	 * Returns the number of query strings in the reuslt map
 	 * @return The number of query strings in the result map
 	 */
 	@Override
 	public int numQueryStrings() {
 		return this.resultMap.size();
-	}
-
-	/**
-	 * Returns the number of search results for a specific query string
-	 * @param queryString The query string to look up in the result map
-	 * @return The number of search results for {@code queryString}
-	 */
-	@Override
-	public int numSearchResults(String queryString) {
-		return getSearchResults(queryString).size();
 	}
 
 	@Override
