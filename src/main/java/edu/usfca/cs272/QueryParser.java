@@ -5,60 +5,66 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
-/** TODO */
-// TODO Javadoc goes here (in the interface)
+/**
+ * Interface responsible for parsing query files
+ *
+ * @author Shyon Ghahghahi
+ * @author CS 272 Software Development (University of San Francisco)
+ * @version Fall 2024
+ */
 public interface QueryParser {
 	/**
-	 * TODO
-	 * @param isExactSearch
+	 * Sets the search mode to either exact or partial
+	 * @param isExactSearch The search type. {@code true} represents an exact search, {@code false} represents a partial search
 	 */
 	void setSearchMode(boolean isExactSearch);
 
 	/**
-	 * TODO
-	 * @param queryLocation
-	 * @throws IOException
+	 * Gets the search query from the passed file. Performs a search of the query words on the inverted index
+	 * @param queryLocation Where to find the query words
+	 * @throws IOException If an IO error occurs
 	 */
 	void parseLocation(Path queryLocation) throws IOException;
 
 	/**
-	 * TODO
-	 * @param line
+	 * Parses a line and performs a search on the inverted index
+	 * @param line The line to parse
 	 */
 	void parseLine(String line);
 
 	/**
-	 * TODO
-	 * @param queryStems
-	 * @return
+	 * Returns a space-separated {@code String} of the query stems
+	 * @param queryStems The query stems to join
+	 * @return The space-separated query {@code String}
 	 */
 	static String extractQueryString(Set<String> queryStems) {
 		return String.join(" ", queryStems);
 	}
 
 	/**
-	 * TODO
-	 * @param location
-	 * @throws IOException
+	 * Writes the search results as pretty JSON objects
+	 * @param location Where to write the results to
+	 * @throws IOException If an IO error occurs
 	 */
 	void queryJson(Path location) throws IOException;
 
 	/**
-	 * TODO
-	 * @return
+	 * Returns a {@code Set} of the query strings in the result map
+	 * @return A {@code Set} of the query strings in the reuslt map
 	 */
 	Set<String> getQueryStrings();
 
 	/**
-	 * TODO
-	 * @return
+	 * Returns the search type. {@code true} for exact, or {@code false} for partial.
+	 * @return the search type. {@code true} for exact, or {@code false} for partial.
 	 */
 	boolean getSearchType();
 
 	/**
-	 * TODO
-	 * @param queryString
-	 * @return
+	 * Returns a {@code List} of {@link InvertedIndex.SearchResult} objects for a particular {@code queryString}
+	 * @param queryString The query string to look up in the {@code List} of search results
+	 * @return A {@code List} of {@link InvertedIndex.SearchResult} objects for a particular {@code queryString} or an empty list
+	 * if the {@code queryString} is not in the {@code Map} of search results
 	 */
 	List<InvertedIndex.SearchResult> getSearchResults(String queryString);
 
@@ -75,8 +81,8 @@ public interface QueryParser {
 	}
 
 	/**
-	 * TODO
-	 * @return
+	 * Returns the number of query strings in the reuslt map
+	 * @return The number of query strings in the result map
 	 */
 	int numQueryStrings();
 

@@ -78,10 +78,6 @@ public class ThreadSafeQueryParser implements QueryParser {
 		}
 	}
 
-	/**
-	 * Sets the search mode to either exact or partial
-	 * @param isExactSearch The search type. {@code true} represents an exact search, {@code false} represents a partial search
-	 */
 	@Override
 	public final void setSearchMode(boolean isExactSearch) {
 		// No need to synchronize because of volatile keyword
@@ -93,11 +89,6 @@ public class ThreadSafeQueryParser implements QueryParser {
 		}
 	}
 
-	/**
-	 * Gets the search query from the passed file. Performs a search of the query words on the inverted index
-	 * @param queryLocation Where to find the query words
-	 * @throws IOException If an IO error occurs
-	 */
 	@Override
 	public void parseLocation(Path queryLocation) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
@@ -110,10 +101,6 @@ public class ThreadSafeQueryParser implements QueryParser {
 		}
 	}
 
-	/**
-	 * Parses a line and performs a search on the inverted index
-	 * @param line The line to parse
-	 */
 	@Override
 	public void parseLine(String line) {
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
@@ -133,11 +120,6 @@ public class ThreadSafeQueryParser implements QueryParser {
 		}
 	}
 
-	/**
-	 * Writes the search results as pretty JSON objects
-	 * @param location Where to write the results to
-	 * @throws IOException If an IO error occurs
-	 */
 	@Override
 	public void queryJson(Path location) throws IOException {
 		synchronized (this.resultMap) {

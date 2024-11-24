@@ -59,10 +59,6 @@ public class DefaultQueryParser implements QueryParser {
 		setSearchMode(true); // Default to exact search
 	}
 
-	/**
-	 * Sets the search mode to either exact or partial
-	 * @param isExactSearch - The search type. {@code true} represents an exact search, {@code false} represents a partial search
-	 */
 	@Override
 	public final void setSearchMode(boolean isExactSearch) {
 		this.isExactSearch = isExactSearch;
@@ -70,11 +66,6 @@ public class DefaultQueryParser implements QueryParser {
 		this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
 	}
 
-	/**
-	 * Gets the search query from the passed file. Performs a search of the query words on the inverted index
-	 * @param queryLocation - Where to find the query words
-	 * @throws IOException If an IO error occurs
-	 */
 	@Override
 	public void parseLocation(Path queryLocation) throws IOException {
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
@@ -85,10 +76,6 @@ public class DefaultQueryParser implements QueryParser {
 		}
 	}
 
-	/**
-	 * Parses a line and performs a search on the inverted index
-	 * @param line The line to parse
-	 */
 	@Override
 	public void parseLine(String line) {
 		Set<String> queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
@@ -100,40 +87,21 @@ public class DefaultQueryParser implements QueryParser {
 		}
 	}
 
-	/**
-	 * Writes the search results as pretty JSON objects
-	 * @param location - Where to write the results to
-	 * @throws IOException If an IO error occurs
-	 */
 	@Override
 	public void queryJson(Path location) throws IOException {
 		SearchResultWriter.writeSearchResults(this.resultMap, location);
 	}
 
-	/**
-	 * Returns a {@code Set} of the query strings in the result map
-	 * @return A {@code Set} of the query strings in the reuslt map
-	 */
 	@Override
 	public Set<String> getQueryStrings() {
 		return Collections.unmodifiableSet(this.resultMap.keySet());
 	}
 
-	/**
-	 * Returns the search type. {@code true} for exact, or {@code false} for partial.
-	 * @return the search type. {@code true} for exact, or {@code false} for partial.
-	 */
 	@Override
 	public boolean getSearchType() {
 		return this.isExactSearch;
 	}
 
-	/**
-	 * Returns a {@code List} of {@link InvertedIndex.SearchResult} objects for a particular {@code queryString}
-	 * @param queryString The query string to look up in the {@code List} of search results
-	 * @return A {@code List} of {@link InvertedIndex.SearchResult} objects for a particular {@code queryString} or an empty list
-	 * if the {@code queryString} is not in the {@code Map} of search results
-	 */
 	@Override
 	public List<InvertedIndex.SearchResult> getSearchResults(String queryString) {
 		Set<String> queryStems = FileStemmer.uniqueStems(queryString, this.snowballStemmer);
@@ -144,10 +112,6 @@ public class DefaultQueryParser implements QueryParser {
 		return searchResults == null ? Collections.emptyList() : Collections.unmodifiableList(searchResults);
 	}
 
-	/**
-	 * Returns the number of query strings in the reuslt map
-	 * @return The number of query strings in the result map
-	 */
 	@Override
 	public int numQueryStrings() {
 		return this.resultMap.size();
