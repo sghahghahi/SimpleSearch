@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import java.util.Set;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
@@ -38,6 +39,9 @@ public class ThreadSafeQueryParser implements QueryParser {
 
 	/** {@code Map} to store either partial or exact search results */
 	private TreeMap<String, List<InvertedIndex.SearchResult>> resultMap;
+
+	/** Flag to keep track of current search mode */
+	private volatile boolean isExactSearch;
 
 	/** The work queue to assign tasks to */
 	private final WorkQueue queue;
@@ -80,6 +84,9 @@ public class ThreadSafeQueryParser implements QueryParser {
 	 */
 	@Override
 	public final void setSearchMode(boolean isExactSearch) {
+		// No need to synchronize because of volatile keyword
+		this.isExactSearch = isExactSearch;
+
 		synchronized (this.resultMap) {
 			this.searchMode = isExactSearch ? this.invertedIndex::exactSearch : this.invertedIndex::partialSearch;
 			this.resultMap = isExactSearch ? this.exactSearchResults : this.partialSearchResults;
@@ -141,38 +148,36 @@ public class ThreadSafeQueryParser implements QueryParser {
 
 	@Override
 	public Set<String> getQueryStrings() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getQueryStrings'");
+		synchronized (this.resultMap) {
+			return Collections.unmodifiableSet(this.resultMap.keySet());
+		}
 	}
 
 	@Override
 	public boolean getSearchType() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getSearchType'");
+		// No need to synchronize because of volatile keyword
+		return this.isExactSearch;
 	}
 
 	@Override
 	public List<SearchResult> getSearchResults(String queryString) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'getSearchResults'");
-	}
+		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
+		Set<String> queryStems = FileStemmer.uniqueStems(queryString, snowballStemmer);
+		String joinedQuerySring = QueryParser.extractQueryString(queryStems);
 
-	@Override
-	public boolean containsQueryString(String queryString) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'containsQueryString'");
+		List<InvertedIndex.SearchResult> searchResults = null;
+		synchronized (this.resultMap) {
+			searchResults = this.resultMap.get(joinedQuerySring);
+		}
+
+		return searchResults == null ? Collections.emptyList() : Collections.unmodifiableList(searchResults);
 	}
 
 	@Override
 	public int numQueryStrings() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'numQueryStrings'");
-	}
-
-	@Override
-	public int numSearchResults(String queryString) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'numSearchResults'");
+		synchronized (this.resultMap) {
+			return this.resultMap.size();
+		}
 	}
 
 	@Override
