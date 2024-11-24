@@ -181,9 +181,14 @@ public class ThreadSafeQueryParser implements QueryParser {
 	}
 
 	@Override
-	public String toString() { /* TODO */ return ""; }
-
-	/*
-	 * TODO Make sure to consistently synchronize on the resultMap
-	 */
+	public String toString() {
+		synchronized (this.resultMap) {
+			return String.format(
+				"Query parser currently has %d %s search %s stored.",
+				this.resultMap.size(),
+				this.isExactSearch ? "exact" : "partial",
+				this.resultMap.size() == 1 ? "result" : "results"
+			);
+		}
+	}
 }
