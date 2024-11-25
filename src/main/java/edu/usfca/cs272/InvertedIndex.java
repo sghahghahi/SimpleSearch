@@ -269,6 +269,7 @@ public class InvertedIndex {
 			}
 		}
 
+		// Add counts to word stems data structure
 		for (var entry : indexToAdd.wordStems.entrySet()) {
 			String location = entry.getKey();
 			this.wordStems.put(
