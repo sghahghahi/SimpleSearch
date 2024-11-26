@@ -99,10 +99,16 @@ public class ThreadSafeQueryParser implements QueryParser {
 		} finally {
 			this.queue.finish();
 		}
+		
+		/* TODO 
+		QueryParser.super.parseLocation(queryLocation);
+		this.queue.finish();
+		*/
 	}
 
 	@Override
 	public void parseLine(String line) {
+		// TODO create tasks, move the implementaiton into run
 		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 		Set<String> queryStems = FileStemmer.uniqueStems(line, snowballStemmer);
 		String queryString = QueryParser.extractQueryString(queryStems);

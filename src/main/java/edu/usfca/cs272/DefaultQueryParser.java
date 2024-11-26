@@ -67,7 +67,7 @@ public class DefaultQueryParser implements QueryParser {
 	}
 
 	@Override
-	public void parseLocation(Path queryLocation) throws IOException {
+	public void parseLocation(Path queryLocation) throws IOException { // TODO Move into the interface
 		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
 			String line = null;
 			while ((line = reader.readLine()) != null) {
@@ -114,6 +114,7 @@ public class DefaultQueryParser implements QueryParser {
 
 	@Override
 	public int numQueryStrings() {
+		// TODO return getQueryStrings().size() and move into the interface
 		return this.resultMap.size();
 	}
 
