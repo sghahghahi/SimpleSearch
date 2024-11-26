@@ -42,8 +42,9 @@ public class ThreadSafeTextFileIndexer extends TextFileIndexer {
 				TextFileIndexer.indexFile(this.location, localIndex);
 				invertedIndex.addAll(localIndex);
 			} catch (IOException e) {
-				System.err.println("IOException occured during run() method.");
-				Thread.currentThread().interrupt();
+				// TODO throw new UncheckedIOException(e);
+				System.err.println("IOException occured during run() method."); // TODO Remove
+				Thread.currentThread().interrupt(); // TODO Remove
 			}
 		}
 	}
@@ -68,3 +69,10 @@ public class ThreadSafeTextFileIndexer extends TextFileIndexer {
 		this.queue.finish();
 	}
 }
+
+/*
+TODO
+Description	Resource	Path	Location	Type
+The method indexFile(Path) of type ThreadSafeTextFileIndexer should be tagged with @Override since it actually overrides a superclass method	ThreadSafeTextFileIndexer.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 56	Java Problem
+The method indexLocation(Path) of type ThreadSafeTextFileIndexer should be tagged with @Override since it actually overrides a superclass method	ThreadSafeTextFileIndexer.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 66	Java Problem
+*/

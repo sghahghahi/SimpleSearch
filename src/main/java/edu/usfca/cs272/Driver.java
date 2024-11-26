@@ -87,6 +87,14 @@ public class Driver {
 				System.err.println("No input file was provided after the '-text' flag.");
 			}
 		}
+		
+		// TODO if (argParser.hasFlag(QUERY)) {
+		
+		/* TODO
+		 * if (workQueue != null) {
+					workQueue.shutdown();
+				}
+		 */
 
 		if (argParser.hasFlag(COUNTS)) {
 			location = argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP));

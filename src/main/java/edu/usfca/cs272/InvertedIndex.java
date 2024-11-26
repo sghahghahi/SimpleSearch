@@ -248,6 +248,7 @@ public class InvertedIndex {
 		return added;
 	}
 
+	// TODO Update Javadoc that this doesn't work with overlapping indexes
 	/**
 	 * Merges two inverted indeces together
 	 * @param indexToAdd The inverted index to add to the current inverted index
@@ -272,6 +273,7 @@ public class InvertedIndex {
 		// Add counts to word stems data structure
 		for (var entry : indexToAdd.wordStems.entrySet()) {
 			String location = entry.getKey();
+			// TODO see if you can use merge here too... use Integer.sum
 			this.wordStems.put(
 				location,
 				this.wordStems.getOrDefault(location, 0) + entry.getValue()
