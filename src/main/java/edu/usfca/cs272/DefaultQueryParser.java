@@ -1,11 +1,8 @@
 package edu.usfca.cs272;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.Set;
 import java.util.List;
@@ -67,16 +64,6 @@ public class DefaultQueryParser implements QueryParser {
 	}
 
 	@Override
-	public void parseLocation(Path queryLocation) throws IOException { // TODO Move into the interface
-		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				parseLine(line);
-			}
-		}
-	}
-
-	@Override
 	public void parseLine(String line) {
 		Set<String> queryStems = FileStemmer.uniqueStems(line, this.snowballStemmer);
 		String queryString = QueryParser.extractQueryString(queryStems);
@@ -110,12 +97,6 @@ public class DefaultQueryParser implements QueryParser {
 		List<InvertedIndex.SearchResult> searchResults = this.resultMap.get(joinedQueryString);
 
 		return searchResults == null ? Collections.emptyList() : Collections.unmodifiableList(searchResults);
-	}
-
-	@Override
-	public int numQueryStrings() {
-		// TODO return getQueryStrings().size() and move into the interface
-		return this.resultMap.size();
 	}
 
 	@Override

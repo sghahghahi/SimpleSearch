@@ -1,7 +1,12 @@
 package edu.usfca.cs272;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+
+import java.nio.file.Files;
 import java.nio.file.Path;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +29,14 @@ public interface QueryParser {
 	 * @param queryLocation Where to find the query words
 	 * @throws IOException If an IO error occurs
 	 */
-	void parseLocation(Path queryLocation) throws IOException;
+	default void parseLocation(Path queryLocation) throws IOException {
+		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				parseLine(line);
+			}
+		}
+	}
 
 	/**
 	 * Parses a line and performs a search on the inverted index
@@ -84,7 +96,9 @@ public interface QueryParser {
 	 * Returns the number of query strings in the reuslt map
 	 * @return The number of query strings in the result map
 	 */
-	int numQueryStrings();
+	default int numQueryStrings() {
+		return getQueryStrings().size();
+	}
 
 	/**
 	 * Returns the number of search results for a specific query string
