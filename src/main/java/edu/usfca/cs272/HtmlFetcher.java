@@ -143,16 +143,11 @@ public class HtmlFetcher {
 				html = response.lines()
 					.collect(Collectors.joining(System.lineSeparator()));
 
-			} else if (statusCode >= 300 && statusCode <= 399 && redirects > 0) {
+			} else {
 				String redirectLocation = getRedirect(headers);
-
-				if (redirectLocation == null) {
-					return null;
+				if (redirectLocation != null && redirects > 0) {
+					html = fetch(redirectLocation, redirects - 1);
 				}
-
-				URI redirectUri = uri.resolve(redirectLocation);
-
-				html = fetch(redirectUri, redirects - 1);
 			}
 		}
 		catch (IOException e) {
