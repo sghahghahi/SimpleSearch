@@ -39,7 +39,7 @@ public class HtmlFetcher {
 			return false;
 		}
 
-		String contentType = contentTypes.get(0);
+		String contentType = contentTypes.getFirst();
 
 		return contentType.toLowerCase().startsWith("text/html");
 	}
@@ -59,7 +59,7 @@ public class HtmlFetcher {
 			return -1;
 		}
 
-		String statusLine = statusLines.get(0);
+		String statusLine = statusLines.getFirst();
 		try {
 			// HTTP specification says the status code comes immediately after the HTTP version in the status line
 			// Ex: 'HTTP/1.1 200 OK'
@@ -90,7 +90,7 @@ public class HtmlFetcher {
 			return null;
 		}
 
-		return statusLines.get(0);
+		return statusLines.getFirst();
 	}
 
 	/**
