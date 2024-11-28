@@ -60,10 +60,16 @@ public class HtmlFetcher {
 		}
 
 		String statusLine = statusLines.getFirst();
+
+		int firstSpace = statusLine.indexOf(" ");
+		int secondSpace = statusLine.indexOf(" ", firstSpace + 1);
+
+		// HTTP specification says the status code comes immediately after the HTTP version in the status line
+		// Ex: 'HTTP/1.1 200 OK'
+		String statusCode = statusLine.substring(firstSpace + 1, secondSpace);
+
 		try {
-			// HTTP specification says the status code comes immediately after the HTTP version in the status line
-			// Ex: 'HTTP/1.1 200 OK'
-			return Integer.parseInt(statusLine.split(" ")[1]);
+			return Integer.parseInt(statusCode);
 		} catch (NumberFormatException e) {
 			return -1;
 		}
@@ -142,7 +148,6 @@ public class HtmlFetcher {
 			if (statusCode == 200 && isHtml(headers)) {
 				html = response.lines()
 					.collect(Collectors.joining(System.lineSeparator()));
-
 			} else {
 				String redirectLocation = getRedirect(headers);
 				if (redirectLocation != null && redirects > 0) {
