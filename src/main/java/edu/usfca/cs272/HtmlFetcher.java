@@ -9,9 +9,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A specialized version of {@link HttpsFetcher} that follows redirects and
@@ -140,14 +140,8 @@ public class HtmlFetcher {
 			int statusCode = getStatusCode(headers);
 
 			if (statusCode == 200 && isHtml(headers)) {
-				ArrayList<String> htmlBody = new ArrayList<>();
-				String line = null;
-
-				while ((line = response.readLine()) != null) {
-					htmlBody.add(line);
-				}
-
-				html = String.join(System.lineSeparator(), htmlBody);
+				html = response.lines()
+					.collect(Collectors.joining(System.lineSeparator()));
 
 			} else if (statusCode >= 300 && statusCode <= 399 && redirects > 0) {
 				String redirectLocation = getRedirect(headers);
