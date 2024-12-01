@@ -87,9 +87,19 @@ public class Driver {
 				System.err.println("No input file was provided after the '-text' flag.");
 			}
 		}
-		
-		// TODO if (argParser.hasFlag(QUERY)) {
-		
+
+		if (argParser.hasFlag(QUERY)) {
+			location = argParser.getPath(QUERY);
+			try {
+				queryParser.setSearchMode(!argParser.hasFlag(PARTIAL));
+				queryParser.parseLocation(location);
+			} catch (IOException e) {
+				System.err.printf("Unable to read search queries from location: %s\n", location);
+			} catch (NullPointerException e) {
+				System.err.println("No input file was provided after '-query' flag.");
+			}
+		}
+
 		/* TODO
 		 * if (workQueue != null) {
 					workQueue.shutdown();
@@ -111,22 +121,6 @@ public class Driver {
 				invertedIndex.indexJson(location);
 			} catch (IOException e) {
 				System.err.printf("Unable to write inverted index to location: %s\n", location);
-			}
-		}
-
-		if (argParser.hasFlag(QUERY)) {
-			location = argParser.getPath(QUERY);
-			try {
-				queryParser.setSearchMode(!argParser.hasFlag(PARTIAL));
-				queryParser.parseLocation(location);
-			} catch (IOException e) {
-				System.err.printf("Unable to read search queries from location: %s\n", location);
-			} catch (NullPointerException e) {
-				System.err.println("No input file was provided after '-query' flag.");
-			} finally {
-				if (workQueue != null) {
-					workQueue.shutdown();
-				}
 			}
 		}
 
