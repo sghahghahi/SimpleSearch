@@ -1,8 +1,6 @@
 package edu.usfca.cs272;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import java.util.Set;
@@ -14,7 +12,6 @@ import java.util.function.Function;
 import edu.usfca.cs272.InvertedIndex.SearchResult;
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 /**
@@ -74,7 +71,21 @@ public class ThreadSafeQueryParser implements QueryParser {
 
 		@Override
 		public void run() {
-			parseLine(line);
+			SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
+			Set<String> queryStems = FileStemmer.uniqueStems(line, snowballStemmer);
+			String queryString = QueryParser.extractQueryString(queryStems);
+
+			synchronized (resultMap) {
+				if (queryString.isBlank() || resultMap.containsKey(queryString)) {
+					return;
+				}
+			}
+
+			List<InvertedIndex.SearchResult> searchResults = searchMode.apply(queryStems);
+
+			synchronized (resultMap) {
+				resultMap.put(queryString, searchResults);
+			}
 		}
 	}
 
@@ -91,39 +102,13 @@ public class ThreadSafeQueryParser implements QueryParser {
 
 	@Override
 	public void parseLocation(Path queryLocation) throws IOException {
-		try (BufferedReader reader = Files.newBufferedReader(queryLocation, UTF_8)) {
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				this.queue.execute(new Work(line));
-			}
-		} finally {
-			this.queue.finish();
-		}
-		
-		/* TODO 
 		QueryParser.super.parseLocation(queryLocation);
 		this.queue.finish();
-		*/
 	}
 
 	@Override
 	public void parseLine(String line) {
-		// TODO create tasks, move the implementaiton into run
-		SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
-		Set<String> queryStems = FileStemmer.uniqueStems(line, snowballStemmer);
-		String queryString = QueryParser.extractQueryString(queryStems);
-
-		synchronized (this.resultMap) {
-			if (queryString.isBlank() || this.resultMap.containsKey(queryString)) {
-				return;
-			}
-		}
-
-		List<InvertedIndex.SearchResult> searchResults = this.searchMode.apply(queryStems);
-
-		synchronized (this.resultMap) {
-			this.resultMap.put(queryString, searchResults);
-		}
+		this.queue.execute(new Work(line));
 	}
 
 	@Override
