@@ -1,6 +1,7 @@
 package edu.usfca.cs272;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 
 /** Thread-safe version of {@link TextFileIndexer} */
@@ -42,9 +43,7 @@ public class ThreadSafeTextFileIndexer extends TextFileIndexer {
 				TextFileIndexer.indexFile(this.location, localIndex);
 				invertedIndex.addAll(localIndex);
 			} catch (IOException e) {
-				// TODO throw new UncheckedIOException(e);
-				System.err.println("IOException occured during run() method."); // TODO Remove
-				Thread.currentThread().interrupt(); // TODO Remove
+				throw new UncheckedIOException(e);
 			}
 		}
 	}
