@@ -30,7 +30,7 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		this.readLock = this.lock.readLock();
 		this.writeLock = this.lock.writeLock();
 	}
-	
+
 	// TODO Missing numStems
 
 	@Override
@@ -108,6 +108,16 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		this.readLock.lock();
 		try {
 			return super.numCounts();
+		} finally {
+			this.readLock.unlock();
+		}
+	}
+
+	@Override
+	public int numStems(String location) {
+		this.readLock.lock();
+		try {
+			return super.numStems(location);
 		} finally {
 			this.readLock.unlock();
 		}
