@@ -49,6 +49,9 @@ public class Driver {
 	/** If the user doesn't specify how many threads to use to build a thread-safe inverted index, this default value will be used. */
 	public static final int NUM_THREADS = 5;
 
+	/** {@code -html} flag passed as an argument to this program. Enables multithreading. Next argument (required) is the seed URI the web crawler should download and process to build the inverted index. */
+	public static final String HTML = "-html";
+
 	/**
 	 * Initializes the classes necessary based on the provided command-line
 	 * arguments. This includes (but is not limited to) how to build or search an
@@ -65,7 +68,13 @@ public class Driver {
 
 		Path location;
 
-		if (argParser.hasFlag(THREAD)) {
+		if (argParser.hasFlag(THREAD) || argParser.hasFlag(HTML)) {
+			String seedURI = argParser.getString(HTML);
+			if (seedURI == null || seedURI.isBlank()) {
+				System.err.println("Seed URI must be provided after '-html' flag.");
+				return;
+			}
+
 			workQueue = new WorkQueue(argParser.getInteger(THREAD, NUM_THREADS));
 			ThreadSafeInvertedIndex safeIndex = new ThreadSafeInvertedIndex();
 			invertedIndex = safeIndex;
