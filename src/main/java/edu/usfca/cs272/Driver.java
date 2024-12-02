@@ -100,11 +100,9 @@ public class Driver {
 			}
 		}
 
-		/* TODO
-		 * if (workQueue != null) {
-					workQueue.shutdown();
-				}
-		 */
+		if (workQueue != null) {
+			workQueue.shutdown();
+		}
 
 		if (argParser.hasFlag(COUNTS)) {
 			location = argParser.getPath(COUNTS, Path.of(CURR_DIR, COUNTS_BACKUP));
