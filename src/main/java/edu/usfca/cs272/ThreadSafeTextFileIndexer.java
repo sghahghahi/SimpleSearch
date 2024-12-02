@@ -54,8 +54,9 @@ public class ThreadSafeTextFileIndexer extends TextFileIndexer {
 	 * @param path File path to read from
 	 * @throws IOException If an IO error occurs
 	 */
+	@Override
 	public void indexFile(Path path) throws IOException {
-		this.queue.execute(new Work(path));;
+		this.queue.execute(new Work(path));
 	}
 
 	/**
@@ -64,15 +65,9 @@ public class ThreadSafeTextFileIndexer extends TextFileIndexer {
 	 * @param location The location of either a directory of file
 	 * @throws IOException If an IO error occurs
 	 */
+	@Override
 	public void indexLocation(Path location) throws IOException {
 		super.indexLocation(location);
 		this.queue.finish();
 	}
 }
-
-/*
-TODO
-Description	Resource	Path	Location	Type
-The method indexFile(Path) of type ThreadSafeTextFileIndexer should be tagged with @Override since it actually overrides a superclass method	ThreadSafeTextFileIndexer.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 56	Java Problem
-The method indexLocation(Path) of type ThreadSafeTextFileIndexer should be tagged with @Override since it actually overrides a superclass method	ThreadSafeTextFileIndexer.java	/SearchEngine/src/main/java/edu/usfca/cs272	line 66	Java Problem
-*/
