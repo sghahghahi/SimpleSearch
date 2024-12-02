@@ -273,11 +273,7 @@ public class InvertedIndex {
 		// Add counts to word stems data structure
 		for (var entry : indexToAdd.wordStems.entrySet()) {
 			String location = entry.getKey();
-			// TODO see if you can use merge here too... use Integer.sum
-			this.wordStems.put(
-				location,
-				this.wordStems.getOrDefault(location, 0) + entry.getValue()
-			);
+			this.wordStems.merge(location, entry.getValue(), Integer::sum);
 		}
 	}
 
