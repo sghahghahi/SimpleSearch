@@ -250,7 +250,8 @@ public class InvertedIndex {
 
 	// TODO Update Javadoc that this doesn't work with overlapping indexes
 	/**
-	 * Merges two inverted indeces together
+	 * Merges two inverted indices together.
+	 * Does not work for overlapping indices
 	 * @param indexToAdd The inverted index to add to the current inverted index
 	 */
 	public void addAll(InvertedIndex indexToAdd) {
