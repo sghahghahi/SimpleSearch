@@ -248,7 +248,6 @@ public class InvertedIndex {
 		return added;
 	}
 
-	// TODO Update Javadoc that this doesn't work with overlapping indexes
 	/**
 	 * Merges two inverted indices together.
 	 * Does not work for overlapping indices

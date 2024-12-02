@@ -31,8 +31,6 @@ public class ThreadSafeInvertedIndex extends InvertedIndex {
 		this.writeLock = this.lock.writeLock();
 	}
 
-	// TODO Missing numStems
-
 	@Override
 	public List<InvertedIndex.SearchResult> exactSearch(Set<String> queryStems) {
 		this.readLock.lock();
