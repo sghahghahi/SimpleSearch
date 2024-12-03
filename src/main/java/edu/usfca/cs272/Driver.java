@@ -71,21 +71,18 @@ public class Driver {
 		Path location;
 
 		if (argParser.hasFlag(THREAD) || argParser.hasFlag(HTML)) {
-			String seedURI = argParser.getString(HTML);
-			if (seedURI == null || seedURI.isBlank()) {
-				System.err.println("Seed URI must be provided after '-html' flag.");
-				return;
-			}
-
 			workQueue = new WorkQueue(argParser.getInteger(THREAD, NUM_THREADS));
 			ThreadSafeInvertedIndex safeIndex = new ThreadSafeInvertedIndex();
 			invertedIndex = safeIndex;
 			textFileIndexer = new ThreadSafeTextFileIndexer(safeIndex, workQueue);
 			queryParser = new ThreadSafeQueryParser(safeIndex, workQueue);
+			String seedURI = argParser.getString(HTML);
 			try {
 				crawler = new WebCrawler(safeIndex, LinkFinder.toUri(seedURI));
 			} catch (URISyntaxException e) {
 				System.err.printf("Unable to create web crawler from %s\n", seedURI);
+			} catch (NullPointerException e) {
+				System.err.println("No seed file was provided after the '-html' flag.");
 			}
 
 		} else {
