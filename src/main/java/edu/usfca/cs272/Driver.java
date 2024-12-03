@@ -77,12 +77,14 @@ public class Driver {
 			textFileIndexer = new ThreadSafeTextFileIndexer(safeIndex, workQueue);
 			queryParser = new ThreadSafeQueryParser(safeIndex, workQueue);
 			String seedURI = argParser.getString(HTML);
-			try {
-				crawler = new WebCrawler(safeIndex, LinkFinder.toUri(seedURI));
-			} catch (URISyntaxException e) {
-				System.err.printf("Unable to create web crawler from %s\n", seedURI);
-			} catch (NullPointerException e) {
-				System.err.println("No seed file was provided after the '-html' flag.");
+			if (argParser.hasFlag(HTML)) {
+				try {
+					crawler = new WebCrawler(safeIndex, LinkFinder.toUri(seedURI));
+				} catch (URISyntaxException e) {
+					System.err.printf("Unable to create web crawler from %s\n", seedURI);
+				} catch (NullPointerException e) {
+					System.err.println("No seed file was provided after the '-html' flag.");
+				}
 			}
 
 		} else {
