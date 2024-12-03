@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 
-/** TODO. Mention that this class is thread-safe */
+/** TODO */
 public class WebCrawler {
 	/** TODO  */
 	private final ThreadSafeInvertedIndex invertedIndex;
@@ -47,6 +47,7 @@ public class WebCrawler {
 		cleanedHtml = HtmlCleaner.stripEntities(cleanedHtml);
 
 		ArrayList<String> stems = FileStemmer.listStems(cleanedHtml, this.snowballStemmer);
-		this.invertedIndex.addWords(stems, this.seedURI.toString(), 1);
+		String cleanedURI = LinkFinder.clean(this.seedURI).toString();
+		this.invertedIndex.addWords(stems, cleanedURI, 1);
 	}
 }
