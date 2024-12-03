@@ -1,6 +1,7 @@
 package edu.usfca.cs272;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 
 /**
@@ -65,6 +66,7 @@ public class Driver {
 		InvertedIndex invertedIndex;
 		TextFileIndexer textFileIndexer;
 		QueryParser queryParser;
+		WebCrawler crawler = null;
 
 		Path location;
 
@@ -80,6 +82,12 @@ public class Driver {
 			invertedIndex = safeIndex;
 			textFileIndexer = new ThreadSafeTextFileIndexer(safeIndex, workQueue);
 			queryParser = new ThreadSafeQueryParser(safeIndex, workQueue);
+			try {
+				crawler = new WebCrawler(safeIndex, LinkFinder.toUri(seedURI));
+			} catch (URISyntaxException e) {
+				System.err.printf("Unable to create web crawler from %s\n", seedURI);
+			}
+
 		} else {
 			invertedIndex = new InvertedIndex();
 			textFileIndexer = new TextFileIndexer(invertedIndex);
@@ -95,6 +103,10 @@ public class Driver {
 			} catch (NullPointerException e) {
 				System.err.println("No input file was provided after the '-text' flag.");
 			}
+		}
+
+		if (crawler != null) {
+			crawler.crawl();
 		}
 
 		if (argParser.hasFlag(QUERY)) {
