@@ -11,6 +11,7 @@ import opennlp.tools.stemmer.snowball.SnowballStemmer;
  * Class responsible for web crawling starting from a specific seed URI.
  * Will only redirect up to three times.
  * Builds an inverted index from the seed URI.
+ * This class is thread-safe.
  *
  * @author Shyon Ghahghahi
  * @author CS 272 Software Development (University of San Francisco)
@@ -32,28 +33,43 @@ public class WebCrawler {
 	/** The number of URLs to crawl */
 	private final int numCrawls;
 
+	/** The work queue to assign tasks to */
+	private final WorkQueue queue;
+
 	/**
 	 * Constructs a web cralwer with a thread-safe inverted index and seed URI
 	 * @param invertedIndex The inverted index to add to
 	 * @param seedURI The seed URI to build the inverted index from
 	 * @param numCrawls The number of URLs to crawl
 	 */
-	public WebCrawler(ThreadSafeInvertedIndex invertedIndex, URI seedURI, int numCrawls) {
+	public WebCrawler(ThreadSafeInvertedIndex invertedIndex, URI seedURI, int numCrawls, WorkQueue queue) {
 		this.invertedIndex = invertedIndex;
 		this.seedURI = seedURI;
 		this.snowballStemmer = new SnowballStemmer(ENGLISH);
 		this.numCrawls = numCrawls;
+		this.queue = queue;
+	}
+
+	/** Nested class that represents a task for a thread to do */
+	private class Work implements Runnable {
+		/** TODO members */
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'run'");
+		}
 	}
 
 	/**
 	 * Starts crawling from the seed URI.
 	 * Will redirect up to three times.
-	 * Adds words and their locations to the inverted index
+	 * Adds words and their locations to the inverted index.
 	 */
 	public void crawl() {
 		String html = HtmlFetcher.fetch(this.seedURI, MAX_REDIRECTS);
 		if (html == null) {
-			System.out.printf("Could not start crawl at %s\n", this.seedURI);
+			System.err.printf("Could not start crawl at %s\n", this.seedURI);
 			return;
 		}
 
