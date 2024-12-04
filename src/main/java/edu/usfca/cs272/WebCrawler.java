@@ -29,15 +29,20 @@ public class WebCrawler {
 	/** The stemmer to use class-wide */
 	private final SnowballStemmer snowballStemmer;
 
+	/** The number of URLs to crawl */
+	private int numCrawls;
+
 	/**
 	 * Constructs a web cralwer with a thread-safe inverted index and seed URI
 	 * @param invertedIndex The inverted index to add to
 	 * @param seedURI The seed URI to build the inverted index from
+	 * @param numCrawls The number of URLs to crawl
 	 */
-	public WebCrawler(ThreadSafeInvertedIndex invertedIndex, URI seedURI) {
+	public WebCrawler(ThreadSafeInvertedIndex invertedIndex, URI seedURI, int numCrawls) {
 		this.invertedIndex = invertedIndex;
 		this.seedURI = seedURI;
 		this.snowballStemmer = new SnowballStemmer(ENGLISH);
+		this.numCrawls = numCrawls;
 	}
 
 	/**
