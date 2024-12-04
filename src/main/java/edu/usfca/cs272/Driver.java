@@ -53,6 +53,12 @@ public class Driver {
 	/** {@code -html} flag passed as an argument to this program. Enables multithreading. Next argument (required) is the seed URI the web crawler should download and process to build the inverted index. */
 	public static final String HTML = "-html";
 
+	/** {@code -crawl} flag passed as an argument to this program. Enables multithreading. Next argument (optional) is the number of URLs to crawl. If no value passed, then value defaults to 1. */
+	public static final String CRAWL = "-crawl";
+
+	/** Default number of URLs to crawl if there is no value for the {@code -crawl} flag or the {@code -crawl} flag is not provided. */
+	public static final int DEFAULT_CRAWL = 1;
+
 	/**
 	 * Initializes the classes necessary based on the provided command-line
 	 * arguments. This includes (but is not limited to) how to build or search an
@@ -79,7 +85,8 @@ public class Driver {
 			String seedURI = argParser.getString(HTML);
 			if (argParser.hasFlag(HTML)) {
 				try {
-					crawler = new WebCrawler(safeIndex, LinkFinder.toUri(seedURI));
+					int numCrawls = argParser.getInteger(CRAWL, DEFAULT_CRAWL);
+					crawler = new WebCrawler(safeIndex, LinkFinder.toUri(seedURI), numCrawls);
 				} catch (URISyntaxException e) {
 					System.err.printf("Unable to create web crawler from %s\n", seedURI);
 				} catch (NullPointerException e) {
