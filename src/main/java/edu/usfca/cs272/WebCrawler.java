@@ -27,9 +27,6 @@ public class WebCrawler {
 	/** The maximum number of redirects allowed */
 	private static final int MAX_REDIRECTS = 3;
 
-	/** The stemmer to use class-wide */
-	private final SnowballStemmer snowballStemmer;
-
 	/** The number of URLs to crawl */
 	private final int numCrawls;
 
@@ -48,7 +45,6 @@ public class WebCrawler {
 	public WebCrawler(ThreadSafeInvertedIndex invertedIndex, URI seedURI, int numCrawls, WorkQueue queue) {
 		this.invertedIndex = invertedIndex;
 		this.seedURI = seedURI;
-		this.snowballStemmer = new SnowballStemmer(ENGLISH);
 		this.numCrawls = numCrawls;
 		this.queue = queue;
 		this.crawledLinks = new HashSet<>();
@@ -56,21 +52,54 @@ public class WebCrawler {
 
 	/** Nested class that represents a task for a thread to do */
 	private class Work implements Runnable {
-		/** TODO members */
-		private final URI seed;
+		/** The link to process */
+		private final URI link;
 
 		/**
-		 * TODO
-		 * @param seed
+		 * The link to download, process, and add to the inverted index
+		 * @param link
 		 */
-		public Work(URI seed) {
-			this.seed = seed;
+		public Work(URI link) {
+			this.link = link;
 		}
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
-			throw new UnsupportedOperationException("Unimplemented method 'run'");
+			String html = null;
+			// Check if we've hit the redirect limit
+			if (crawledLinks.size() < MAX_REDIRECTS) {
+				html = HtmlFetcher.fetch(this.link, MAX_REDIRECTS);
+			}
+
+			if (html == null) {
+				System.err.printf("Could not start crawl at %s\n", this.link);
+				return;
+			}
+
+			html = HtmlCleaner.stripBlockElements(html);
+			ArrayList<URI> hyperlinks = LinkFinder.listUris(link, html);
+
+			for (URI hyperlink : hyperlinks) {
+				URI absoluteURI = null;
+				synchronized (seedURI) {
+					absoluteURI = LinkFinder.toAbsolute(seedURI, hyperlink.toString());
+				}
+
+				synchronized (crawledLinks) {
+					if (absoluteURI != null && !crawledLinks.contains(absoluteURI)) {
+						crawledLinks.add(absoluteURI);
+						queue.execute(new Work(absoluteURI));
+					}
+				}
+			}
+
+			String cleanedHtml = HtmlCleaner.stripTags(html);
+			cleanedHtml = HtmlCleaner.stripEntities(cleanedHtml);
+
+			SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
+			ArrayList<String> stems = FileStemmer.listStems(cleanedHtml, snowballStemmer);
+			String cleanedURI = LinkFinder.clean(this.link).toString();
+			invertedIndex.addWords(stems, cleanedURI, 1);
 		}
 	}
 
@@ -80,18 +109,8 @@ public class WebCrawler {
 	 * Adds words and their locations to the inverted index.
 	 */
 	public void crawl() {
-		String html = HtmlFetcher.fetch(this.seedURI, MAX_REDIRECTS);
-		if (html == null) {
-			System.err.printf("Could not start crawl at %s\n", this.seedURI);
-			return;
-		}
 
-		html = HtmlCleaner.stripBlockElements(html);
-		String cleanedHtml = HtmlCleaner.stripTags(html);
-		cleanedHtml = HtmlCleaner.stripEntities(cleanedHtml);
-
-		ArrayList<String> stems = FileStemmer.listStems(cleanedHtml, this.snowballStemmer);
-		String cleanedURI = LinkFinder.clean(this.seedURI).toString();
-		this.invertedIndex.addWords(stems, cleanedURI, 1);
+		this.queue.execute(new Work(this.seedURI));
+		this.queue.finish();
 	}
 }
