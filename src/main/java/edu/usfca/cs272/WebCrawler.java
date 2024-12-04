@@ -1,11 +1,10 @@
 package edu.usfca.cs272;
 
-import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
-
 import java.net.URI;
 import java.util.ArrayList;
 
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
+import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 /**
  * Class responsible for web crawling starting from a specific seed URI.
@@ -53,6 +52,15 @@ public class WebCrawler {
 	/** Nested class that represents a task for a thread to do */
 	private class Work implements Runnable {
 		/** TODO members */
+		private final URI seed;
+
+		/**
+		 * TODO
+		 * @param seed
+		 */
+		public Work(URI seed) {
+			this.seed = seed;
+		}
 
 		@Override
 		public void run() {
