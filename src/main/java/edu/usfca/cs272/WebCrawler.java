@@ -2,6 +2,7 @@ package edu.usfca.cs272;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import opennlp.tools.stemmer.snowball.SnowballStemmer;
 import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
@@ -35,6 +36,9 @@ public class WebCrawler {
 	/** The work queue to assign tasks to */
 	private final WorkQueue queue;
 
+	/** {@code Set} to keep track of already crawled links */
+	private final HashSet<URI> crawledLinks;
+
 	/**
 	 * Constructs a web cralwer with a thread-safe inverted index and seed URI
 	 * @param invertedIndex The inverted index to add to
@@ -47,6 +51,7 @@ public class WebCrawler {
 		this.snowballStemmer = new SnowballStemmer(ENGLISH);
 		this.numCrawls = numCrawls;
 		this.queue = queue;
+		this.crawledLinks = new HashSet<>();
 	}
 
 	/** Nested class that represents a task for a thread to do */
