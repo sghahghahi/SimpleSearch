@@ -86,7 +86,7 @@ public class Driver {
 			if (argParser.hasFlag(HTML)) {
 				try {
 					int numCrawls = argParser.getInteger(CRAWL, DEFAULT_CRAWL);
-					crawler = new WebCrawler(safeIndex, LinkFinder.toUri(seedURI), numCrawls);
+					crawler = new WebCrawler(safeIndex, LinkFinder.toUri(seedURI), numCrawls, workQueue);
 				} catch (URISyntaxException e) {
 					System.err.printf("Unable to create web crawler from %s\n", seedURI);
 				} catch (NullPointerException e) {
