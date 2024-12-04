@@ -30,7 +30,7 @@ public class WebCrawler {
 	private final SnowballStemmer snowballStemmer;
 
 	/** The number of URLs to crawl */
-	private int numCrawls;
+	private final int numCrawls;
 
 	/**
 	 * Constructs a web cralwer with a thread-safe inverted index and seed URI
