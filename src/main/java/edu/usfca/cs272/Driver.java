@@ -104,9 +104,9 @@ public class Driver {
 			if (invertedIndex instanceof ThreadSafeInvertedIndex) {
 				String seedURI = argParser.getString(HTML);
 				try {
-					int numCrawls = argParser.getInteger(CRAWL, DEFAULT_CRAWL);
+					int maxCrawls = argParser.getInteger(CRAWL, DEFAULT_CRAWL);
 					// Safe to cast here because invertedIndex is guaranteed to be thread safe by this point
-					crawler = new WebCrawler((ThreadSafeInvertedIndex) invertedIndex, LinkFinder.toUri(seedURI), numCrawls, workQueue);
+					crawler = new WebCrawler((ThreadSafeInvertedIndex) invertedIndex, LinkFinder.toUri(seedURI), maxCrawls, workQueue);
 				} catch (URISyntaxException e) {
 					System.err.printf("Unable to create web crawler from %s\n", seedURI);
 				} catch (NullPointerException e) {

@@ -9,7 +9,6 @@ import static opennlp.tools.stemmer.snowball.SnowballStemmer.ALGORITHM.ENGLISH;
 
 /**
  * Class responsible for web crawling starting from a specific seed URI.
- * Will only redirect up to three times.
  * Builds an inverted index from the seed URI.
  * This class is thread safe.
  *
@@ -27,8 +26,8 @@ public class WebCrawler {
 	/** The maximum number of redirects allowed */
 	private static final int MAX_REDIRECTS = 3;
 
-	/** The number of URLs to crawl */
-	private final int numCrawls;
+	/** The maximum number of URLs to crawl */
+	private final int maxCrawls;
 
 	/** The work queue to assign tasks to */
 	private final WorkQueue queue;
@@ -37,15 +36,16 @@ public class WebCrawler {
 	private final HashSet<URI> crawledLinks;
 
 	/**
-	 * Constructs a web cralwer with a thread-safe inverted index and seed URI
+	 * Constructs a web crawler with a thread-safe inverted index, seed URI, maximum number of crawls, and work queue
 	 * @param invertedIndex The inverted index to add to
 	 * @param seedURI The seed URI to build the inverted index from
-	 * @param numCrawls The number of URLs to crawl
+	 * @param maxCrawls The maximum number of URLs to crawl
+	 * @param queue The work queue to assign tasks to
 	 */
-	public WebCrawler(ThreadSafeInvertedIndex invertedIndex, URI seedURI, int numCrawls, WorkQueue queue) {
+	public WebCrawler(ThreadSafeInvertedIndex invertedIndex, URI seedURI, int maxCrawls, WorkQueue queue) {
 		this.invertedIndex = invertedIndex;
 		this.seedURI = seedURI;
-		this.numCrawls = numCrawls;
+		this.maxCrawls = maxCrawls;
 		this.queue = queue;
 		this.crawledLinks = new HashSet<>();
 		this.crawledLinks.add(this.seedURI);
@@ -57,8 +57,8 @@ public class WebCrawler {
 		private final URI link;
 
 		/**
-		 * The link to download, process, and add to the inverted index
-		 * @param link
+		 * Constructs a task for a thread to do
+		 * @param link The link to download, process, and add to the inverted index
 		 */
 		public Work(URI link) {
 			this.link = link;
@@ -78,7 +78,7 @@ public class WebCrawler {
 
 			synchronized (crawledLinks) {
 				for (URI hyperLink : hyperlinks) {
-					if (crawledLinks.size() >= numCrawls) {
+					if (crawledLinks.size() >= maxCrawls) {
 						break;
 					}
 
@@ -109,7 +109,6 @@ public class WebCrawler {
 
 	/**
 	 * Starts crawling from the seed URI.
-	 * Will redirect up to three times.
 	 * Adds words and their locations to the inverted index.
 	 */
 	public void crawl() {
