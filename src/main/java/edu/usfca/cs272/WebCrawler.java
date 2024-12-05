@@ -93,9 +93,10 @@ public class WebCrawler {
 
 			SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 			ArrayList<String> stems = FileStemmer.listStems(cleanedHtml, snowballStemmer);
+
 			URI absoulteURI = LinkFinder.toAbsolute(seedURI, this.link.toString());
 			if (absoulteURI == null) {
-				System.err.println("Could not make URI absoulte");
+				System.err.println("Could not make URI absolute");
 				return;
 			}
 
