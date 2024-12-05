@@ -82,18 +82,6 @@ public class Driver {
 			invertedIndex = safeIndex;
 			textFileIndexer = new ThreadSafeTextFileIndexer(safeIndex, workQueue);
 			queryParser = new ThreadSafeQueryParser(safeIndex, workQueue);
-			String seedURI = argParser.getString(HTML);
-			if (argParser.hasFlag(HTML)) {
-				try {
-					int numCrawls = argParser.getInteger(CRAWL, DEFAULT_CRAWL);
-					crawler = new WebCrawler(safeIndex, LinkFinder.toUri(seedURI), numCrawls, workQueue);
-				} catch (URISyntaxException e) {
-					System.err.printf("Unable to create web crawler from %s\n", seedURI);
-				} catch (NullPointerException e) {
-					System.err.println("No seed file was provided after the '-html' flag.");
-				}
-			}
-
 		} else {
 			invertedIndex = new InvertedIndex();
 			textFileIndexer = new TextFileIndexer(invertedIndex);
@@ -108,6 +96,22 @@ public class Driver {
 				System.err.printf("Unable to index the files from location: %s\n", location);
 			} catch (NullPointerException e) {
 				System.err.println("No input file was provided after the '-text' flag.");
+			}
+		}
+
+		if (argParser.hasFlag(HTML)) {
+			// WebCrawler needs a ThreadSafeInvertedIndex, which by this point is guaranteed to be initialized
+			if (invertedIndex instanceof ThreadSafeInvertedIndex) {
+				String seedURI = argParser.getString(HTML);
+				try {
+					int numCrawls = argParser.getInteger(CRAWL, DEFAULT_CRAWL);
+					// Safe to cast here because invertedIndex is guaranteed to be thread safe by this point
+					crawler = new WebCrawler((ThreadSafeInvertedIndex) invertedIndex, LinkFinder.toUri(seedURI), numCrawls, workQueue);
+				} catch (URISyntaxException e) {
+					System.err.printf("Unable to create web crawler from %s\n", seedURI);
+				} catch (NullPointerException e) {
+					System.err.println("No seed file was provided after the '-html' flag.");
+				}
 			}
 		}
 
