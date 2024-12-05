@@ -82,8 +82,7 @@ public class WebCrawler {
 						break;
 					}
 
-					if (!crawledLinks.contains(hyperLink)) {
-						crawledLinks.add(hyperLink);
+					if (crawledLinks.add(hyperLink)) {
 						queue.execute(new Work(hyperLink));
 					}
 				}
