@@ -117,4 +117,9 @@ public class WebCrawler {
 		this.queue.execute(new Work(this.seedURI));
 		this.queue.finish();
 	}
+
+	@Override
+	public String toString() {
+		return String.format("Web crawler started at %s\n", this.seedURI);
+	}
 }
