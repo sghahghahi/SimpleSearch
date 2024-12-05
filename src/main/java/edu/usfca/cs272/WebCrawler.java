@@ -48,6 +48,7 @@ public class WebCrawler {
 		this.numCrawls = numCrawls;
 		this.queue = queue;
 		this.crawledLinks = new HashSet<>();
+		this.crawledLinks.add(this.seedURI);
 	}
 
 	/** Nested class that represents a task for a thread to do */
@@ -61,9 +62,6 @@ public class WebCrawler {
 		 */
 		public Work(URI link) {
 			this.link = link;
-			synchronized (crawledLinks) {
-				crawledLinks.add(this.link);
-			}
 		}
 
 		@Override
