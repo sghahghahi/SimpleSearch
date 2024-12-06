@@ -72,7 +72,7 @@ public class Driver {
 		InvertedIndex invertedIndex;
 		TextFileIndexer textFileIndexer;
 		QueryParser queryParser;
-		WebCrawler crawler = null;
+		WebCrawler crawler;
 
 		Path location;
 
@@ -107,16 +107,13 @@ public class Driver {
 					int maxCrawls = argParser.getInteger(CRAWL, DEFAULT_CRAWL);
 					// Safe to cast here because invertedIndex is guaranteed to be thread safe by this point
 					crawler = new WebCrawler((ThreadSafeInvertedIndex) invertedIndex, LinkFinder.toUri(seedURI), maxCrawls, workQueue);
+					crawler.crawl();
 				} catch (URISyntaxException e) {
 					System.err.printf("Unable to create web crawler from %s\n", seedURI);
 				} catch (NullPointerException e) {
 					System.err.println("No seed file was provided after the '-html' flag.");
 				}
 			}
-		}
-
-		if (crawler != null) {
-			crawler.crawl();
 		}
 
 		if (argParser.hasFlag(QUERY)) {
