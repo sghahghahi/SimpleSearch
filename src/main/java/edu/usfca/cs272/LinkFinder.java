@@ -203,7 +203,7 @@ public class LinkFinder {
 	 * @param args unused
 	 * @throws Exception if any issues occur
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception { // TODO Remove
 		// this demonstrates cleaning
 		String pythonLink = "https://docs.python.org/3/library/functions.html?highlight=string#format";
 		URI pythonUri = toUri(pythonLink);

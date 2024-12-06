@@ -99,6 +99,13 @@ public class Driver {
 			}
 		}
 
+		/*
+		 * TODO Could either declare the crawler with the others at the top,
+		 * or you can declare the thread-safe version so that it is 
+		 * accessible here.
+		 * 
+		 * Do try to avoid downcasting...
+		 */
 		if (argParser.hasFlag(HTML)) {
 			// WebCrawler needs a ThreadSafeInvertedIndex, which by this point is guaranteed to be initialized
 			if (invertedIndex instanceof ThreadSafeInvertedIndex) {
@@ -107,7 +114,7 @@ public class Driver {
 					int maxCrawls = argParser.getInteger(CRAWL, DEFAULT_CRAWL);
 					// Safe to cast here because invertedIndex is guaranteed to be thread safe by this point
 					crawler = new WebCrawler((ThreadSafeInvertedIndex) invertedIndex, LinkFinder.toUri(seedURI), maxCrawls, workQueue);
-					crawler.crawl();
+					crawler.crawl(); // TODO Pass in the seed and max here
 				} catch (URISyntaxException e) {
 					System.err.printf("Unable to create web crawler from %s\n", seedURI);
 				} catch (NullPointerException e) {

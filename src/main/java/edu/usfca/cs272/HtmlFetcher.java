@@ -210,7 +210,7 @@ public class HtmlFetcher {
 	 * @param args unused
 	 * @throws IOException if unable to process uri
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException { // TODO Remove
 		String link = "https://usf-cs272n-fall2024.github.io/project-web/input/birds/falcon.html";
 		System.out.println(link);
 		System.out.println(fetch(link));
