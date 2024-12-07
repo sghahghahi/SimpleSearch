@@ -196,47 +196,4 @@ public class LinkFinder {
 	 * @see URI
 	 */
 	public static Pattern URI_PARTS = Pattern.compile("^(?:([^:]*):)?([^#]+)?(?:#(.*))?$");
-
-	/**
-	 * Demonstrates this class.
-	 *
-	 * @param args unused
-	 * @throws Exception if any issues occur
-	 */
-	public static void main(String[] args) throws Exception { // TODO Remove
-		// this demonstrates cleaning
-		String pythonLink = "https://docs.python.org/3/library/functions.html?highlight=string#format";
-		URI pythonUri = toUri(pythonLink);
-		URI pythonClean = clean(pythonUri);
-
-		System.out.println(pythonLink);
-		System.out.println(pythonClean);
-		System.out.println();
-
-		// this demonstrates encoding
-		String googleLink = "https://www.google.com/search?q=hello world";
-		URI googleUri = toUri(googleLink);
-
-		System.out.println(googleLink);
-		System.out.println(googleUri);
-		System.out.println();
-
-		// this demonstrates a non-HTTP (but valid) URI
-		String emailLink = "mailto:username@example.edu";
-		URI emailUri = toUri(emailLink);
-		System.out.println(emailLink);
-		System.out.println(emailUri);
-		System.out.println();
-
-		// this demonstrates converting to absolute
-		String relative = "index.html?q=hello world#top";
-		System.out.println(relative);
-		System.out.println(toAbsolute(pythonUri, relative));
-		System.out.println(toAbsolute(googleUri, relative));
-		System.out.println(toAbsolute(emailUri, relative)); // invalid base
-	}
-
-	/** Prevent instantiating this class of static methods. */
-	private LinkFinder() {
-	}
 }

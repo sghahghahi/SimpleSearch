@@ -203,20 +203,4 @@ public class HtmlFetcher {
 	public static String fetch(URI uri) {
 		return fetch(uri, 0);
 	}
-
-	/**
-	 * Demonstrates this class.
-	 *
-	 * @param args unused
-	 * @throws IOException if unable to process uri
-	 */
-	public static void main(String[] args) throws IOException { // TODO Remove
-		String link = "https://usf-cs272n-fall2024.github.io/project-web/input/birds/falcon.html";
-		System.out.println(link);
-		System.out.println(fetch(link));
-	}
-
-	/** Prevent instantiating this class of static methods. */
-	private HtmlFetcher() {
-	}
 }
