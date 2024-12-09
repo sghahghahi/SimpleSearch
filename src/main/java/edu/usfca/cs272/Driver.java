@@ -71,19 +71,22 @@ public class Driver {
 		ArgumentParser argParser = new ArgumentParser(args);
 		WorkQueue workQueue = null;
 		InvertedIndex invertedIndex;
-		ThreadSafeInvertedIndex safeIndex = null;
 		TextFileIndexer textFileIndexer;
 		QueryParser queryParser;
-		WebCrawler crawler;
+		WebCrawler crawler = null;
 
 		Path location;
 
 		if (argParser.hasFlag(THREAD) || argParser.hasFlag(HTML)) {
 			workQueue = new WorkQueue(argParser.getInteger(THREAD, NUM_THREADS));
-			safeIndex = new ThreadSafeInvertedIndex();
+			ThreadSafeInvertedIndex safeIndex = new ThreadSafeInvertedIndex();
 			invertedIndex = safeIndex;
 			textFileIndexer = new ThreadSafeTextFileIndexer(safeIndex, workQueue);
 			queryParser = new ThreadSafeQueryParser(safeIndex, workQueue);
+
+			if (argParser.hasFlag(HTML)) {
+				crawler = new WebCrawler(safeIndex, workQueue);
+			}
 		} else {
 			invertedIndex = new InvertedIndex();
 			textFileIndexer = new TextFileIndexer(invertedIndex);
@@ -106,7 +109,6 @@ public class Driver {
 			int maxCrawls = argParser.getInteger(CRAWL, DEFAULT_CRAWL);
 			try {
 				URI seedURI = LinkFinder.toUri(seed);
-				crawler = new WebCrawler(safeIndex, workQueue);
 				crawler.crawl(seedURI, maxCrawls);
 			} catch (URISyntaxException e) {
 				System.err.printf("Unable to create web crawler from %s\n", seed);
