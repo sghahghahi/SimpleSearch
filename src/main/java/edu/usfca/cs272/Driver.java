@@ -1,6 +1,7 @@
 package edu.usfca.cs272;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
@@ -101,13 +102,14 @@ public class Driver {
 		}
 
 		if (argParser.hasFlag(HTML)) {
-			String seedURI = argParser.getString(HTML);
+			String seed = argParser.getString(HTML);
 			int maxCrawls = argParser.getInteger(CRAWL, DEFAULT_CRAWL);
 			try {
-				crawler = new WebCrawler(safeIndex, LinkFinder.toUri(seedURI), maxCrawls, workQueue);
-				crawler.crawl(); // TODO Pass in the seed and max here
+				URI seedURI = LinkFinder.toUri(seed);
+				crawler = new WebCrawler(safeIndex, workQueue);
+				crawler.crawl(seedURI, maxCrawls);
 			} catch (URISyntaxException e) {
-				System.err.printf("Unable to create web crawler from %s\n", seedURI);
+				System.err.printf("Unable to create web crawler from %s\n", seed);
 			} catch (NullPointerException e) {
 				System.err.println("No seed file was provided after the '-html' flag.");
 			}

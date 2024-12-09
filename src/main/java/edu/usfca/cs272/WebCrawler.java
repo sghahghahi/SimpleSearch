@@ -20,14 +20,8 @@ public class WebCrawler {
 	/** The inverted index to add to */
 	private final ThreadSafeInvertedIndex invertedIndex;
 
-	/** The initial {@code URI} to build an inverted index from */
-	private final URI seedURI;
-
 	/** The maximum number of redirects allowed */
 	private static final int MAX_REDIRECTS = 3;
-
-	/** The maximum number of URLs to crawl */
-	private final int maxCrawls;
 
 	/** The work queue to assign tasks to */
 	private final WorkQueue queue;
@@ -36,19 +30,14 @@ public class WebCrawler {
 	private final HashSet<URI> crawledLinks;
 
 	/**
-	 * Constructs a web crawler with a thread-safe inverted index, seed URI, maximum number of crawls, and work queue
+	 * Constructs a web crawler with a thread-safe inverted index and work queue
 	 * @param invertedIndex The inverted index to add to
-	 * @param seedURI The seed URI to build the inverted index from
-	 * @param maxCrawls The maximum number of URLs to crawl
 	 * @param queue The work queue to assign tasks to
 	 */
-	public WebCrawler(ThreadSafeInvertedIndex invertedIndex, URI seedURI, int maxCrawls, WorkQueue queue) {
+	public WebCrawler(ThreadSafeInvertedIndex invertedIndex, WorkQueue queue) {
 		this.invertedIndex = invertedIndex;
-		this.seedURI = seedURI;
-		this.maxCrawls = maxCrawls;
 		this.queue = queue;
 		this.crawledLinks = new HashSet<>();
-		this.crawledLinks.add(this.seedURI);
 	}
 
 	/** Nested class that represents a task for a thread to do */
@@ -56,11 +45,16 @@ public class WebCrawler {
 		/** The link to process */
 		private final URI link;
 
+		/** The maximum number of URLs to crawl */
+		private final int maxCrawls;
+
 		/**
 		 * Constructs a task for a thread to do
 		 * @param link The link to download, process, and add to the inverted index
+		 * @param maxCrawls The maximum number of URLs to crawl
 		 */
-		public Work(URI link) {
+		public Work(URI link, int maxCrawls) {
+			this.maxCrawls = maxCrawls;
 			this.link = link;
 		}
 
@@ -83,7 +77,7 @@ public class WebCrawler {
 					}
 
 					if (crawledLinks.add(hyperLink)) {
-						queue.execute(new Work(hyperLink));
+						queue.execute(new Work(hyperLink, this.maxCrawls));
 					}
 				}
 			}
@@ -94,7 +88,7 @@ public class WebCrawler {
 			SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 			ArrayList<String> stems = FileStemmer.listStems(cleanedHtml, snowballStemmer);
 
-			URI absoulteURI = LinkFinder.toAbsolute(seedURI, this.link.toString()); // TODO Check if this is necessary (could make sure the seed is aboslute before creating the first task)
+			URI absoulteURI = LinkFinder.toAbsolute(this.link, this.link.toString()); // TODO Check if this is necessary (could make sure the seed is aboslute before creating the first task)
 			if (absoulteURI == null) {
 				System.err.println("Could not make URI absolute");
 				return;
@@ -111,14 +105,22 @@ public class WebCrawler {
 	/**
 	 * Starts crawling from the seed URI.
 	 * Adds words and their locations to the inverted index.
+	 * @param seedURI The initial {@code URI} to build an inverted index from
+	 * @param maxCrawls The maximum number of URLs to crawl
 	 */
-	public void crawl() {
-		this.queue.execute(new Work(this.seedURI));
+	public void crawl(URI seedURI, int maxCrawls) {
+		this.crawledLinks.add(seedURI);
+		this.queue.execute(new Work(seedURI, maxCrawls));
 		this.queue.finish();
 	}
 
 	@Override
 	public String toString() {
-		return String.format("Web crawler started at %s\n", this.seedURI);
+		return String.format(
+			"Web crawler started at %s and has crawled %d %s\n",
+			this.crawledLinks.isEmpty() ? "N/A" : this.crawledLinks.iterator().next(),
+			this.crawledLinks.size(),
+			this.crawledLinks.size() == 1 ? "URL" : "URLs"
+		);
 	}
 }
