@@ -70,6 +70,7 @@ public class Driver {
 		ArgumentParser argParser = new ArgumentParser(args);
 		WorkQueue workQueue = null;
 		InvertedIndex invertedIndex;
+		ThreadSafeInvertedIndex safeIndex = null;
 		TextFileIndexer textFileIndexer;
 		QueryParser queryParser;
 		WebCrawler crawler;
@@ -78,7 +79,7 @@ public class Driver {
 
 		if (argParser.hasFlag(THREAD) || argParser.hasFlag(HTML)) {
 			workQueue = new WorkQueue(argParser.getInteger(THREAD, NUM_THREADS));
-			ThreadSafeInvertedIndex safeIndex = new ThreadSafeInvertedIndex();
+			safeIndex = new ThreadSafeInvertedIndex();
 			invertedIndex = safeIndex;
 			textFileIndexer = new ThreadSafeTextFileIndexer(safeIndex, workQueue);
 			queryParser = new ThreadSafeQueryParser(safeIndex, workQueue);
@@ -99,27 +100,16 @@ public class Driver {
 			}
 		}
 
-		/*
-		 * TODO Could either declare the crawler with the others at the top,
-		 * or you can declare the thread-safe version so that it is 
-		 * accessible here.
-		 * 
-		 * Do try to avoid downcasting...
-		 */
 		if (argParser.hasFlag(HTML)) {
-			// WebCrawler needs a ThreadSafeInvertedIndex, which by this point is guaranteed to be initialized
-			if (invertedIndex instanceof ThreadSafeInvertedIndex) {
-				String seedURI = argParser.getString(HTML);
-				try {
-					int maxCrawls = argParser.getInteger(CRAWL, DEFAULT_CRAWL);
-					// Safe to cast here because invertedIndex is guaranteed to be thread safe by this point
-					crawler = new WebCrawler((ThreadSafeInvertedIndex) invertedIndex, LinkFinder.toUri(seedURI), maxCrawls, workQueue);
-					crawler.crawl(); // TODO Pass in the seed and max here
-				} catch (URISyntaxException e) {
-					System.err.printf("Unable to create web crawler from %s\n", seedURI);
-				} catch (NullPointerException e) {
-					System.err.println("No seed file was provided after the '-html' flag.");
-				}
+			String seedURI = argParser.getString(HTML);
+			int maxCrawls = argParser.getInteger(CRAWL, DEFAULT_CRAWL);
+			try {
+				crawler = new WebCrawler(safeIndex, LinkFinder.toUri(seedURI), maxCrawls, workQueue);
+				crawler.crawl(); // TODO Pass in the seed and max here
+			} catch (URISyntaxException e) {
+				System.err.printf("Unable to create web crawler from %s\n", seedURI);
+			} catch (NullPointerException e) {
+				System.err.println("No seed file was provided after the '-html' flag.");
 			}
 		}
 
