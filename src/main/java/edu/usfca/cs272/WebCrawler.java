@@ -68,7 +68,7 @@ public class WebCrawler {
 			}
 
 			html = HtmlCleaner.stripBlockElements(html);
-			ArrayList<URI> hyperlinks = LinkFinder.listUris(link, html);
+			ArrayList<URI> hyperlinks = LinkFinder.listUris(this.link, html);
 
 			synchronized (crawledLinks) {
 				for (URI hyperLink : hyperlinks) {
