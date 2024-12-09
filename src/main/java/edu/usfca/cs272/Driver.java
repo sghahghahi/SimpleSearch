@@ -60,6 +60,12 @@ public class Driver {
 	/** Default number of URLs to crawl if there is no value for the {@code -crawl} flag or the {@code -crawl} flag is not provided. */
 	public static final int DEFAULT_CRAWL = 1;
 
+	/** {@code -server} flag passed as an argument to this program. Launches a web server and enables multithreading. Next argument (optional) is the port the web server should use to accept socket connections. */
+	public static final String SERVER = "-server";
+
+	/** Default port the web server shoudl use to accept socket connections if no value after the {@code -server} flag was provided. */
+	public static final int DEFAULT_PORT = 8080;
+
 	/**
 	 * Initializes the classes necessary based on the provided command-line
 	 * arguments. This includes (but is not limited to) how to build or search an
@@ -77,7 +83,7 @@ public class Driver {
 
 		Path location;
 
-		if (argParser.hasFlag(THREAD) || argParser.hasFlag(HTML)) {
+		if (argParser.hasFlag(THREAD) || argParser.hasFlag(HTML) || argParser.hasFlag(SERVER)) {
 			workQueue = new WorkQueue(argParser.getInteger(THREAD, NUM_THREADS));
 			ThreadSafeInvertedIndex safeIndex = new ThreadSafeInvertedIndex();
 			invertedIndex = safeIndex;
