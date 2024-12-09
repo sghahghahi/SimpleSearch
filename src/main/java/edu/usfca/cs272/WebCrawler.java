@@ -88,14 +88,8 @@ public class WebCrawler {
 			SnowballStemmer snowballStemmer = new SnowballStemmer(ENGLISH);
 			ArrayList<String> stems = FileStemmer.listStems(cleanedHtml, snowballStemmer);
 
-			URI absoulteURI = LinkFinder.toAbsolute(this.link, this.link.toString()); // TODO Check if this is necessary (could make sure the seed is aboslute before creating the first task)
-			if (absoulteURI == null) {
-				System.err.println("Could not make URI absolute");
-				return;
-			}
-
 			InvertedIndex localIndex = new InvertedIndex();
-			localIndex.addWords(stems, absoulteURI.toString(), 1);
+			localIndex.addWords(stems, this.link.toString(), 1);
 
 			// No need to synchronize because invertedIndex is thread safe
 			invertedIndex.addAll(localIndex);
