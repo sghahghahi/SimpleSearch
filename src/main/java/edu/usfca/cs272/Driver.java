@@ -80,6 +80,7 @@ public class Driver {
 		TextFileIndexer textFileIndexer;
 		QueryParser queryParser;
 		WebCrawler crawler = null;
+		SearchEngine searchEngine = null;
 
 		Path location;
 
@@ -92,6 +93,9 @@ public class Driver {
 
 			if (argParser.hasFlag(HTML)) {
 				crawler = new WebCrawler(safeIndex, workQueue);
+			}
+			if (argParser.hasFlag(SERVER)) {
+				searchEngine = new SearchEngine(argParser.getInteger(SERVER, DEFAULT_PORT));
 			}
 		} else {
 			invertedIndex = new InvertedIndex();
@@ -163,6 +167,14 @@ public class Driver {
 				queryParser.queryJson(location);
 			} catch (IOException e) {
 				System.err.printf("Unable to write search results to location: %s\n", location);
+			}
+		}
+
+		if (argParser.hasFlag(SERVER)) {
+			try {
+				searchEngine.launchServer();
+			} catch (Exception e) {
+				System.err.println("Could not launch web server." + e);
 			}
 		}
 
