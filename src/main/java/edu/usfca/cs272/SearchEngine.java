@@ -10,6 +10,9 @@ import org.eclipse.jetty.server.Server;
 /** TODO */
 public class SearchEngine {
 	/** TODO */
+	private final ThreadSafeInvertedIndex invertedIndex;
+
+	/** TODO */
 	private final int port;
 
 	/** TODO */
@@ -20,7 +23,8 @@ public class SearchEngine {
 	 * @param invertedIndex TODO
 	 * @param port TODO
 	 */
-	public SearchEngine(int port) {
+	public SearchEngine(ThreadSafeInvertedIndex invertedIndex, int port) {
+		this.invertedIndex = invertedIndex;
 		this.port = port;
 	}
 
@@ -29,7 +33,7 @@ public class SearchEngine {
 		Server server = new Server(this.port);
 
 		ServletContextHandler handler = new ServletContextHandler();
-		handler.addServlet(new ServletHolder(new GetServlet()), "/");
+		handler.addServlet(new ServletHolder(new GetServlet(this.invertedIndex)), "/");
 		server.setHandler(handler);
 
 		server.start();

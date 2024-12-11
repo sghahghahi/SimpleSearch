@@ -95,7 +95,7 @@ public class Driver {
 				crawler = new WebCrawler(safeIndex, workQueue);
 			}
 			if (argParser.hasFlag(SERVER)) {
-				searchEngine = new SearchEngine(argParser.getInteger(SERVER, DEFAULT_PORT));
+				searchEngine = new SearchEngine(safeIndex, argParser.getInteger(SERVER, DEFAULT_PORT));
 			}
 		} else {
 			invertedIndex = new InvertedIndex();
