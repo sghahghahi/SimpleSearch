@@ -19,8 +19,14 @@ import jakarta.servlet.http.HttpServletResponse;
  * @version Fall 2024
  */
 public class SearchServlet extends HttpServlet {
-	/** The inverted index to search through */
-	private final ThreadSafeInvertedIndex invertedIndex;
+	/**  */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * The inverted index to search through.
+	 * Marked as {@code transient} because this member is not serializable and does not need to be persisted if the servlet is serialized.
+	 */
+	private final transient ThreadSafeInvertedIndex invertedIndex;
 
 	/**
 	 * Constructs a {@code SearchServlet} object with a thread save inverted index to search through.

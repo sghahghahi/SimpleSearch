@@ -15,6 +15,8 @@ import jakarta.servlet.http.HttpServletResponse;
  * @version Fall 2024
  */
 public class HomeServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
 	/** Empty constructor is necessary to add this servlet to the server's handler. */
 	public HomeServlet() {}
 
