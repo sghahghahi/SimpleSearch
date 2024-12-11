@@ -8,9 +8,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/** TODO */
+/**
+ * Servlet responsible for serving the home page.
+ *
+ * @author Shyon Ghahghahi
+ * @version Fall 2024
+ */
 public class HomeServlet extends HttpServlet {
-	/** TODO */
+	/** Empty constructor is necessary to add this servlet to the server's handler. */
 	public HomeServlet() {}
 
 	@Override

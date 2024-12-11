@@ -12,14 +12,19 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/** TODO */
+/**
+ * Servlet responsible for processing all form data from the user.
+ *
+ * @author Shyon Ghahghahi
+ * @version Fall 2024
+ */
 public class SearchServlet extends HttpServlet {
-	/** TODO */
+	/** The inverted index to search through */
 	private final ThreadSafeInvertedIndex invertedIndex;
 
 	/**
-	 * TODO
-	 * @param invertedIndex TODO
+	 * Constructs a {@code SearchServlet} object with a thread save inverted index to search through.
+	 * @param invertedIndex The inverted index to search through
 	 */
 	public SearchServlet(ThreadSafeInvertedIndex invertedIndex) {
 		this.invertedIndex = invertedIndex;
@@ -27,19 +32,20 @@ public class SearchServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String html = Files.readString(SearchEngine.template.resolve("searchTop.html"), UTF_8);
+		String htmlTop = Files.readString(SearchEngine.template.resolve("searchTop.html"), UTF_8);
+		String htmlBottom = Files.readString(SearchEngine.template.resolve("searchBottom.html"), UTF_8);
 
 		String query = request.getParameter("q");
 		query = query == null ? "" : StringEscapeUtils.escapeHtml4(query);
 
 		List<InvertedIndex.SearchResult> searchResults = this.invertedIndex.partialSearch(FileStemmer.uniqueStems(query));
-		StringBuilder resultHtml = new StringBuilder(html);
+		StringBuilder resultHtml = new StringBuilder(htmlTop);
 
 		for (var searchResult : searchResults) {
 			resultHtml.append(String.format("<a href=\"%s\" class=\"list-group-item list-group-item-action\">%s</a>", searchResult.getLocation(), searchResult.getLocation()));
 		}
 
-		resultHtml.append(Files.readString(SearchEngine.template.resolve("searchBottom.html"), UTF_8));
+		resultHtml.append(htmlBottom);
 
 		response.setContentType("text/html");
 		response.setStatus(HttpServletResponse.SC_OK);

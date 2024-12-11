@@ -7,28 +7,37 @@ import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Server;
 
 
-/** TODO */
+/**
+ * Launches a multithreaded web server and search engine.
+ * Searches through an already-populated inverted index to list search results to the user.
+ *
+ * @author Shyon Ghahghahi
+ * @version Fall 2024
+ */
 public class SearchEngine {
-	/** TODO */
+	/** The inverted index to search through */
 	private final ThreadSafeInvertedIndex invertedIndex;
 
-	/** TODO */
+	/** The port to use */
 	private final int port;
 
-	/** TODO */
+	/** Path for all HTML files */
 	public static final Path template = Path.of("project-sghahghahi", "src", "main", "resources");
 
 	/**
-	 * TODO
-	 * @param invertedIndex TODO
-	 * @param port TODO
+	 * Constructs a {@code SearchEngine} object with a thread safe inverted index and port number.
+	 * @param invertedIndex The inverted index to search through
+	 * @param port The port to use
 	 */
 	public SearchEngine(ThreadSafeInvertedIndex invertedIndex, int port) {
 		this.invertedIndex = invertedIndex;
 		this.port = port;
 	}
 
-	/** TODO */
+	/**
+	 * Launches the web server and search engine at the port specified when this object was created.
+	 * @throws Exception If an error occurs
+	 */
 	public void launchServer() throws Exception {
 		Server server = new Server(this.port);
 
