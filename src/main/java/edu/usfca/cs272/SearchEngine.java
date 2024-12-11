@@ -33,7 +33,7 @@ public class SearchEngine {
 		Server server = new Server(this.port);
 
 		ServletContextHandler handler = new ServletContextHandler();
-		handler.addServlet(new ServletHolder(new GetServlet(this.invertedIndex)), "/");
+		handler.addServlet(new ServletHolder(new HomeServlet(this.invertedIndex)), "/");
 		server.setHandler(handler);
 
 		server.start();

@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /** TODO */
-public class GetServlet extends HttpServlet {
+public class HomeServlet extends HttpServlet {
 	/** TODO */
 	private final ThreadSafeInvertedIndex invertedIndex;
 
@@ -21,7 +21,7 @@ public class GetServlet extends HttpServlet {
 	 * TODO
 	 * @param invertedIndex
 	 */
-	public GetServlet(ThreadSafeInvertedIndex invertedIndex) {
+	public HomeServlet(ThreadSafeInvertedIndex invertedIndex) {
 		this.invertedIndex = invertedIndex;
 	}
 
