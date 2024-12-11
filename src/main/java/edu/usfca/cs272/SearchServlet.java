@@ -38,6 +38,9 @@ public class SearchServlet extends HttpServlet {
 			resultHtml.append(String.format("<p><a href=\"%s\">%s</a></p>", searchResult.getLocation(), searchResult.getLocation()));
 		}
 
+		// Allow user to go back to home page
+		resultHtml.append("<p><a href=\"\\\">Back</a></p>");
+
 		response.setContentType("text/html");
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.getWriter().println(resultHtml.toString());
