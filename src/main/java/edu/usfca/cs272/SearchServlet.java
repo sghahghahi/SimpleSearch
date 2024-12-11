@@ -1,8 +1,10 @@
 package edu.usfca.cs272;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
-import java.util.TreeSet;
 
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -25,21 +27,19 @@ public class SearchServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String html = Files.readString(SearchEngine.template.resolve("searchTop.html"), UTF_8);
+
 		String query = request.getParameter("q");
 		query = query == null ? "" : StringEscapeUtils.escapeHtml4(query);
 
-		TreeSet<String> queryStems = FileStemmer.uniqueStems(query);
-		List<InvertedIndex.SearchResult> searchResults = this.invertedIndex.partialSearch(queryStems);
-
-		StringBuilder resultHtml = new StringBuilder();
-		resultHtml.append("<h1>Search Results</h1>");
+		List<InvertedIndex.SearchResult> searchResults = this.invertedIndex.partialSearch(FileStemmer.uniqueStems(query));
+		StringBuilder resultHtml = new StringBuilder(html);
 
 		for (var searchResult : searchResults) {
-			resultHtml.append(String.format("<p><a href=\"%s\">%s</a></p>", searchResult.getLocation(), searchResult.getLocation()));
+			resultHtml.append(String.format("<a href=\"%s\" class=\"list-group-item list-group-item-action\">%s</a>", searchResult.getLocation(), searchResult.getLocation()));
 		}
 
-		// Allow user to go back to home page
-		resultHtml.append("<p><a href=\"\\\">Back</a></p>");
+		resultHtml.append(Files.readString(SearchEngine.template.resolve("searchBottom.html"), UTF_8));
 
 		response.setContentType("text/html");
 		response.setStatus(HttpServletResponse.SC_OK);
