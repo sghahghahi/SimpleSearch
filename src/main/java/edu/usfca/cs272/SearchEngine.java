@@ -33,11 +33,13 @@ public class SearchEngine {
 		Server server = new Server(this.port);
 
 		ServletContextHandler handler = new ServletContextHandler();
-		handler.addServlet(new ServletHolder(new HomeServlet(this.invertedIndex)), "/");
+		handler.addServlet(new ServletHolder(new HomeServlet()), "/");
+		handler.addServlet(new ServletHolder(new SearchServlet(this.invertedIndex)), "/search");
+
 		server.setHandler(handler);
 
 		server.start();
-		System.err.printf("Server started at %s:%d\n", "localhost", this.port);
+		System.err.printf("Server started at localhost:%d\n", this.port);
 		server.join();
 	}
 }
