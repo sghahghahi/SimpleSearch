@@ -3,14 +3,15 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Search Engine</title>
+		<title>SimpleSearch</title>
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 	</head>
 	<body class="d-flex align-items-center justify-content-center vh-100">
 		<div class="container text-center mt-5">
+			<p><h1><label for="q">SimpleSearch</label></h1></p>
 			<form action="/search" method="get">
 				<div class="mb-3">
-					<input type="text" class="form-control form-control-lg" id="q" name="q" placeholder="Search anything" required>
+					<input type="text" class="form-control form-control-lg" id="q" name="q" placeholder="What's up?" required>
 				</div>
 				<button type="submit" class="btn btn-primary btn-lg">Search</button>
 			</form>
